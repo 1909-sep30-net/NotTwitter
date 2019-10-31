@@ -18,6 +18,9 @@ namespace DataAccess.Entities
 		public ICollection <Friendships> Friends { get; set; }
 		public ICollection <Comments> Comments { get; set; }
 
-		
+		public ICollection<FriendRequests> FriendRequestSent { get; set; } = new List<FriendRequests>();
+
+		public ICollection<FriendRequests> FriendRequestReceived { get; set; } = new List<FriendRequests>();
+
 	}
 }

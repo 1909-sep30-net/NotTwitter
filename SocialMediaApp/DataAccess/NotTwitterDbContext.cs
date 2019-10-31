@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+
 
 namespace DataAccess
 {
@@ -19,7 +21,7 @@ namespace DataAccess
         public DbSet<Comments> Comments { get; set; }
         public DbSet<Friendships> Friendships { get; set; }
         public DbSet<Posts> Posts { get; set; }
-
+		public DbSet<FriendRequests> FriendRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -139,6 +141,18 @@ namespace DataAccess
                 entity.Property(f => f.TimeRequestConfirmed)
                     .IsRequired();
             });
+			modelBuilder.Entity<FriendRequests>(entity =>
+			{
+
+				entity.HasOne(f => f.Sender)
+					.WithMany(u => u.FriendRequestSent)
+					.HasForeignKey(f => f.SenderId);
+
+				entity.HasOne(f => f.Receiver)
+					.WithMany(u => u.FriendRequestReceived)
+					.HasForeignKey(fr => fr.ReceiverId);
+
+			});
         }
     }
 }

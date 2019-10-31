@@ -40,9 +40,15 @@ namespace Library.Interfaces
         /// <param name="id"></param>
         public void DeleteUserByID(int id);
 
-        /// <summary>
-        /// Saves changes to database
-        /// </summary>
-        public void Save();
+		/// <summary>
+		/// Add Friend
+		/// </summary>
+		/// <param name="senderId", name="receiverId"></param>
+		public void MakeFriends(int senderId, int receiverId);
+
+		/// <summary>
+		/// Saves changes to database
+		/// </summary>
+		public void Save();
     }
 }
