@@ -52,14 +52,21 @@ namespace DataAccess.Repositories
         /// Gets all comments from a post
         /// </summary>
         /// <param name="postId"></param>
+        /// <remarks>Orders comments by time sent, descending</remarks>
         /// <returns></returns>
 		public IEnumerable<Comment> GetCommentsByPostId(int postId)
 		{
 			return _context.Comments.Where(p => p.PostId == postId).OrderByDescending(d => d.TimeSent).Select(Mapper.MapComments);
 		}
 
+        public IEnumerable<Comment> GetCommentsByUserId(int userId)
+        {
+            return _context.Comments.Where(c => c.UserId == userId).Select(Mapper.MapComments);
+        }
+
         public void Save()
         {
+            // log save message
             _context.SaveChanges();
         }
 

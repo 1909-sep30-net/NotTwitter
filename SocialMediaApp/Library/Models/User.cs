@@ -12,6 +12,7 @@ namespace Library.Models
         private string _lastName;
         private int _gender;
         private string _email;
+        private string _password;
 
         /// <summary>
         /// ID that uniquely identifies the user, 0 if unset
@@ -77,15 +78,15 @@ namespace Library.Models
             }
             set
             {
-                if (Regex.IsMatch(value, @"^([a-zA-Z0-9_-.]+)@(([[0-9]{1,3}" +
-                            @".[0-9]{1,3}.[0-9]{1,3}.)|(([a-zA-Z0-9-]+" +
-                            @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(]?)$" +
-                            @"^([a-zA-Z0-9_-.]+)@(([[0-9]{1,3}" +
-                            @".[0-9]{1,3}.[0-9]{1,3}.)|(([a-zA-Z0-9-]+" +
-                            @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(]?)$"))
+                try
                 {
-                    _email = value;
+                    System.Net.Mail.MailAddress m = new System.Net.Mail.MailAddress(value);
                 }
+                catch (FormatException ex)
+                {
+                    throw ex;
+                }
+                _email = value;
             }
         }
 
@@ -123,7 +124,21 @@ namespace Library.Models
         /// <summary>
         /// Password that user uses to log into their account
         /// </summary>
-        public string Password { get; set; }
+        public string Password 
+        {
+            get
+            {
+                return _password;
+            }
+            set
+            {
+                if (value.Length < 8) 
+                {
+                    throw new ArgumentException("Password must be 8 characters or longer.", nameof(value));
+                }
+                _password = value;
+            }
+        }
 
         /// <summary>
         /// Error handling for inserting a name

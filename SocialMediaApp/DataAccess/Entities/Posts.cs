@@ -6,6 +6,10 @@ namespace DataAccess.Entities
 {
 	public class Posts
 	{
+        public Posts()
+        {
+            Comments = new HashSet<Comments>();
+        }
 		public int PostId { get; set; }
 		public int UserId { get; set; }
 		public DateTime TimeSent { get; set; }
