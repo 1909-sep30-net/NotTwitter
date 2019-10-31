@@ -122,8 +122,18 @@ namespace DataAccess.Repositories
             // GC.SuppressFinalize(this);
         }
 
+		public void MakeFriends(int sender, int receiver)
+		{
+			
+		}
 
-        #endregion
+		public bool CheckIfFriends(int senderId, int receiverId)
+		{
+			return _context.Friendships.Any(uf =>(uf.User1ID == senderId && uf.User2ID == receiverId) || (uf.User1ID == receiverId && uf.User2ID == senderId));
+		}
 
-    }
+
+		#endregion
+
+	}
 }
