@@ -35,6 +35,7 @@ steps:
   displayName: dotnet test
   inputs:
     command: 'test'
+    projects: './SocialMediaApp'
     arguments: --configuration $(buildConfiguration) --collect "Code Coverage"
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
