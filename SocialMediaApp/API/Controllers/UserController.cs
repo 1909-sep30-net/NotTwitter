@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Models;
 using DataAccess.Repositories;
 using Library.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ namespace API.Controllers
     {
         private readonly IUserRepository _userRepo;
 
-        public UserController(UserRepository urepo)
+        public UserController(IUserRepository urepo)
         {
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
@@ -29,9 +30,10 @@ namespace API.Controllers
 
         // GET: api/User/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public UserViewModel Get(int id)
         {
-            return "value";
+
+            return new UserViewModel();
         }
 
         // POST: api/User
