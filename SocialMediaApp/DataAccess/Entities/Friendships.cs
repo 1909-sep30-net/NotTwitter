@@ -12,6 +12,7 @@ namespace DataAccess.Entities
         public DateTime TimeRequestConfirmed { get; set; } 
         public virtual Users User1 { get; set; }
         public virtual Users User2 { get; set; }
+        // hewoo
 
     }
 }
