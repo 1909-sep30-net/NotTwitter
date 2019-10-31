@@ -125,14 +125,7 @@ namespace DataAccess.Repositories
 
 		public void MakeFriends(int sender, int receiver)
 		{
-			if (!this.CheckIfFriends(sender, receiver))
-			{
-				var currentUser = _context.Users.Find(sender);
-				var newFriend = _context.Users.Find(receiver);
-				DateTime time = DateTime.Now;
-
-				
-			}
+			
 		}
 
 		public bool CheckIfFriends(int senderId, int receiverId)
