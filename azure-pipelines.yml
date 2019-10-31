@@ -35,7 +35,7 @@ steps:
   displayName: dotnet test
   inputs:
     command: 'test'
-    projects: './SocialMediaApp'
+    projects: './SocialMediaApp/Testing'
     arguments: --configuration $(buildConfiguration) -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura'
     nobuild: true
 - task: PublishCodeCoverageResults@1
