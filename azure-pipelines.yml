@@ -1,0 +1,55 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: 
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloud-project2'
+    organization: '1909-sep30-net'
+    scannerMode: 'MSBuild'
+    projectKey: 'project2.123'
+    projectName: 'NotTwitter'
+    extraProperties: |
+        sonar.exclusions=**/lib/**
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+  workingDirectory: ./SocialMediaApp
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet test
+  inputs:
+    command: 'test'
+    projects: './SocialMediaApp'
+    arguments: --configuration $(buildConfiguration) --collect "Code Coverage"
+- task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Agent.TempDirectory)/*/coverage.cobertura.xml'
+- task: SonarCloudAnalyze@1
+  displayName: Run code analysis
+- task: SonarCloudPublish@1
+  displayName: Publish code analysis
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet publish + zip
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    zipAfterPublish: true
