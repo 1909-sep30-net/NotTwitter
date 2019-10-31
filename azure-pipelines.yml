@@ -26,6 +26,7 @@ steps:
     projectName: 'NotTwitter'
     extraProperties: |
         sonar.exclusions=**/lib/**
+        sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
@@ -37,16 +38,16 @@ steps:
   inputs:
     command: 'test'
     projects: './SocialMediaApp'
-    arguments: '--configuration $(buildConfiguration) -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura'
+    arguments: 
+      --configuration $(buildConfiguration)
+      --settings RestaurantReviews/coverletArgs.runsettings
     nobuild: true
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/SocialMediaApp/**/Testing/coverage.cobertura.xml'
-
-
+    summaryFileLocation: '$(Agent.TempDirectory)/*/coverage.cobertura.xml'
 
 - task: SonarCloudAnalyze@1
   displayName: Run code analysis
