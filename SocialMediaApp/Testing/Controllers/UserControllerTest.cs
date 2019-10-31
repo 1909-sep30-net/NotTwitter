@@ -15,6 +15,7 @@ namespace Testing.Controllers
         [Fact]
         public void GetUserByIdShouldReturnUser()
         {
+            // Assemble 
             var userIdForTest = 2;
             var mockRepo = new Mock<IUserRepository>();
             mockRepo.Setup(x => x.GetUserByID(It.IsAny<int>()))
@@ -30,6 +31,7 @@ namespace Testing.Controllers
 
             var controller = new UserController(mockRepo.Object);
 
+            // Act
             var result = controller.Get(userIdForTest);
 
             // Asserts
