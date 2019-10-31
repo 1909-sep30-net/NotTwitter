@@ -29,6 +29,7 @@ steps:
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+  workingDirectory: ./SocialMediaApp
 
 - task: DotNetCoreCLI@2
   displayName: dotnet test
