@@ -80,7 +80,6 @@ namespace DataAccess
             {
                 TimeRequestConfirmed = friendships.TimeRequestConfirmed,
                 TimeRequestSent = friendships.TimeRequestSent
-
             };
         }
 
@@ -92,5 +91,23 @@ namespace DataAccess
                 TimeRequestSent = friendships.TimeRequestSent
             };
         }
+
+		public static Library.Models.FriendRequest MapFriendRequest(Entities.FriendRequests friendRequests)
+		{
+			return new Library.Models.FriendRequest
+			{
+				ReceiverId = friendRequests.ReceiverId,
+				SenderId = friendRequests.SenderId
+			};
+		}
+
+		public static Entities.FriendRequests MapFriendRequest(Library.Models.FriendRequest friendRequests)
+		{
+			return new Entities.FriendRequests
+			{
+				ReceiverId = friendRequests.ReceiverId,
+				SenderId = friendRequests.SenderId,
+			};
+		}
     }
 }

@@ -9,29 +9,29 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FriendRequestController : ControllerBase
+    public class PostsController : ControllerBase
     {
-        // GET: api/FriendRequest
+        // GET: api/Posts
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET: api/FriendRequest/5
+        // GET: api/Posts/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST: api/FriendRequest
+        // POST: api/Posts
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT: api/FriendRequest/5
+        // PUT: api/Posts/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {

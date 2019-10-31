@@ -6,9 +6,9 @@ namespace Library.Interfaces
 {
 	public interface IFriendRequestRepository
 	{
-		public void Create(int senderId, int receiverId);
-		public void Accept(int senderId, int receiverId);
-		public void Decline(int senderId, int receiverId);
+		public void Create(Library.Models.FriendRequest request);
+		public void Accept(Library.Models.FriendRequest request);
+		public void Decline(Library.Models.FriendRequest request);
 		public void Delete(int senderId, int receiverId);
 	}
 }

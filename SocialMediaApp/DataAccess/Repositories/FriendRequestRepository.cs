@@ -24,37 +24,29 @@ namespace DataAccess.Repositories
 			return _context.FriendRequests.Any(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
 		}
 			 
-		public void Create(int senderId, int receiverId)
+		public void Create(Library.Models.FriendRequest request)
 		{
-			if (!this.Exists(senderId, receiverId))
+			if (!this.Exists(request.SenderId, request.ReceiverId))
 			{
-				var friendRequest = new FriendRequests
-				{
-					SenderId = senderId,
-					ReceiverId = receiverId,
-					FriendRequestStatus = FriendRequestStatus.Pending
-				};
-
+				var friendRequest = Mapper.MapFriendRequest(request);
 				_context.FriendRequests.Add(friendRequest);
 				_context.SaveChanges();
 			}
 		}
-		public void Accept(int senderId, int receiverId)
+		public void Accept(Library.Models.FriendRequest request)
 		{
-			if (this.Exists(senderId, receiverId)) // check bool condition- done
+			if (this.Exists(request.SenderId, request.ReceiverId))
 			{
-				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == receiverId && fr.SenderId == senderId);
-				friendRequest.FriendRequestStatus = FriendRequestStatus.Accepted;
-				_user.MakeFriends(senderId, receiverId); 
+				var friendRequest = Mapper.MapFriendRequest(request);
+				_user.MakeFriends(request.SenderId,request.ReceiverId); 
 				_context.SaveChanges();
 			}
 		}
-		public void Decline(int senderId, int receiverId)
+		public void Decline(Library.Models.FriendRequest request)
 		{
-			if (this.Exists(senderId, receiverId))
+			if (this.Exists(request.SenderId, request.ReceiverId))
 			{
-				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == receiverId && fr.SenderId == senderId);
-				friendRequest.FriendRequestStatus = FriendRequestStatus.Declined;
+				var friendRequest = Mapper.MapFriendRequest(request);
 				_context.FriendRequests.Remove(friendRequest);
 				_context.SaveChanges();
 			}
