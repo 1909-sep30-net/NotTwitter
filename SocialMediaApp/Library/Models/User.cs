@@ -12,6 +12,7 @@ namespace Library.Models
         private string _lastName;
         private int _gender;
         private string _email;
+        private string _password;
 
         /// <summary>
         /// ID that uniquely identifies the user, 0 if unset
@@ -123,7 +124,21 @@ namespace Library.Models
         /// <summary>
         /// Password that user uses to log into their account
         /// </summary>
-        public string Password { get; set; }
+        public string Password 
+        {
+            get
+            {
+                return _password;
+            }
+            set
+            {
+                if (value.Length < 8) 
+                {
+                    throw new ArgumentException("Password must be 8 characters or longer.", nameof(value));
+                }
+                _password = value;
+            }
+        }
 
         /// <summary>
         /// Error handling for inserting a name
