@@ -10,7 +10,6 @@ namespace DataAccess.Entities
             Friends = new HashSet<Friendships>();
             Comments = new HashSet<Comments>();
             Posts = new HashSet<Posts>();
-
         }
 
         public int UserID { get; set; }
