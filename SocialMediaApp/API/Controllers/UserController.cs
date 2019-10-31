@@ -28,6 +28,7 @@ namespace API.Controllers
             return new string[] { "value1", "value2" };
         }
 
+
         // GET: api/User/5
         [HttpGet("{id}", Name = "Get")]
         public UserViewModel Get(int id)

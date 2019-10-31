@@ -1,5 +1,6 @@
 ﻿using API.Controllers;
 using DataAccess;
+using DataAccess.Entities;
 using DataAccess.Repositories;
 using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,31 @@ namespace Testing.Repositories
         [Fact]
         public void GetUserByIdShouldReturnResult()
         {
+            // Assemble
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("GetUserByIdShouldReturnResult")
                 .Options;
             using var arrangeContext = new NotTwitterDbContext(options);
             var testId = 2;
-            arrangeContext.Users.Add(new DataAccess.Entities.Users { });
+            var testUserEntity = new Users
+            {
+                UserID = 2,
+                FirstName = "Jicky",
+                LastName = "Johnson",
+                Email = "abc.abc@abc.com",
+                Username = "blah",
+                Password = "blah",
+                Gender = 1
+            };
+            arrangeContext.Users.Add(testUserEntity);
             arrangeContext.SaveChanges();
-
             using var actContext = new NotTwitterDbContext(options);
             var repo = new UserRepository(actContext);
 
+            // Act
             var result = repo.GetUserByID(testId);
-
+             
+            // Assert
             Assert.NotNull(result);
         }
     }
