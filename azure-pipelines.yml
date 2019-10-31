@@ -36,7 +36,8 @@ steps:
   inputs:
     command: 'test'
     projects: './SocialMediaApp'
-    arguments: --configuration $(buildConfiguration) --collect "Code Coverage"
+    arguments: --configuration $(buildConfiguration) -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura'
+    nobuild: true
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
   inputs:
