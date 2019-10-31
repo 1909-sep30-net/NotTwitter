@@ -16,7 +16,7 @@ namespace DataAccess.Repositories
 		public FriendRequestRepository(NotTwitterDbContext db, IUserRepository user)
 		{
 			_context = db;
-			_user = user;
+			_user = user; // need to fix not call it as param
 		}
 
 		public bool Exists(int senderId, int receiverId)
@@ -41,17 +41,17 @@ namespace DataAccess.Repositories
 		}
 		public void Accept(int senderId, int receiverId)
 		{
-			if (!this.Exists(senderId, receiverId))
+			if (this.Exists(senderId, receiverId)) // check bool condition- done
 			{
 				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == receiverId && fr.SenderId == senderId);
 				friendRequest.FriendRequestStatus = FriendRequestStatus.Accepted;
-				_user.MakeFriends(senderId, receiverId);
+				_user.MakeFriends(senderId, receiverId); 
 				_context.SaveChanges();
 			}
 		}
 		public void Decline(int senderId, int receiverId)
 		{
-			if (!this.Exists(senderId, receiverId))
+			if (this.Exists(senderId, receiverId))
 			{
 				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == receiverId && fr.SenderId == senderId);
 				friendRequest.FriendRequestStatus = FriendRequestStatus.Declined;
