@@ -40,7 +40,7 @@ steps:
     projects: './SocialMediaApp'
     arguments: 
       --configuration $(buildConfiguration)
-      --settings RestaurantReviews/coverletArgs.runsettings
+      --settings SocialMediaApp/coverletArgs.runsettings
     nobuild: true
 
 - task: PublishCodeCoverageResults@1
