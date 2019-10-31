@@ -39,13 +39,18 @@ steps:
     projects: './SocialMediaApp'
     arguments: '--configuration $(buildConfiguration) -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura'
     nobuild: true
+
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Agent.TempDirectory)/*/coverage.cobertura.xml'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/SocialMediaApp/**/Testing/coverage.cobertura.xml'
+
+
+
 - task: SonarCloudAnalyze@1
   displayName: Run code analysis
+
 - task: SonarCloudPublish@1
   displayName: Publish code analysis
 
