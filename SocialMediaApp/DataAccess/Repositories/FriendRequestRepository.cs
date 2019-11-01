@@ -37,8 +37,8 @@ namespace DataAccess.Repositories
 		{
 			if (this.Exists(request.SenderId, request.ReceiverId))
 			{
-				var friendRequest = Mapper.MapFriendRequest(request);
-				_user.MakeFriends(request.SenderId,request.ReceiverId); 
+				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == request.ReceiverId && fr.SenderId == request.SenderId);
+				friendRequest.FriendRequestStatus = FriendRequestStatus.Accepted; 
 				_context.SaveChanges();
 			}
 		}
@@ -46,8 +46,8 @@ namespace DataAccess.Repositories
 		{
 			if (this.Exists(request.SenderId, request.ReceiverId))
 			{
-				var friendRequest = Mapper.MapFriendRequest(request);
-				_context.FriendRequests.Remove(friendRequest);
+				var friendRequest = _context.FriendRequests.FirstOrDefault(fr => fr.ReceiverId == request.ReceiverId && fr.SenderId == request.SenderId);
+				_context.Remove(friendRequest);
 				_context.SaveChanges();
 			}
 		}
