@@ -42,7 +42,8 @@ namespace API.Controllers
         public UserViewModel Get(int id)
         {
             var x = _userRepo.GetUserByID(id);
-            
+
+
             return new UserViewModel()
             {
                 Username = x.Username,
@@ -50,7 +51,7 @@ namespace API.Controllers
                 LastName = x.LastName,
                 Gender = x.Gender,
                 Email = x.Email,
-                Id = x.UserID        
+                Id = x.UserID
             };
 
         }
@@ -60,18 +61,24 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult Post([FromBody, Bind("FirstName, LastName, Username, Email, Gender")] UserViewModel newUser)
         {
-            Library.Models.User mappedUser = new Library.Models.User()
+            //Check if the user ID from new User already exists
+            if (_userRepo.GetUserByID(newUser.Id) == null)
             {
-                Username = newUser.Username,
-                FirstName = newUser.FirstName,
-                LastName = newUser.LastName,
-                Gender = newUser.Gender,
-                Email = newUser.Email,
-                UserID = newUser.Id
+                Library.Models.User mappedUser = new Library.Models.User()
+                {
+                    Username = newUser.Username,
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName,
+                    Gender = newUser.Gender,
+                    Email = newUser.Email,
+                    UserID = newUser.Id
+                };
+                _userRepo.AddUser(mappedUser);
 
-            };
-            _userRepo.AddUser(mappedUser);
-            return CreatedAtRoute("Get", new { Id = mappedUser.UserID}, newUser);
+                return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
+            }
+            //Return a BadRequest message if User already exists
+            return BadRequest();
         }
 
         // PUT: api/User/5
