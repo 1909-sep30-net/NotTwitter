@@ -18,11 +18,12 @@ namespace API.Controllers
 		{
 			_repo = repo;
 		}
-
+        /*
 		[HttpPost]
 		public ActionResult Create([FromBody] Library.Models.FriendRequest request)
 		{
 			
 		}
+        */
     }
 }

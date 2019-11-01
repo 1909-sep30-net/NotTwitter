@@ -143,16 +143,20 @@ namespace DataAccess
             });
 			modelBuilder.Entity<FriendRequests>(entity =>
 			{
+                entity.HasKey(f => new { f.SenderId, f.ReceiverId });
 
 				entity.HasOne(f => f.Sender)
 					.WithMany(u => u.FriendRequestSent)
-					.HasForeignKey(f => f.SenderId);
+					.HasForeignKey(f => f.SenderId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
 
-				entity.HasOne(f => f.Receiver)
+                entity.HasOne(f => f.Receiver)
 					.WithMany(u => u.FriendRequestReceived)
-					.HasForeignKey(fr => fr.ReceiverId);
-
-			});
+					.HasForeignKey(fr => fr.ReceiverId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

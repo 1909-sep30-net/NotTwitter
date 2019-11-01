@@ -41,6 +41,7 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "Get")]
         public UserViewModel Get(int id)
         {
+            
             var x = _userRepo.GetUserByID(id);
             
             return new UserViewModel()
