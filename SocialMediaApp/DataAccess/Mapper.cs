@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DataAccess
 {
@@ -38,7 +39,8 @@ namespace DataAccess
             {
                PostID = posts.PostId,
                Content = posts.Content,
-               TimeSent = posts.TimeSent
+               TimeSent = posts.TimeSent,
+               Comments = posts.Comments.Select(MapComments).ToHashSet()
             };
         }
 

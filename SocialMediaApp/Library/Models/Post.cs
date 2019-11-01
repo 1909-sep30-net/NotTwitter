@@ -47,6 +47,8 @@ namespace Library.Models
             }
         }
 
+        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+
         /// <summary>
         /// Time that the post was submitted.
         /// </summary>

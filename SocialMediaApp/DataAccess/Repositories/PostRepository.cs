@@ -1,5 +1,6 @@
 ﻿using Library.Interfaces;
 using Library.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,25 +37,32 @@ namespace DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets post by ID
+        /// Gets post by ID, including comments
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
         public Post GetPost(int postId)
         {
+            // First check if post exists
             var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
 
-            return Mapper.MapPosts(post);
+            // Then get the post with comments
+            var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
+
+            return Mapper.MapPosts(postWithComments);
         }
 
         /// <summary>
-        /// Gets posts from user
+        /// Gets posts from user, including comments
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         public IEnumerable<Post> GetPosts(int userId)
         {
-            return _context.Posts.Where(p => p.UserId == userId).Select(Mapper.MapPosts);
+            return _context.Posts
+                .Include(p=>p.Comments)
+                .Where(p => p.UserId == userId)
+                .Select(Mapper.MapPosts);
         }
 
 
