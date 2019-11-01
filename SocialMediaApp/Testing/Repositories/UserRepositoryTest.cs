@@ -3,10 +3,12 @@ using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Repositories;
 using Library.Interfaces;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -17,7 +19,7 @@ namespace Testing.Repositories
         [Fact]
         public void GetUserByIdShouldReturnResult()
         {
-            // Assemble
+            // Arrange
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("GetUserByIdShouldReturnResult")
                 .Options;
@@ -43,6 +45,35 @@ namespace Testing.Repositories
              
             // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void AddUserShouldAdd()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("AddUserShouldAdd")
+                .Options;
+            using var actContext = new NotTwitterDbContext(options);
+            var newUser = new User
+            {
+                FirstName = "Tester",
+                LastName = "Testy",
+                Email = "abc.abc@abc.com",
+                Username = "blah",
+                Password = "blahblah",
+                Gender = 1
+            };
+            var actRepo = new UserRepository(actContext);
+
+            // Act
+            actRepo.AddUser(newUser);
+            actRepo.Save();
+
+            // Assert
+            using var assertContext = new NotTwitterDbContext(options);
+            var assertUser = assertContext.Users.First(u => u.FirstName == newUser.FirstName);
+
         }
     }
 }

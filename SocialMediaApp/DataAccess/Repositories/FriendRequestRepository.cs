@@ -26,7 +26,7 @@ namespace DataAccess.Repositories
 			 
 		public void Create(Library.Models.FriendRequest request)
 		{
-			if (!this.Exists(request.SenderId, request.ReceiverId))
+			if (!this.Exists(request.Sender.UserID, request.Receiver.UserID))
 			{
 				var friendRequest = Mapper.MapFriendRequest(request);
 				_context.FriendRequests.Add(friendRequest);
@@ -35,10 +35,10 @@ namespace DataAccess.Repositories
 		}
 		public void Accept(Library.Models.FriendRequest request)
 		{
-			if (this.Exists(request.SenderId, request.ReceiverId))
+			if (this.Exists(request.Sender.UserID, request.Receiver.UserID))
 			{
 				var friendRequest = Mapper.MapFriendRequest(request);
-				_user.MakeFriends(request.SenderId,request.ReceiverId); 
+				_user.MakeFriends(request.Sender.UserID, request.Receiver.UserID); 
 				_context.SaveChanges();
 			}
 		}
