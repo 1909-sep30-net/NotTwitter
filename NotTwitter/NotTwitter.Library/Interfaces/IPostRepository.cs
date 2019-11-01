@@ -11,6 +11,11 @@ namespace NotTwitter.Library.Interfaces
         //CRUD
         public void CreatePost(Post post);
 
+        /// <summary>
+        /// Gets post by ID, including comments
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         public Post GetPost(int postId);
 
         /// <summary>
