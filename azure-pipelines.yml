@@ -39,8 +39,8 @@ steps:
     command: 'test'
     projects: './SocialMediaApp'
     arguments: 
-      --configuration $(buildConfiguration)
-      --settings SocialMediaApp/coverletArgs.runsettings
+      --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,cobertura\"
+      #--settings SocialMediaApp/coverletArgs.runsettings
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
