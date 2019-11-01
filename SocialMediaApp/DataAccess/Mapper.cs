@@ -67,8 +67,6 @@ namespace DataAccess
             return new Entities.Comments
             {
                 CommentId = comments.CommentId,
-                PostId = comments.Post.PostID,
-                UserId = comments.User.UserID,
                 Content = comments.Content,
                 TimeSent = comments.TimeSent
             };
