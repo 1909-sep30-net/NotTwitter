@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Testing
+namespace Testing.Library.Models
 {
     public class UserTesting
     {
@@ -66,6 +66,28 @@ namespace Testing
             string expected = lastname.Substring(0, 1).ToUpper() + lastname.Substring(1).ToLower();
 
             Assert.Equal(expected, user.LastName);
+        }
+
+        [Theory]
+        [InlineData("d34gh54")]
+        [InlineData("123")]
+        [InlineData("4j")]
+        [InlineData("s")]
+        public void Password_TooShort_ThrowsException(string password)
+        {
+            Assert.Throws<ArgumentException>( () => user.Password = password);
+        }
+
+        [Theory]
+        [InlineData("12345678")]
+        [InlineData("fiberonetree")]
+        [InlineData("pickle pocket poo")]
+        [InlineData("thisislongerthan8")]
+        public void Password_LongEnough_CorrectlyStores(string password)
+        {
+            user.Password = password;
+
+            Assert.Equal(password, user.Password);
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Testing
+namespace Testing.Library.Models
 {
 	public class CommentTesting
 	{
@@ -12,7 +13,7 @@ namespace Testing
 		[InlineData(null)]
 		public void NullCommentThrowsArgNullException(string content)
 		{
-			Library.Models.Comment comment = new Library.Models.Comment();
+			Comment comment = new Comment();
 			Assert.Throws<ArgumentNullException>(() => comment.Content = content);
 		}
 
@@ -20,14 +21,14 @@ namespace Testing
 		[InlineData("")]
 		public void EmptyCommentThrowsArgOORException(string content)
 		{
-			Library.Models.Comment comment = new Library.Models.Comment();
+			Comment comment = new Comment();
 			Assert.Throws<ArgumentOutOfRangeException>(() => comment.Content = content);
 		}
 
 		[Fact]
 		public void LongCommentThrowsArgOORException()
 		{
-			Library.Models.Comment comment = new Library.Models.Comment();
+			Comment comment = new Comment();
 
             // 282 Character string
             string longString = "Lorem ipsum dolor sit amet consectetur adipiscing elit," +
@@ -37,5 +38,20 @@ namespace Testing
 
 			Assert.Throws<ArgumentOutOfRangeException>(() => comment.Content = longString);
 		}
-	}
+
+        [Fact]
+        public void ShorterCommentStoresCorrectly()
+        {
+            Comment comment = new Comment();
+
+            // 282 Character string
+            string longString = "Lorem ipsum dolor sit amet consectetur adipiscing elit," +
+                " mollis lectus est tempus auctor malesuada, nam sociis dignissim habitant" +
+                " nec varius litora.";
+
+            comment.Content = longString;
+
+            Assert.Equal(longString, comment.Content);
+        }
+    }
 }
