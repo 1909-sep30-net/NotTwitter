@@ -2,6 +2,7 @@
 using Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DataAccess.Repositories
@@ -19,20 +20,49 @@ namespace DataAccess.Repositories
             _context.Add(Mapper.MapPosts(post));
         }
 
-        public void DeletePost()
+        public void DeletePost(int postId)
         {
-            throw new NotImplementedException();
+            // Throw exception if post was not found
+            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
+
+            // Delete all comments from post
+            foreach (var comment in post.Comments)
+            {
+                _context.Remove(comment);
+            }
+
+            // Then delete post
+            _context.Remove(post);
         }
 
-        public IEnumerable<Post> GetPosts(int id)
+        /// <summary>
+        /// Gets post by ID
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        public Post GetPost(int postId)
         {
-            throw new NotImplementedException();
+            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
+
+            return Mapper.MapPosts(post);
+        }
+
+        /// <summary>
+        /// Gets posts from user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public IEnumerable<Post> GetPosts(int userId)
+        {
+            return _context.Posts.Where(p => p.UserId == userId).Select(Mapper.MapPosts);
         }
 
 
-        public void UpdatePost()
+        public void UpdatePost(Post post)
         {
-            throw new NotImplementedException();
+            var newEntity = Mapper.MapPosts(post);
+            var oldEntity = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
+            _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
         #region IDisposable Support
@@ -45,6 +75,7 @@ namespace DataAccess.Repositories
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
+                    _context.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

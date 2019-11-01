@@ -10,13 +10,15 @@ namespace Library.Interfaces
         //CRUD
         public void CreatePost(Post post);
 
+        public Post GetPost(int postId);
+
         /// <summary>
-        /// Gets all posts from a specific 
+        /// Gets all posts from a specific user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IEnumerable<Post> GetPosts(int id);
-        public void UpdatePost();
-        public void DeletePost();
+        public IEnumerable<Post> GetPosts(int userId);
+        public void UpdatePost(Post post);
+        public void DeletePost(int postId);
     }
 }
