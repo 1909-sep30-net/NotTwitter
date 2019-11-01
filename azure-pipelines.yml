@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   buildConfiguration: 'Release'
@@ -26,7 +26,6 @@ steps:
     projectName: 'NotTwitter'
     extraProperties: |
         sonar.exclusions=**/lib/**
-        sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
@@ -39,7 +38,7 @@ steps:
     command: 'test'
     projects: './NotTwitter'
     arguments: 
-      --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=“cobertura%2copencover”
+      --configuration $(buildConfiguration) --collect "Code Coverage"
       #--settings NotTwitter/coverletArgs.runsettings
 
 - task: PublishCodeCoverageResults@1
