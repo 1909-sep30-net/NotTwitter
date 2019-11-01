@@ -14,9 +14,7 @@ namespace NotTwitter.API.Controllers
     [ApiController]
 
     /*
- 
        * Get FriendList
-       
     */
 
     public class UserController : ControllerBase
@@ -31,19 +29,18 @@ namespace NotTwitter.API.Controllers
         // Get UserPosts
         // GET: api/User
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<string> GetPost()
         {
-            return new string[] { "value1", "value2" };
+            return null;
         }
+
 
         // Get User by Name
         // GET: api/User/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public UserViewModel Get(int id)
         {
-            
             var x = _userRepo.GetUserByID(id);
-
 
             return new UserViewModel()
             {
@@ -60,26 +57,29 @@ namespace NotTwitter.API.Controllers
         // Post User Model
         // POST: api/User
         [HttpPost]
-        public ActionResult Post([FromBody, Bind("FirstName, LastName, Username, Email, Gender")] UserViewModel newUser)
+        public ActionResult Post([FromBody, Bind("FirstName, LastName, Username, Password, Email, Gender")] UserViewModel newUser)
         {
-            //Check if the user ID from new User already exists
-            if (_userRepo.GetUserByID(newUser.Id) == null)
+            Library.Models.User mappedUser = new Library.Models.User()
             {
-                Library.Models.User mappedUser = new Library.Models.User()
-                {
-                    Username = newUser.Username,
-                    FirstName = newUser.FirstName,
-                    LastName = newUser.LastName,
-                    Gender = newUser.Gender,
-                    Email = newUser.Email,
-                    UserID = newUser.Id
-                };
-                _userRepo.AddUser(mappedUser);
+                Username = newUser.Username,
+                Password = newUser.Password,
+                FirstName = newUser.FirstName,
+                LastName = newUser.LastName,
+                Gender = newUser.Gender,
+                Email = newUser.Email,
+                UserID = newUser.Id
+            };
 
-                return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
-            }
+            _userRepo.AddUser(mappedUser);
+            _userRepo.Save();
+
             //Return a BadRequest message if User already exists
-            return BadRequest();
+            //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
+            //{
+            //    return BadRequest();
+            //}
+            
+            return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
         }
 
         // PUT: api/User/5

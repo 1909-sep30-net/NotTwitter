@@ -39,6 +39,31 @@ namespace NotTwitter.Testing.Controllers
             var viewresult = Assert.IsAssignableFrom<UserViewModel>(result);
             Assert.Equal(userIdForTest, viewresult.Id);
         }
-        
+
+        [Fact]
+        public void PostUserShouldReturnPostUser()
+        {
+            //Assemble 
+            UserViewModel newUser = new UserViewModel() {
+                Username = "hithisistest",
+                FirstName = "HiThis",
+                LastName = "IsTest",
+                Gender = 1,
+                Email = "hithisistest@test.com",
+                Id = 2,
+            };
+
+            var mockRepo = new Mock<IUserRepository>();
+            mockRepo.Setup(x => x.AddUser(It.IsAny<User>()));
+
+            var controller = new UserController(mockRepo.Object);
+
+            //Act
+            var result = controller.Post(newUser);
+            //Assert
+            var viewResult = controller.Get(2);
+            Assert.Equal(viewResult.Username, newUser.Username);
+        }
+
     }
 }
