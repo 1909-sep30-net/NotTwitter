@@ -23,7 +23,7 @@ namespace NotTwitter.API.Controllers
 			_user = user;
 		}
 		[HttpPost]
-		public ActionResult CreateRequest([FromBody] Models.FriendRequestModel friendRequest)
+		public ActionResult CreateRequest([FromBody] FriendRequestModel friendRequest)
 		{
 			if (_user.GetUserByID(friendRequest.SenderId) is null || _user.GetUserByID(friendRequest.ReceiverId) is null)
 			{
@@ -64,7 +64,7 @@ namespace NotTwitter.API.Controllers
 				TimeRequestConfirmed = newFriendModel.TimeRequestConfirmed
 			};
 			_user.MakeFriends(newFriend);
-			return CreatedAtRoute("Get", new { Id = friendRequest.SenderId }, friendRequest);
+			return CreatedAtRoute("Get", new { Id = friendRequest.ReceiverId }, friendRequest);
 		}
 
 		[HttpPost]
