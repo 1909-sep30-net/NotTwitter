@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Testing
+namespace Testing.Library.Models
 {
 	public class PostTesting
 	{
@@ -12,7 +12,7 @@ namespace Testing
 		[InlineData(null)]
 		public void IsPostNull(string content) 
 		{
-			Library.Models.Post post = new Library.Models.Post();
+			Post post = new Post();
 			Assert.Throws<ArgumentNullException>(() => post.Content = content);
 		}
 
@@ -20,14 +20,14 @@ namespace Testing
 		[InlineData("")]
 		public void IsPostEmpty(string content)
 		{
-			Library.Models.Post post = new Library.Models.Post();
+			Post post = new Post();
 			Assert.Throws<ArgumentOutOfRangeException>(()=>post.Content = content);
 		}
 
 		[Fact]
 		public void IsPostTooLong()
 		{
-			Library.Models.Post post = new Library.Models.Post();
+		Post post = new Post();
 
             // 282 Character string
             string longString = "Lorem ipsum dolor sit amet consectetur adipiscing elit," +
@@ -37,5 +37,20 @@ namespace Testing
 
             Assert.Throws<ArgumentOutOfRangeException>(() => post.Content = longString);			
 		}
-	}
+
+        [Fact]
+        public void ShorterPostStoresCorrectly()
+        {
+            Post post = new Post();
+
+            // 282 Character string
+            string longString = "Lorem ipsum dolor sit amet consectetur adipiscing elit," +
+                " mollis lectus est tempus auctor malesuada, nam sociis dignissim habitant" +
+                " nec varius litora.";
+
+            post.Content = longString;
+
+            Assert.Equal(longString, post.Content);
+        }
+    }
 }
