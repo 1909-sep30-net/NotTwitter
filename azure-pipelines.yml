@@ -41,7 +41,6 @@ steps:
     arguments: 
       --configuration $(buildConfiguration)
       --settings SocialMediaApp/coverletArgs.runsettings
-    nobuild: true
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage
