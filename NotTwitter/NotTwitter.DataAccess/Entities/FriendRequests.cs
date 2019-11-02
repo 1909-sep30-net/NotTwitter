@@ -19,6 +19,6 @@ namespace NotTwitter.DataAccess.Entities
 		public Users Receiver { get; set; }
 
 		
-		public FriendRequestStatus FriendRequestStatus { get; set; }
+		public int FriendRequestStatus { get; set; }
 	}
 }

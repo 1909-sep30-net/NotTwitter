@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using NotTwitter.Library.Models;
 
 namespace NotTwitter.Library.Interfaces

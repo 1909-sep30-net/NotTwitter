@@ -65,7 +65,10 @@ namespace NotTwitter.DataAccess.Repositories
                 .Select(Mapper.MapPosts);
         }
 
-
+        /// <summary>
+        /// Updates database with given post
+        /// </summary>
+        /// <param name="post"></param>
         public void UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPosts(post);

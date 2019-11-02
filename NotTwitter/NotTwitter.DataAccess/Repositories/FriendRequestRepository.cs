@@ -1,6 +1,7 @@
 ﻿using NotTwitter.DataAccess.Entities;
 using NotTwitter.DataAccess.Entities.Enum;
 using NotTwitter.Library.Interfaces;
+using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,45 +17,69 @@ namespace NotTwitter.DataAccess.Repositories
 		public FriendRequestRepository(NotTwitterDbContext db, IUserRepository user)
 		{
 			_context = db;
-			_user = user; // need to fix not call it as param
+			_user = user;
 		}
 
-		public bool Exists(int senderId, int receiverId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public IEnumerable<FriendRequest> GetAllPendingFriendRequests(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Checks if a given friend request already exists
+        /// </summary>
+        /// <param name="senderId"></param>
+        /// <param name="receiverId"></param>
+        /// <returns></returns>
+		public bool FriendRequestExists(FriendRequest request)
 		{
-			return _context.FriendRequests.Any(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
+			return _context.FriendRequests.Any(fr => fr.SenderId == request.SenderId && fr.ReceiverId == request.ReceiverId);
 		}
 			 
-		public void Create(Library.Models.FriendRequest request)
+		public void CreateFriendRequest(FriendRequest request)
 		{
-			if (!this.Exists(request.Sender.UserID, request.Receiver.UserID))
+			if (!this.FriendRequestExists(request))
 			{
 				var friendRequest = Mapper.MapFriendRequest(request);
 				_context.FriendRequests.Add(friendRequest);
 				_context.SaveChanges();
 			}
 		}
-		public void Accept(Library.Models.FriendRequest request)
+
+
+        /// <summary>
+        /// Updates friend request in the database with new values
+        /// </summary>
+        /// <param name="request"></param>
+        public void UpdateFriendRequest(FriendRequest request)
+        {
+            var newEntity = Mapper.MapFriendRequest(request);
+            var oldEntity = _context.FriendRequests.Find(request.FriendRequestId) ?? throw new ArgumentNullException("Request does not exist.", nameof(request));
+            _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
+        }
+
+        /// <summary>
+        /// Deletes request from the database
+        /// </summary>
+        /// <param name="request"></param>
+		public void DeleteFriendRequest(FriendRequest request)
 		{
-			if (this.Exists(request.Sender.UserID, request.Receiver.UserID))
-			{
-				var friendRequest = Mapper.MapFriendRequest(request);
-				//_user.MakeFriends(request.Sender.UserID, request.Receiver.UserID); 
-				_context.SaveChanges();
-			}
-		}
-		public void Decline(Library.Models.FriendRequest request)
-		{
-			if (this.Exists(request.SenderId, request.ReceiverId))
-			{
-				var friendRequest = Mapper.MapFriendRequest(request);
-				_context.FriendRequests.Remove(friendRequest);
-				_context.SaveChanges();
-			}
+            // If the request doesnt exist, throw exception
+            var requestEntity = _context.FriendRequests.Find(request.FriendRequestId) ?? throw new ArgumentNullException("Request does not exist.", nameof(request));
+
+            // Otherwise, remove from database
+            _context.FriendRequests.Remove(requestEntity);
 		}
 
-		public void Delete(int senderId, int receiverId)
-		{
-			throw new NotImplementedException();
-		}
+        public void Save()
+        {
+            // TODO: log
+            _context.SaveChanges();
+        }
 	}
 }

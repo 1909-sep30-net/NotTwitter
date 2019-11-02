@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using System.Linq;
 
 namespace NotTwitter.Testing.Controllers
 {
@@ -38,6 +39,45 @@ namespace NotTwitter.Testing.Controllers
             // Asserts
             var viewresult = Assert.IsAssignableFrom<UserViewModel>(result);
             Assert.Equal(userIdForTest, viewresult.Id);
+        }
+
+        [Fact]
+        public void PostUserShouldPost()
+        {
+            UserViewModel newUser = new UserViewModel()
+            {
+                Username = "hithisistest",
+                FirstName = "HiThis",
+                LastName = "IsTest",
+                Password = "password1",
+                Gender = 1,
+                Email = "hithisistest@test.com",
+                Id = 3,
+            };
+
+            var userList = new List<User>
+            {
+                new User {UserID = 1, FirstName = "abc", LastName = "abc"},
+                new User {UserID = 2, FirstName = "abc", LastName = "abc"},
+                new User {UserID = 3, FirstName = "abc", LastName = "abc"},
+            };
+
+
+            var mockRepo = new Mock<IUserRepository>();
+            mockRepo.Setup(x => x.GetUserByID(It.IsAny<int>())).Returns((int i) => userList.First(u => u.UserID == i));
+            mockRepo.Setup(x => x.AddUser(It.IsAny<User>()))
+                .Callback(() => 
+                {
+                    userList.Add(new User { UserID = 4, FirstName = "abc", LastName = "abc" });
+                });
+
+            var controller = new UserController(mockRepo.Object);
+
+            controller.Post(newUser);
+
+            var testUser = mockRepo.Object.GetUserByID(4);
+            Assert.NotNull(testUser);
+
         }
         
     }
