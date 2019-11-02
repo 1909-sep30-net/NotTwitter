@@ -48,21 +48,22 @@ namespace NotTwitter.Testing.Controllers
                 Username = "hithisistest",
                 FirstName = "HiThis",
                 LastName = "IsTest",
+                Password = "password1",
                 Gender = 1,
                 Email = "hithisistest@test.com",
-                Id = 2,
+                Id = 3,
             };
 
-            var mockRepo = new Mock<IUserRepository>();
-            mockRepo.Setup(x => x.AddUser(It.IsAny<User>()));
+            var mock = new Mock<IUserRepository>();
+
+            var repository = new MockRepository(MockBehavior.Loose);
+
+            var mockRepo = repository.Create<IUserRepository>();
 
             var controller = new UserController(mockRepo.Object);
 
-            //Act
-            var result = controller.Post(newUser);
-            //Assert
-            var viewResult = controller.Get(2);
-            Assert.Equal(viewResult.Username, newUser.Username);
+            //Assert with Act
+            Assert.NotNull(controller.Post(newUser));
         }
 
     }
