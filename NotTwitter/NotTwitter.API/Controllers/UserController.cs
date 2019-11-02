@@ -104,8 +104,16 @@ namespace NotTwitter.API.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var oldUser = _userRepo.GetUserByID(id);
+            if (oldUser != null)
+            {
+                _userRepo.DeleteUserByID(id);
+                _userRepo.Save();
+                return NoContent();
+            }
+            return NotFound();
         }
     }
 }
