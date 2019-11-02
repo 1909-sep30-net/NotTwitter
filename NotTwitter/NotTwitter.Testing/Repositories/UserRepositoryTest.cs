@@ -52,6 +52,42 @@ namespace NotTwitter.Testing.Repositories
              
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(testId, result.UserID);
+        }
+
+        [Theory]
+        [InlineData("Jicky","Jick")]
+
+        public void GetUsersByNameShouldReturnList(string fullName, string partialName)
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("GetUsersByNameShouldReturnList")
+                .Options;
+            using var arrangeContext = new NotTwitterDbContext(options);
+            for (int i=0;i<3;i++)
+            {
+                arrangeContext.Users.Add(
+                    new Users
+                    {
+                        FirstName = fullName,
+                        LastName = fullName,
+                        Email = ValidEmail,
+                        Username = ValidUsername,
+                        Password = ValidPassword,
+                        Gender = ValidGender
+                    }
+                );
+            }
+            arrangeContext.SaveChanges();
+            var repo = new UserRepository(arrangeContext);
+
+            // Act
+            var result = repo.GetUsersByName(partialName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(arrangeContext.Users.Count(), result.Count());
         }
 
         [Fact]

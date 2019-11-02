@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NotTwitter.Testing.Controllers
 {
@@ -64,7 +65,6 @@ namespace NotTwitter.Testing.Controllers
 
 
             var mockRepo = new Mock<IUserRepository>();
-            mockRepo.Setup(x => x.GetUserByID(It.IsAny<int>())).Returns((int i) => userList.First(u => u.UserID == i));
             mockRepo.Setup(x => x.AddUser(It.IsAny<User>()))
                 .Callback(() => 
                 {
@@ -73,10 +73,16 @@ namespace NotTwitter.Testing.Controllers
 
             var controller = new UserController(mockRepo.Object);
 
-            controller.Post(newUser);
+            // Act
+            var response = controller.Post(newUser);
+            var responseContent = response as CreatedAtRouteResult;
 
-            var testUser = mockRepo.Object.GetUserByID(4);
-            Assert.NotNull(testUser);
+            // Assert
+            mockRepo.Verify(x => x.AddUser(It.IsAny<User>()));
+            Assert.Equal(4, userList.Count);
+            Assert.Equal(4, userList.First(x=>x.UserID==4).UserID);
+
+            Assert.NotNull(responseContent);
 
         }
         
