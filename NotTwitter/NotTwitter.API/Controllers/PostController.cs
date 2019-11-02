@@ -22,15 +22,26 @@ namespace NotTwitter.API.Controllers
         
 
         // GET: api/Post/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("{id}", Name = "GetPosts")]
+        public List<PostModel> GetPosts(int postId)
         {
-            return "value";
+			var posts = _repo.GetPosts(postId);
+			List<Models.PostModel> ListPosts = new List<PostModel>(); 
+			foreach (var p in posts)
+			{
+				var post = new Models.PostModel
+				{
+					User = p.User,
+					Text = p.Content,
+				};
+				ListPosts.Add(post);
+			}
+			return ListPosts;
         }
 
-        // POST: api/Post
+        // POST: api/CreatePost
         [HttpPost]
-        public ActionResult Post([FromBody] Models.PostModel postModel)
+        public ActionResult CreatePost([FromBody] Models.PostModel postModel)
         {
 			var newPost = new Library.Models.Post
 			{
@@ -52,12 +63,12 @@ namespace NotTwitter.API.Controllers
 			}
 			_repo.Likes(postId);
 
-			return RedirectToAction(nameof(Get));
+			return RedirectToAction(nameof(GetPosts));
 		}
 
 		// PUT: api/Post/5
 		[HttpPut("{id}")]
-        public IActionResult Put(int PostId, [FromBody] Models.PostModel postModel)
+        public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
 			if (_repo.GetPosts(PostId) is null)
 				return NotFound();
