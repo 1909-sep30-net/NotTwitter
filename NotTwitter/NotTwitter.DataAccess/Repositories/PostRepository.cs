@@ -73,8 +73,15 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+		public Post Likes(int postId)
+		{
+			var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
+			var PostWithLikes = _context.Posts.Include(p => p.Likes).First(p => p.PostId == postId);
+			return Mapper.MapPosts(PostWithLikes);
+		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -109,7 +116,9 @@ namespace NotTwitter.DataAccess.Repositories
             // GC.SuppressFinalize(this);
         }
 
+		
 
-        #endregion
-    }
+
+		#endregion
+	}
 }
