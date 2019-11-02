@@ -57,8 +57,18 @@ namespace NotTwitter.API.Controllers
 
 		// PUT: api/Post/5
 		[HttpPut("{id}")]
-        public void Put(int PostId, [FromBody] string value)
+        public IActionResult Put(int PostId, [FromBody] Models.PostModel postModel)
         {
+			if (_repo.GetPosts(PostId) is null)
+				return NotFound();
+			var updatedPost = new Library.Models.Post
+			{
+				User = postModel.User,
+				Content = postModel.Text,
+				TimeSent = DateTime.Now,
+			};
+			_repo.UpdatePost(updatedPost);
+			return NoContent();
         }
 
         // DELETE: api/ApiWithActions/5
