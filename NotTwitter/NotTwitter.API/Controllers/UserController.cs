@@ -26,20 +26,12 @@ namespace NotTwitter.API.Controllers
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
-        // Get UserPosts
-        // GET: api/User
-        [HttpGet]
-        public IEnumerable<string> GetPost()
-        {
-            return null;
-        }
-
-
         // Get User by Name
         // GET: api/User/5
         [HttpGet("{id}")]
         public UserViewModel Get(int id)
         {
+
             var x = _userRepo.GetUserByID(id);
 
             return new UserViewModel()
@@ -84,8 +76,30 @@ namespace NotTwitter.API.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] UserViewModel user)
         {
+            var oldUser = _userRepo.GetUserByID(id);
+            if (oldUser != null)
+            {
+                if(oldUser.UserID != user.Id || oldUser.Username != user.Username)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                Library.Models.User updatedUser = new Library.Models.User()
+                {
+                    UserID = user.Id,
+                    Username = user.Username,
+                    Password = user.Password,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Gender = user.Gender
+                };
+                _userRepo.UpdateUser(updatedUser);
+                _userRepo.Save();
+                return NoContent();
+            }
+            return NotFound();
         }
 
         // DELETE: api/ApiWithActions/5
