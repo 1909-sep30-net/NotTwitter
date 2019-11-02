@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
+using NotTwitter.Library.Models;
 
 namespace NotTwitter.API.Controllers
 {
@@ -23,7 +24,7 @@ namespace NotTwitter.API.Controllers
 
         // GET: api/Post/5
         [HttpGet("{id}", Name = "GetPosts")]
-        public List<PostModel> GetPosts(int postId)
+        public List<PostModel> GetAllPosts(int postId)
         {
 			var posts = _repo.GetPosts(postId);
 			List<Models.PostModel> ListPosts = new List<PostModel>(); 
@@ -55,15 +56,17 @@ namespace NotTwitter.API.Controllers
 			return CreatedAtRoute("Get", postModel, new { Id = postModel.User.UserID});
         }
 
-		public IActionResult Like(int postId)
+		public IActionResult Like(Post post)
 		{
-			if (_repo.GetPosts(postId) is null)
+			if (_repo.GetPosts(post.PostID) is null)
 			{
 				return NotFound();
 			}
-			_repo.Likes(postId);
+			var liked = _repo.GetPost(post.PostID);
+			liked.Likes++;
+			_repo.Likes(liked);
 
-			return RedirectToAction(nameof(GetPosts));
+			return RedirectToAction(nameof(GetAllPosts));
 		}
 
 		// PUT: api/Post/5

@@ -73,10 +73,10 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
-		public Post Likes(int postId)
+		public Post Likes(Post post)
 		{
-			var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
-			var PostWithLikes = _context.Posts.Include(p => p.Likes).First(p => p.PostId == postId);
+			var oldPost = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
+			var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
 			return Mapper.MapPosts(PostWithLikes);
 		}
 
