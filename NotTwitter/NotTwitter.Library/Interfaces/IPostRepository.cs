@@ -21,6 +21,6 @@ namespace NotTwitter.Library.Interfaces
         public IEnumerable<Post> GetPosts(int userId);
         public void UpdatePost(Post post);
         public void DeletePost(int postId);
-		public void Likes(int postId);
+		public Post Likes(int postId);
     }
 }
