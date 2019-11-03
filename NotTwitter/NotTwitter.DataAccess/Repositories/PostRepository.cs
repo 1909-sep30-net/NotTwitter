@@ -31,13 +31,16 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Deletes post from database
+        /// Deletes post and its comments from database
         /// </summary>
         /// <param name="postId">Id of the post to be removed</param>
         public void DeletePost(int postId)
         {
-            // Throw exception if post was not found
-            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
+            // Find post and eager load its comments
+            var post = _context.Posts
+                .Where(p => p.PostId == postId)
+                .Include(p => p.Comments)
+                .Single();
 
             // Delete all comments from post
             foreach (var comment in post.Comments)
@@ -56,9 +59,6 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public Post GetPost(int postId)
         {
-            // First check if post exists
-            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
-
             // Then get the post with comments
             var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
 

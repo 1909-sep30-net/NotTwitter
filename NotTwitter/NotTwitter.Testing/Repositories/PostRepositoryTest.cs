@@ -188,6 +188,51 @@ namespace NotTwitter.Testing.Repositories
 
         }
 
+        [Fact]
+        public void DeletePostShouldRemovePostAndComments()
+        {
+            // Assemble
+            var postId = 1;
+            var commentId = 1;
+            var commentInDb = new Comments
+            {
+                CommentId = commentId,
+                Content = "delete me too",
+                TimeSent = DateTime.Now,
+            };
+
+            // Assemble posts
+            var postInDb = new Posts
+            {
+                PostId = postId,
+                Comments = new List<Comments> { commentInDb },
+                TimeSent = DateTime.Now,
+                Content = "delete me!"
+            };
+
+            // Assemble context
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("DeletePostShouldRemovePost")
+                .Options;
+            using var assembleContext = new NotTwitterDbContext(options);
+            assembleContext.Posts.Add(postInDb);
+            assembleContext.SaveChanges();
+
+            using var actContext = new NotTwitterDbContext(options);
+            var repo = new PostRepository(actContext);
+
+            // Act
+            repo.DeletePost(postId);
+            actContext.SaveChanges();
+
+            // Assert
+            var assertPost = actContext.Posts.Any();
+            var assertComment = actContext.Comments.Any();
+            Assert.False(assertPost);
+            Assert.False(assertComment);
+        }
+
+
 
     }
 }
