@@ -12,15 +12,28 @@ namespace NotTwitter.DataAccess.Repositories
     {
         private readonly NotTwitterDbContext _context;
 
+        /// <summary>
+        /// Constructs repository with DbContext injected
+        /// </summary>
+        /// <param name="db">The DbContext</param>
         public PostRepository(NotTwitterDbContext db)
         {
             _context = db ?? throw new NullReferenceException();
         }
+
+        /// <summary>
+        /// Stores new post in database
+        /// </summary>
+        /// <param name="post">Post to be stored</param>
         public void CreatePost(Post post)
         {
             _context.Add(Mapper.MapPosts(post));
         }
 
+        /// <summary>
+        /// Deletes post from database
+        /// </summary>
+        /// <param name="postId">Id of the post to be removed</param>
         public void DeletePost(int postId)
         {
             // Throw exception if post was not found
@@ -53,11 +66,20 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
+        /// Gets all posts in database
+        /// </summary>
+        /// <returns>All posts in data base</returns>
+        public IEnumerable<Post> GetAllPosts()
+        {
+            return _context.Posts.Select(Mapper.MapPosts);
+        }
+
+        /// <summary>
         /// Gets posts from user, including comments
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public IEnumerable<Post> GetPosts(int userId)
+        public IEnumerable<Post> GetPostsFromUser(int userId)
         {
             return _context.Posts
                 .Include(p=>p.Comments)
@@ -68,7 +90,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <summary>
         /// Updates database with given post
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="post">Post to be updated</param>
         public void UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPosts(post);
@@ -85,7 +107,6 @@ namespace NotTwitter.DataAccess.Repositories
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                     _context.Dispose();
                 }
 

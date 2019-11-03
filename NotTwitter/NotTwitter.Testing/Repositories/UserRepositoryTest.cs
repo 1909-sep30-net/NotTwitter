@@ -44,6 +44,7 @@ namespace NotTwitter.Testing.Repositories
             };
             arrangeContext.Users.Add(testUserEntity);
             arrangeContext.SaveChanges();
+
             using var actContext = new NotTwitterDbContext(options);
             var repo = new UserRepository(actContext);
 
@@ -80,14 +81,16 @@ namespace NotTwitter.Testing.Repositories
                 );
             }
             arrangeContext.SaveChanges();
-            var repo = new UserRepository(arrangeContext);
+
+            var actContext = new NotTwitterDbContext(options);
+            var repo = new UserRepository(actContext);
 
             // Act
             var result = repo.GetUsersByName(partialName);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(arrangeContext.Users.Count(), result.Count());
+            Assert.Equal(actContext.Users.Count(), result.Count());
         }
 
         [Fact]
@@ -111,7 +114,7 @@ namespace NotTwitter.Testing.Repositories
 
             // Act
             actRepo.AddUser(newUser);
-            actRepo.Save();
+            actContext.SaveChanges();
 
             // Assert
             using var assertContext = new NotTwitterDbContext(options);
@@ -153,13 +156,43 @@ namespace NotTwitter.Testing.Repositories
             // Act
             var repo = new UserRepository(arrangeContext);
             repo.UpdateUser(updatedUser);
-            repo.Save();
+            arrangeContext.SaveChanges();
 
             // Assert
             var assertContext = new NotTwitterDbContext(options);
             var assertUser = assertContext.Users.First(u => u.FirstName == updatedName);
             Assert.NotNull(assertUser);
+            Assert.Equal(updatedName, assertUser.FirstName);
+        }
 
+        [Fact]
+        public void DeleteUserShouldDelete()
+        {
+            //Assemble
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("DeleteUserShouldDelete")
+                .Options;
+            var assembleContext = new NotTwitterDbContext(options);
+            var someUser = new Users
+            {
+                FirstName = ValidName,
+                LastName = ValidName,
+                Email = ValidEmail,
+                Username = ValidUsername,
+                Password = ValidPassword,
+                Gender = ValidGender
+            };
+            assembleContext.Add(someUser);
+
+            var repo = new UserRepository(assembleContext);
+
+            // Act
+            repo.DeleteUserByID(1);
+
+            // Assert
+            var users = assembleContext.Users.ToList();
+
+            Assert.DoesNotContain(someUser,users);
         }
     }
 }
