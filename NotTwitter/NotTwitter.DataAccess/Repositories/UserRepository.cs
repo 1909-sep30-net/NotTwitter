@@ -26,7 +26,12 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            return Mapper.MapUsers( _context.Users.Find(id) );
+            if (_context.Users.Find(id) != null)
+            {
+                return Mapper.MapUsers(_context.Users.Find(id));
+            }
+            else
+                return null;
         }
 
         /// <summary>
