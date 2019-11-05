@@ -13,10 +13,6 @@ namespace NotTwitter.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    /*
-       * Get FriendList
-    */
-
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
@@ -62,15 +58,14 @@ namespace NotTwitter.API.Controllers
                 UserID = newUser.Id
             };
 
-            _userRepo.AddUser(mappedUser);
-            _userRepo.Save();
-
             //Return a BadRequest message if User already exists
             //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
             //{
             //    return BadRequest();
             //}
-            
+
+            _userRepo.AddUser(mappedUser);
+            _userRepo.Save();
             return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
         }
 
