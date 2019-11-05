@@ -102,12 +102,12 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-		public Post GetPostWithLikes(Post post)
-		{
-			var oldPost = _context.Posts.Find(post.PostID);
-			var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
-			return Mapper.MapPosts(PostWithLikes);
-		}
+		//public Post GetPostWithLikes(Post post)
+		//{
+		//	var oldPost = _context.Posts.Find(post.PostID);
+		//	var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
+		//	return Mapper.MapPosts(PostWithLikes);
+		//}
 
         public void Save()
         {

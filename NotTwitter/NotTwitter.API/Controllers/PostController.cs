@@ -20,25 +20,29 @@ namespace NotTwitter.API.Controllers
 		{
 			_repo =repo ?? throw new ArgumentNullException(nameof(repo));
 		}
-        
-        /* TODO: Fix; method doesnt rly make sense. Returns a list of all posts but requires a post id as a parameter?*/
-   //     // GET: api/Post/5
-   //     [HttpGet("{id}", Name = "GetPosts")]
-   //     public List<PostModel> GetAllPosts(int postId)
-   //     {
-			//var posts = _repo.GetPosts(postId);
-			//List<Models.PostModel> ListPosts = new List<PostModel>(); 
-			//foreach (var p in posts)
-			//{
-			//	var post = new Models.PostModel
-			//	{
-			//		User = p.User,
-			//		Text = p.Content,
-			//	};
-			//	ListPosts.Add(post);
-			//}
-			//return ListPosts;
-   //     }
+
+        /// <summary>
+        /// Returns a list of posts from the user, including comments
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        // GET: api/Post/5
+        [HttpGet("{userId}", Name = "GetPostsByUser")]
+        public List<PostModel> GetPostsByUser(int userId)
+        {
+            var posts = _repo.GetPostsByUser(userId);
+            List<PostModel> ListPosts = new List<PostModel>();
+            foreach (var p in posts)
+            {
+                var post = new PostModel
+                {
+                    User = p.User,
+                    Text = p.Content,
+                };
+                ListPosts.Add(post);
+            }
+            return ListPosts;
+        }
 
         // POST: api/CreatePost
         [HttpPost]
@@ -59,7 +63,7 @@ namespace NotTwitter.API.Controllers
         /* TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?*/
 		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
 		//{
-  //          var liked = _repo.GetPostById(post.PostID);
+        //  var liked = _repo.GetPostById(post.PostID);
 		//	if (liked is null)
 		//	{
 		//		return NotFound();
@@ -88,6 +92,7 @@ namespace NotTwitter.API.Controllers
 			};
 			_repo.UpdatePost(updatedPost);
             _repo.Save();
+
 			return NoContent();
         }
 
@@ -102,6 +107,7 @@ namespace NotTwitter.API.Controllers
 
             _repo.DeletePost(postId);
             _repo.Save();
+
 			return NoContent();
         }
     }

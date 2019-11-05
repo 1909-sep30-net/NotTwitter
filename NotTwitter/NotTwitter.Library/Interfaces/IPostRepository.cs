@@ -25,27 +25,32 @@ namespace NotTwitter.Library.Interfaces
         /// <param name="userId">Id of the user</param>
         /// <returns>All posts with comments from a user</returns>
         public IEnumerable<Post> GetPostsByUser(int userId);
+
         /// <summary>
         /// Gets all posts in database
         /// </summary>
         /// <returns>All posts in data base</returns>
         public IEnumerable<Post> GetAllPosts();
+
         /// <summary>
         /// Updates database with given post
         /// </summary>
         /// <param name="post">Post to be updated</param>
         public void UpdatePost(Post post);
+
         /// <summary>
         /// Deletes post from database
         /// </summary>
         /// <param name="postId">Id of the post to be removed</param>
         public void DeletePost(int postId);
+
         /// <summary>
         /// Get posts including likes
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-		public Post GetPostWithLikes(Post post);
+		//public Post GetPostWithLikes(Post post);
+
         /// <summary>
         /// Persist changes to the database
         /// </summary>
