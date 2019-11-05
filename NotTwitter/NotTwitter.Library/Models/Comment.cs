@@ -14,19 +14,6 @@ namespace NotTwitter.Library.Models
         /// </summary>
         public int CommentId { get; set; }
 
-        /* Commenting these out-- Object Oriented relationship means that a User has comments/posts, not the other way around; 
-         * that would be reflected in Entities instead
-         * 
-        /// <summary>
-        /// The post that this comment is posted to.
-        /// </summary>
-        public Post Post { get; set; }
-
-        /// <summary>
-        /// The user that this comment was written by
-        /// </summary>
-        public User User { get; set; }
-        */
         
         /// <summary>
         /// The text content of the comment.

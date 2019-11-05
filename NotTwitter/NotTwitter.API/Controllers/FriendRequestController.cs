@@ -14,18 +14,18 @@ namespace NotTwitter.API.Controllers
     [ApiController]
     public class FriendRequestController : ControllerBase
     {
-		private readonly IFriendRequestRepository _repo;
-		private readonly IUserRepository _user;
+		private readonly IFriendRequestRepository _frRepo;
+		private readonly IUserRepository _userRepo;
 
 		public FriendRequestController(IFriendRequestRepository repo, IUserRepository user)
 		{
-			_repo = repo;
-			_user = user;
+			_frRepo = repo;
+			_userRepo = user;
 		}
 		[HttpPost]
 		public ActionResult CreateRequest([FromBody] FriendRequestModel friendRequest)
 		{
-			if (_user.GetUserByID(friendRequest.SenderId) is null || _user.GetUserByID(friendRequest.ReceiverId) is null)
+			if (_userRepo.GetUserByID(friendRequest.SenderId) is null || _userRepo.GetUserByID(friendRequest.ReceiverId) is null)
 			{
 				return NotFound();
 			}
@@ -37,41 +37,73 @@ namespace NotTwitter.API.Controllers
 				Receiver = friendRequest.Receiver,
 				FriendRequestStatus = (int)FriendRequestStatus.Pending
 			};
-			_repo.Create(newRequest);
+			_frRepo.CreateFriendRequest(newRequest);
+            _frRepo.Save();
+            
 			return CreatedAtRoute("Get", new { Id = newRequest.ReceiverId }, friendRequest);
 		}
 
 		[HttpPost]
 		public ActionResult AcceptRequest([FromBody] Library.Models.FriendRequest friendRequest)
 		{
-			_repo.Accept(friendRequest);
-			return RedirectToAction(nameof(MakeFriend));
+            // TODO: Enclose this in a try/catch block in case this fails
+
+            try
+            {
+                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
+                _frRepo.UpdateFriendRequest(friendRequest);
+                _frRepo.Save();
+
+                //TODO: Update the friend list of the users involved
+                //sender.Friends.Add(receiver)
+                //receiver.Friends.Add(sender)
+                //_userRepo.UpdateUser(sender)
+                //_userRepo.UpdateUser(receiver)
+                //_userRepo.Save()
+
+                return RedirectToAction(nameof(MakeFriend));
+            }
+            catch
+            {
+                return NotFound();
+            }
+
 		}
 
 		public ActionResult MakeFriend([FromBody] Models.FriendRequestModel friendRequest)
 		{
-			var newFriendModel = new FriendshipModel
+
+			var newFriend = new Library.Models.Friendship
 			{
 				User1 = friendRequest.Sender,
 				User2 = friendRequest.Receiver,
 				TimeRequestConfirmed = DateTime.Now
 			};
-
-			var newFriend = new Library.Models.Friendship
-			{
-				User1 = newFriendModel.User1,
-				User2 = newFriendModel.User2,
-				TimeRequestConfirmed = newFriendModel.TimeRequestConfirmed
-			};
-			_user.MakeFriends(newFriend);
+			_userRepo.MakeFriends(newFriend);
+            _userRepo.Save();
 			return CreatedAtRoute("Get", new { Id = friendRequest.ReceiverId }, friendRequest);
 		}
 
+        /// <summary>
+        /// Declines the request and updates the database
+        /// </summary>
+        /// <param name="friendRequest"></param>
+        /// <returns></returns>
 		[HttpPost]
 		public ActionResult DeclineRequest([FromBody] Library.Models.FriendRequest friendRequest)
 		{
-			_repo.Decline(friendRequest);
-			return CreatedAtRoute("Get", new { Id = friendRequest.SenderId }, friendRequest);
+            try
+            {
+                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Declined;
+                _frRepo.UpdateFriendRequest(friendRequest);
+                _frRepo.Save();
+                return CreatedAtRoute("Get", new { Id = friendRequest.SenderId }, friendRequest);
+            }
+            catch
+            {
+                return NotFound();
+            }
 		}
+
 	}
 }

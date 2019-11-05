@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace NotTwitter.Library.Models
@@ -38,7 +36,7 @@ namespace NotTwitter.Library.Models
                 if (Regex.IsMatch(value, @"^[a-zA-Z]+$"))
                 {
                     // Always capitalize first letter and lowercase the rest
-                    _firstName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
+                    _firstName = CapitalizeName(value);
                 }
 
             }
@@ -62,7 +60,7 @@ namespace NotTwitter.Library.Models
                 if (Regex.IsMatch(value, @"^[a-zA-Z]+$"))
                 {
                     // Always capitalize first letter and lowercase the rest
-                    _lastName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
+                    _lastName = CapitalizeName(value);
                 }
             }
         }
@@ -155,6 +153,16 @@ namespace NotTwitter.Library.Models
                 throw new ArgumentException("Name cannot be empty string.", nameof(value));
             }
 
+        }
+
+        /// <summary>
+        /// Capitalizes a string
+        /// </summary>
+        /// <param name="value">String to be capitalized</param>
+        /// <returns>Capitalized string</returns>
+        private string CapitalizeName(string value)
+        {
+            return value[0].ToString().ToUpper() + value.Substring(1).ToLower();
         }
     }
 }

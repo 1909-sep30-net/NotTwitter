@@ -1,7 +1,5 @@
 ﻿using NotTwitter.Library.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace NotTwitter.Testing.Library.Models
@@ -46,7 +44,8 @@ namespace NotTwitter.Testing.Library.Models
         [InlineData("beckany")]
         [InlineData("garbage")]
         [InlineData("Dillon")]
-        public void FirstName_AlphabeticString_CorrectlyStored(string firstname)
+        [InlineData("b")]
+        public void CapitalizeName_AlphabeticString_CorrectlyStored(string firstname)
         {
             user.FirstName = firstname;
 
@@ -59,6 +58,7 @@ namespace NotTwitter.Testing.Library.Models
         [InlineData("winthrop")]
         [InlineData("Parlitan")]
         [InlineData("Francis")]
+        [InlineData("c")]
         public void LastName_AlphabeticString_CorrectlyStored(string lastname)
         {
             user.LastName = lastname;

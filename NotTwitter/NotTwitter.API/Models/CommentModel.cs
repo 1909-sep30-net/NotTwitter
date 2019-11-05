@@ -15,10 +15,11 @@ namespace NotTwitter.API.Models
 		[Required]
 		public int UserId { get; set; }
 		[Required]
+        [MinLength(1)]
 		public string Content { get; set; }
 		public DateTime TimeSent { get; set; }
 
-		public  User User { get; set; }
+		public User User { get; set; }
 		public Post Post { get; set; }
 	}
 }

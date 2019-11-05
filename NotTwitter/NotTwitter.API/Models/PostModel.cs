@@ -11,12 +11,12 @@ namespace NotTwitter.API.Models
 	{
 		[Required]
 		public User User { get; set; }
+
 		[Required]
 		[Display(Name = "What do you think?")]
-		public string Text { get; set; }
 
-		[Display(Name = "How do you feel?")]
-		public string Feeling { get; set; }
+		public string Text { get; set; }
+        public Comment Comments { get; set; }
 
 		/*[Display(Name = "Upload a photo")]
 		public IFormFile Photo { get; set; }*/

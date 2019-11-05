@@ -46,11 +46,13 @@ namespace NotTwitter.DataAccess
 
         public static Entities.Posts MapPosts(Library.Models.Post posts)
         {
+            posts.Comments.Select(MapComments);
             return new Entities.Posts
             {
                 PostId = posts.PostID,
                 Content = posts.Content,
                 TimeSent = posts.TimeSent
+
             };
         }
 

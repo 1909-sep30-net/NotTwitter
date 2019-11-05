@@ -1,10 +1,8 @@
-﻿using NotTwitter.DataAccess.Entities;
-using NotTwitter.Library.Interfaces;
+﻿using NotTwitter.Library.Interfaces;
 using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 
 namespace NotTwitter.DataAccess.Repositories

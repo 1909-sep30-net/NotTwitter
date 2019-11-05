@@ -3,10 +3,10 @@ using NotTwitter.API.Models;
 using NotTwitter.Library.Models;
 using Moq;
 using NotTwitter.Library.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NotTwitter.Testing.Controllers
 {
@@ -41,10 +41,10 @@ namespace NotTwitter.Testing.Controllers
         }
 
         [Fact]
-        public void PostUserShouldReturnPostUser()
+        public void PostUserShouldPost()
         {
-            //Assemble 
-            UserViewModel newUser = new UserViewModel() {
+            UserViewModel newUser = new UserViewModel()
+            {
                 Username = "hithisistest",
                 FirstName = "HiThis",
                 LastName = "IsTest",
@@ -54,17 +54,35 @@ namespace NotTwitter.Testing.Controllers
                 Id = 3,
             };
 
-            var mock = new Mock<IUserRepository>();
+            var userList = new List<User>
+            {
+                new User {UserID = 1, FirstName = "abc", LastName = "abc"},
+                new User {UserID = 2, FirstName = "abc", LastName = "abc"},
+                new User {UserID = 3, FirstName = "abc", LastName = "abc"},
+            };
 
-            var repository = new MockRepository(MockBehavior.Loose);
 
-            var mockRepo = repository.Create<IUserRepository>();
+            var mockRepo = new Mock<IUserRepository>();
+            mockRepo.Setup(x => x.AddUser(It.IsAny<User>()))
+                .Callback(() => 
+                {
+                    userList.Add(new User { UserID = 4, FirstName = "abc", LastName = "abc" });
+                });
 
             var controller = new UserController(mockRepo.Object);
 
-            //Assert with Act
-            Assert.NotNull(controller.Post(newUser));
-        }
+            // Act
+            var response = controller.Post(newUser);
+            var responseContent = response as CreatedAtRouteResult;
 
+            // Assert
+            mockRepo.Verify(x => x.AddUser(It.IsAny<User>()));
+            Assert.Equal(4, userList.Count);
+            Assert.Equal(4, userList.First(x=>x.UserID==4).UserID);
+
+            Assert.NotNull(responseContent);
+
+        }
+        
     }
 }

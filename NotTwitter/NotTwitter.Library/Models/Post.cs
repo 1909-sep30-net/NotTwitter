@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NotTwitter.Library.Models
 {
@@ -47,6 +46,9 @@ namespace NotTwitter.Library.Models
             }
         }
 
+        /// <summary>
+        /// Comments belonging to this post
+        /// </summary>
         public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
         /// <summary>

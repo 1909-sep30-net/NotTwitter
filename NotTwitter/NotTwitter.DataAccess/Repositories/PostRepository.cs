@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NotTwitter.DataAccess.Repositories
 {
@@ -12,19 +11,35 @@ namespace NotTwitter.DataAccess.Repositories
     {
         private readonly NotTwitterDbContext _context;
 
+        /// <summary>
+        /// Constructs repository with DbContext injected
+        /// </summary>
+        /// <param name="db">The DbContext</param>
         public PostRepository(NotTwitterDbContext db)
         {
             _context = db ?? throw new NullReferenceException();
         }
+
+        /// <summary>
+        /// Stores new post in database
+        /// </summary>
+        /// <param name="post">Post to be stored</param>
         public void CreatePost(Post post)
         {
             _context.Add(Mapper.MapPosts(post));
         }
 
+        /// <summary>
+        /// Deletes post and its comments from database
+        /// </summary>
+        /// <param name="postId">Id of the post to be removed</param>
         public void DeletePost(int postId)
         {
-            // Throw exception if post was not found
-            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
+            // Find post and eager load its comments
+            var post = _context.Posts
+                .Where(p => p.PostId == postId)
+                .Include(p => p.Comments)
+                .Single();
 
             // Delete all comments from post
             foreach (var comment in post.Comments)
@@ -41,11 +56,8 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
-        public Post GetPost(int postId)
+        public Post GetPostById(int postId)
         {
-            // First check if post exists
-            var post = _context.Posts.Find(postId) ?? throw new ArgumentException("Post does not exist.");
-
             // Then get the post with comments
             var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
 
@@ -53,11 +65,20 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
+        /// Gets all posts in database
+        /// </summary>
+        /// <returns>All posts in data base</returns>
+        public IEnumerable<Post> GetAllPosts()
+        {
+            return _context.Posts.Select(Mapper.MapPosts);
+        }
+
+        /// <summary>
         /// Gets posts from user, including comments
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public IEnumerable<Post> GetPosts(int userId)
+        public IEnumerable<Post> GetPostsByUser(int userId)
         {
             return _context.Posts
                 .Include(p=>p.Comments)
@@ -65,21 +86,34 @@ namespace NotTwitter.DataAccess.Repositories
                 .Select(Mapper.MapPosts);
         }
 
-
+        /// <summary>
+        /// Updates database with given post
+        /// </summary>
+        /// <param name="post">Post to be updated</param>
         public void UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPosts(post);
-            var oldEntity = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
+            var oldEntity = _context.Posts.Find(post.PostID);
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
-		public Post Likes(Post post)
-		{
-			var oldPost = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
-			var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
-			return Mapper.MapPosts(PostWithLikes);
-		}
+        /// <summary>
+        /// Returns a post including its likes, excluding its comments?
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
+		//public Post GetPostWithLikes(Post post)
+		//{
+		//	var oldPost = _context.Posts.Find(post.PostID);
+		//	var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
+		//	return Mapper.MapPosts(PostWithLikes);
+		//}
 
+        public void Save()
+        {
+            // todo: log
+            _context.SaveChanges();
+        }
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
 
@@ -89,7 +123,6 @@ namespace NotTwitter.DataAccess.Repositories
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                     _context.Dispose();
                 }
 
