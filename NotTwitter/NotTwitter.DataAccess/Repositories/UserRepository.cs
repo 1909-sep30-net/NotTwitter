@@ -81,10 +81,24 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Remove(entityToBeRemoved);
         }
 
-        /// <summary>
-        /// Saves changes to database
-        /// </summary>
-        public void Save()
+		public void MakeFriends(Friendship newFriend)
+		{
+			if (!CheckIfFriends(newFriend.User1.UserID, newFriend.User2.UserID))
+			{
+				var newEntity = Mapper.MapFriendships(newFriend);
+				_context.Add(newEntity);
+			}
+		}
+
+		public bool CheckIfFriends(int senderId, int receiverId)
+		{
+			return _context.Friendships.Any(uf => (uf.User1ID == senderId && uf.User2ID == receiverId) || (uf.User1ID == receiverId && uf.User2ID == senderId));
+		}
+
+		/// <summary>
+		/// Saves changes to database
+		/// </summary>
+		public void Save()
         {
             // TODO: Ideally put a log message here to notify when saving
             _context.SaveChanges();
@@ -126,18 +140,6 @@ namespace NotTwitter.DataAccess.Repositories
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
-
-		public void MakeFriends(int sender, int receiver)
-		{
-			
-		}
-
-		public bool CheckIfFriends(int senderId, int receiverId)
-		{
-			return _context.Friendships.Any(uf =>(uf.User1ID == senderId && uf.User2ID == receiverId) || (uf.User1ID == receiverId && uf.User2ID == senderId));
-		}
-
-
 		#endregion
 
 	}

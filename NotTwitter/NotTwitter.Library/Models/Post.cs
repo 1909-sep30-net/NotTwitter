@@ -53,5 +53,10 @@ namespace NotTwitter.Library.Models
         /// Time that the post was submitted.
         /// </summary>
         public DateTime TimeSent { get; set; }
-    }
+
+		/// <summary>
+		/// Number of Likes per Posts
+		/// </summary>
+		public int Likes { get; set; }
+	}
 }

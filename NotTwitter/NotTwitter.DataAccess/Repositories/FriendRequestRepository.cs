@@ -38,7 +38,7 @@ namespace NotTwitter.DataAccess.Repositories
 			if (this.Exists(request.Sender.UserID, request.Receiver.UserID))
 			{
 				var friendRequest = Mapper.MapFriendRequest(request);
-				_user.MakeFriends(request.Sender.UserID, request.Receiver.UserID); 
+				//_user.MakeFriends(request.Sender.UserID, request.Receiver.UserID); 
 				_context.SaveChanges();
 			}
 		}
