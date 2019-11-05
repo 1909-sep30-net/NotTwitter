@@ -1,14 +1,8 @@
-﻿using NotTwitter.DataAccess.Entities.Enum;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-namespace NotTwitter.DataAccess.Entities
+﻿namespace NotTwitter.DataAccess.Entities
 {
-	public class FriendRequests
+    public class FriendRequests
 	{
-		public int FriendRequestId { get; set; }
+		//public int FriendRequestId { get; set; }
 
 		public int SenderId { get; set; }
 

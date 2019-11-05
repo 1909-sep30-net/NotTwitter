@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NotTwitter.DataAccess.Repositories
 {
@@ -57,7 +56,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
-        public Post GetPost(int postId)
+        public Post GetPostById(int postId)
         {
             // Then get the post with comments
             var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
@@ -79,7 +78,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public IEnumerable<Post> GetPostsFromUser(int userId)
+        public IEnumerable<Post> GetPostsByUser(int userId)
         {
             return _context.Posts
                 .Include(p=>p.Comments)

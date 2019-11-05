@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotTwitter.DataAccess.Entities
 {
     public class Users
     {
-        public Users()
-        {
-            Friends = new HashSet<Friendships>();
-            Comments = new HashSet<Comments>();
-            Posts = new HashSet<Posts>();
-        }
 
         public int UserID { get; set; }
 		public string Username { get; set; }
@@ -21,13 +16,19 @@ namespace NotTwitter.DataAccess.Entities
 		public int Gender { get; set; }
 		public DateTime DateCreated { get; set; }
 		
-		public ICollection <Posts> Posts { get; set; }
-		public ICollection <Friendships> Friends { get; set; }
-		public ICollection <Comments> Comments { get; set; }
+		public ICollection <Posts> Posts { get; set; } = new HashSet<Posts>();
+        [InverseProperty("User1")]
+        public ICollection <Friendships> IncomingFriends { get; set; } = new HashSet<Friendships>();
+        [InverseProperty("User2")]
+        public ICollection<Friendships> OutgoingFriends { get; set; } = new HashSet<Friendships>();
 
+        public ICollection <Comments> Comments { get; set; } = new HashSet<Comments>();
+
+        [InverseProperty("Sender")]
 		public ICollection<FriendRequests> FriendRequestsSent { get; set; } = new List<FriendRequests>();
 
-		public ICollection<FriendRequests> FriendRequestsReceived { get; set; } = new List<FriendRequests>();
+        [InverseProperty("Receiver")]
+        public ICollection<FriendRequests> FriendRequestsReceived { get; set; } = new List<FriendRequests>();
 
 	}
 }
