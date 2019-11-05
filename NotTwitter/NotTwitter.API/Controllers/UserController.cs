@@ -14,9 +14,7 @@ namespace NotTwitter.API.Controllers
     [ApiController]
 
     /*
- 
        * Get FriendList
-       
     */
 
     public class UserController : ControllerBase
@@ -28,22 +26,13 @@ namespace NotTwitter.API.Controllers
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
-        // Get UserPosts
-        // GET: api/User
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // Get User by Name
         // GET: api/User/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public UserViewModel Get(int id)
         {
-            
-            var x = _userRepo.GetUserByID(id);
 
+            var x = _userRepo.GetUserByID(id);
 
             return new UserViewModel()
             {
@@ -60,38 +49,71 @@ namespace NotTwitter.API.Controllers
         // Post User Model
         // POST: api/User
         [HttpPost]
-        public ActionResult Post([FromBody, Bind("FirstName, LastName, Username, Email, Gender")] UserViewModel newUser)
+        public ActionResult Post([FromBody, Bind("FirstName, LastName, Username, Password, Email, Gender")] UserViewModel newUser)
         {
-            //Check if the user ID from new User already exists
-            if (_userRepo.GetUserByID(newUser.Id) == null)
+            Library.Models.User mappedUser = new Library.Models.User()
             {
-                Library.Models.User mappedUser = new Library.Models.User()
-                {
-                    Username = newUser.Username,
-                    FirstName = newUser.FirstName,
-                    LastName = newUser.LastName,
-                    Gender = newUser.Gender,
-                    Email = newUser.Email,
-                    UserID = newUser.Id
-                };
-                _userRepo.AddUser(mappedUser);
+                Username = newUser.Username,
+                Password = newUser.Password,
+                FirstName = newUser.FirstName,
+                LastName = newUser.LastName,
+                Gender = newUser.Gender,
+                Email = newUser.Email,
+                UserID = newUser.Id
+            };
 
-                return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
-            }
+            _userRepo.AddUser(mappedUser);
+            _userRepo.Save();
+
             //Return a BadRequest message if User already exists
-            return BadRequest();
+            //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
+            //{
+            //    return BadRequest();
+            //}
+            
+            return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
         }
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] UserViewModel user)
         {
+            var oldUser = _userRepo.GetUserByID(id);
+            if (oldUser != null)
+            {
+                if(oldUser.UserID != user.Id || oldUser.Username != user.Username)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                Library.Models.User updatedUser = new Library.Models.User()
+                {
+                    UserID = user.Id,
+                    Username = user.Username,
+                    Password = user.Password,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Gender = user.Gender
+                };
+                _userRepo.UpdateUser(updatedUser);
+                _userRepo.Save();
+                return NoContent();
+            }
+            return NotFound();
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var oldUser = _userRepo.GetUserByID(id);
+            if (oldUser != null)
+            {
+                _userRepo.DeleteUserByID(id);
+                _userRepo.Save();
+                return NoContent();
+            }
+            return NotFound();
         }
     }
 }
