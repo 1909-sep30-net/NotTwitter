@@ -22,6 +22,7 @@ namespace NotTwitter.API.Controllers
 			_repo = repo;
 			_post = post;
 		}
+
         // GET: api/Comment
         [HttpGet]
         public IEnumerable<string> Get()
@@ -40,12 +41,14 @@ namespace NotTwitter.API.Controllers
         [HttpPost]
         public ActionResult CreateComment([FromBody] CommentModel commentModel)
         {
-			if (_post.GetPost(commentModel.PostId) is null)
+			if (_post.GetPostById(commentModel.PostId) is null)
+            {
 				return NotFound();
-			if (commentModel.Content is null || commentModel.Content == "")
+            }
+			if (commentModel.Content is null || commentModel.Content == "") // Not sure if you need this if we have data annotations checking for the same thing
 			{
 				ModelState.AddModelError(string.Empty, "You cannot submit an empty comment!");
-				return NotFound();
+				return NotFound(); // Is this the correct status code for incorrect input? I think it should just be 400 if it's Post
 			}
 			var comment = new Library.Models.Comment
 			{
@@ -53,6 +56,8 @@ namespace NotTwitter.API.Controllers
 				TimeSent = DateTime.Now
 			};
 			_repo.CreateComment(comment);
+            _repo.Save();
+
 			return CreatedAtRoute("Get", commentModel, new { Id =  commentModel.PostId});
 		}
 
@@ -71,6 +76,7 @@ namespace NotTwitter.API.Controllers
 				TimeSent = DateTime.Now,
 			};
 			_repo.UpdateComment(updateComment);
+            _repo.Save();
 			return NoContent();
 		}
 
@@ -79,8 +85,11 @@ namespace NotTwitter.API.Controllers
         public ActionResult Delete(int postId, PostModel postModel)
         {
 			if (_repo.GetCommentsByPostId(postId) is null)
+            {
 				return NotFound();
+            }
 			_repo.DeleteCommentsByPostId(postId);
+            _repo.Save();
 			return CreatedAtRoute("Get", postModel, new { Id = postId });
 		}
 	}

@@ -93,17 +93,27 @@ namespace NotTwitter.DataAccess.Repositories
         public void UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPosts(post);
-            var oldEntity = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
+            var oldEntity = _context.Posts.Find(post.PostID);
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
-		public Post Likes(Post post)
+        /// <summary>
+        /// Returns a post including its likes, excluding its comments?
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
+		public Post GetPostWithLikes(Post post)
 		{
-			var oldPost = _context.Posts.Find(post.PostID) ?? throw new ArgumentException("Post does not exist.");
+			var oldPost = _context.Posts.Find(post.PostID);
 			var PostWithLikes = _context.Posts.Include(p =>p.Likes).First(p => p.PostId == post.PostID);
 			return Mapper.MapPosts(PostWithLikes);
 		}
 
+        public void Save()
+        {
+            // todo: log
+            _context.SaveChanges();
+        }
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
 

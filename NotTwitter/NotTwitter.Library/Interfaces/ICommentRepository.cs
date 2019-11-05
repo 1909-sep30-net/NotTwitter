@@ -11,6 +11,10 @@ namespace NotTwitter.Library.Interfaces
         public IEnumerable<Comment> GetCommentsByUserId(int userId);
         public void UpdateComment(Comment newComment);
         public void DeleteCommentsByPostId(int postId);
+        /// <summary>
+        /// Persist changes to database
+        /// </summary>
+        public void Save();
 
 	}
 }
