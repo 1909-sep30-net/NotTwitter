@@ -40,5 +40,6 @@ namespace NotTwitter.Library.Interfaces
         /// </summary>
         /// <param name="postId">Id of the post to be removed</param>
         public void DeletePost(int postId);
+		public Post Likes(Post post);
     }
 }
