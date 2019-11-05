@@ -1,8 +1,6 @@
-﻿using Library.Models;
-using NotTwitter.Library.Models;
+﻿using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NotTwitter.Library.Interfaces
 {
@@ -19,14 +17,14 @@ namespace NotTwitter.Library.Interfaces
         /// </summary>
         /// <param name="postId">ID of the post</param>
         /// <returns>A post including the comments</returns>
-        public Post GetPost(int postId);
+        public Post GetPostById(int postId);
 
         /// <summary>
         /// Gets all posts from a specific user
         /// </summary>
         /// <param name="userId">Id of the user</param>
         /// <returns>All posts with comments from a user</returns>
-        public IEnumerable<Post> GetPostsFromUser(int userId);
+        public IEnumerable<Post> GetPostsByUser(int userId);
         /// <summary>
         /// Gets all posts in database
         /// </summary>

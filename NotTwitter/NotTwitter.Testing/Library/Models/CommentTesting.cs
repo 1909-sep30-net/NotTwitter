@@ -1,7 +1,5 @@
 ﻿using NotTwitter.Library.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace NotTwitter.Testing.Library.Models

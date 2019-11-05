@@ -6,7 +6,6 @@ using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace NotTwitter.Testing.Repositories
@@ -35,7 +34,7 @@ namespace NotTwitter.Testing.Repositories
             var actRepo = new PostRepository(arrangeContext);
 
             // Act
-            var assertPost = actRepo.GetPost(postId);
+            var assertPost = actRepo.GetPostById(postId);
 
             // Assert
             Assert.NotNull(arrangePost);
@@ -100,7 +99,7 @@ namespace NotTwitter.Testing.Repositories
             var repo = new PostRepository(assembleContext);
 
             // Act
-            var postsAssert = repo.GetPostsFromUser(userId);
+            var postsAssert = repo.GetPostsByUser(userId);
 
             // Assert
             Assert.NotNull(postsAssert);

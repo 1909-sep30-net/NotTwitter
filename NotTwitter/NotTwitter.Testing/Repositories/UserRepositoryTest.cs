@@ -1,14 +1,8 @@
-﻿using NotTwitter.API.Controllers;
-using NotTwitter.DataAccess.Entities;
+﻿using NotTwitter.DataAccess.Entities;
 using NotTwitter.DataAccess.Repositories;
-using NotTwitter.Library.Interfaces;
 using NotTwitter.Library.Models;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 using NotTwitter.DataAccess;
 
