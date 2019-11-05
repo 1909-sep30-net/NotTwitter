@@ -55,7 +55,7 @@ namespace NotTwitter.DataAccess.Repositories
         public void AddUser(User newUser)
         {
             var newEntity = Mapper.MapUsers(newUser);
-            newUser.UserID = 0;
+            newEntity.UserID = 0;
             _context.Users.Add(newEntity);
         }
 
