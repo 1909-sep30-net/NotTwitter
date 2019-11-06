@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -17,7 +18,6 @@ namespace NotTwitter.API.Controllers
 			_repo = repo;
 			_post = post;
 		}
-<<<<<<< HEAD
 
         // GET: api/Comment
         [HttpGet]
@@ -32,9 +32,6 @@ namespace NotTwitter.API.Controllers
         {
             return "value";
         }
-=======
- 
->>>>>>> master
 
         // POST: api/Comment
         [HttpPost]
