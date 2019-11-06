@@ -31,7 +31,7 @@ namespace NotTwitter.API.Controllers
         }
 
         // GET: api/Comment/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
@@ -81,7 +81,7 @@ namespace NotTwitter.API.Controllers
 		}
 
 		// DELETE: api/ApiWithActions/5
-		[HttpDelete("{id}")]
+		[HttpDelete("{postId}")]
         public ActionResult Delete(int postId, PostModel postModel)
         {
 			if (_repo.GetCommentsByPostId(postId) is null)

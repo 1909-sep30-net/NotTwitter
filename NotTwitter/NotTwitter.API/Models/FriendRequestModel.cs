@@ -14,11 +14,11 @@ namespace NotTwitter.API.Models
 		[Required]
 		public int SenderId { get; set; }
 
-		public User Sender { get; set; }
+		//public User Sender { get; set; }
 		[Required]
 		public int ReceiverId { get; set; }
 
-		public User Receiver { get; set; }
+		//public User Receiver { get; set; }
 
 		public int FriendRequestStatus { get; set; }
 	}

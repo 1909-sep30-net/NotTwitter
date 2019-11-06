@@ -27,8 +27,8 @@ namespace NotTwitter.API.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         // GET: api/Post/5
-        [HttpGet("{userId}", Name = "GetPostsByUser")]
-        public List<PostModel> GetPostsByUser(int userId)
+        [HttpGet("{userId}")]
+        public List<PostModel> Get(int userId)
         {
             var posts = _repo.GetPostsByUser(userId);
             List<PostModel> ListPosts = new List<PostModel>();
@@ -52,7 +52,6 @@ namespace NotTwitter.API.Controllers
 			{
 				User = postModel.User,
 				Content = postModel.Text,
-				Likes = 0,
 				TimeSent = DateTime.Now,
 				
 			};
@@ -76,7 +75,7 @@ namespace NotTwitter.API.Controllers
 
 
 		// PUT: api/Post/5
-		[HttpPut("{id}")]
+		[HttpPut("{PostId}")]
         public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
             if (_repo.GetPostById(PostId) is null)
@@ -97,7 +96,7 @@ namespace NotTwitter.API.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{postId}")]
         public IActionResult Delete(int postId)
         {
 			if (_repo.GetPostById(postId) is null)
