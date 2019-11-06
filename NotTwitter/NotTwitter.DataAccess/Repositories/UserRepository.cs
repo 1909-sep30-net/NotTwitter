@@ -60,10 +60,16 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public IEnumerable<User> GetUsersByName(string name)
         {
-            return _context.Users
+            var x = _context.Users
                 .Where(u => ((u.FirstName + u.LastName).ToUpper())
-                .Contains(name.ToUpper()))
-                .Select(Mapper.MapUsers);
+                .Contains(name.ToUpper()));
+ 
+
+            if (x.Any())
+            {
+                return x.Select(Mapper.MapUsers);
+            }
+            return null;
         }
 
         /// <summary>

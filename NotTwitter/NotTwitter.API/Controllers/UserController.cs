@@ -23,10 +23,14 @@ namespace NotTwitter.API.Controllers
         }
 
         [HttpGet("name/{name}", Name = "GetUserByName")]
-        public IEnumerable<UserViewModel> GetName(string name)
+        public IActionResult GetName(string name)
         {
             var x = _userRepo.GetUsersByName(name);
             var userList = new List<UserViewModel>();
+            if (x == null)
+            {
+                return NotFound();
+            }
             foreach (Library.Models.User user in x)
             {
                 userList.Add(new UserViewModel()
@@ -40,13 +44,15 @@ namespace NotTwitter.API.Controllers
                     Id = user.UserID
                 });
             }
-            return userList;
+            return Ok(userList);
         }
 
 
-        // Get User by Name
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUserByID")]
+
+
+    // Get User by Name
+    // GET: api/User/5
+    [HttpGet("{id}", Name = "GetUserByID")]
         public IActionResult Get(int id)
         {
 
