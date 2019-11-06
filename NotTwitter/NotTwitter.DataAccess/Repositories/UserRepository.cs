@@ -27,8 +27,8 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            //var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
-            var user = _context.Users.Find(id);
+            var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            //var user = _context.Users.Find(id);
             if (user == null)
             {
                 return null;
@@ -61,8 +61,8 @@ namespace NotTwitter.DataAccess.Repositories
         public IEnumerable<User> GetUsersByName(string name)
         {
             return _context.Users
-                .Where(u => (u.FirstName + u.LastName)
-                .Contains(name))
+                .Where(u => ((u.FirstName + u.LastName).ToUpper())
+                .Contains(name.ToUpper()))
                 .Select(Mapper.MapUsers);
         }
 
