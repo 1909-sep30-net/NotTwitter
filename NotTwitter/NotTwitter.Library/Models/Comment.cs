@@ -50,5 +50,7 @@ namespace NotTwitter.Library.Models
         /// Time that the comment was written.
         /// </summary>
         public DateTime TimeSent { get; set; }
+
+        public User Author { get; set; }
     }
 }

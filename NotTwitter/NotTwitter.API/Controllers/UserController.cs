@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NotTwitter.API.Models;
-using NotTwitter.DataAccess.Repositories;
 using NotTwitter.Library.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace NotTwitter.API.Controllers
 {
+    /*
+     * Get FriendList
+     */
+
     [Route("api/[controller]")]
     [ApiController]
-
-    /*
-       * Get FriendList
-    */
-
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
@@ -26,14 +22,50 @@ namespace NotTwitter.API.Controllers
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
+        [HttpGet("{name}", Name = "GetUserByName")]
+        public IEnumerable<UserViewModel> GetName(string name)
+        {
+            var x = _userRepo.GetUsersByName(name);
+            var userList = new List<UserViewModel>();
+            foreach (Library.Models.User user in x)
+            {
+                userList.Add(new UserViewModel()
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    Id = user.UserID
+                });
+            }
+            return userList;
+        }
+
+
         // Get User by Name
         // GET: api/User/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUserByID")]
         public UserViewModel Get(int id)
         {
 
-            var x = _userRepo.GetUserByID(id);
+            var x = _userRepo.GetUserWithFriends(id);
+            var modelFriends = new List<FriendViewModel>();
+            // Populate friend view model using x's populated friend list
+            // business model -> representational model
+            foreach (var friend in x.Friends)
+            {
+                var f = new FriendViewModel
+                {
+                    UserId = friend.UserID,
+                    FirstName = friend.FirstName,
+                    LastName = friend.LastName
+                };
+                modelFriends.Add(f);
+            }
 
+            // Create and return representational model of user
             return new UserViewModel()
             {
                 Username = x.Username,
@@ -41,7 +73,8 @@ namespace NotTwitter.API.Controllers
                 LastName = x.LastName,
                 Gender = x.Gender,
                 Email = x.Email,
-                Id = x.UserID
+                Id = x.UserID,
+                Friends = modelFriends
             };
 
         }
@@ -59,19 +92,23 @@ namespace NotTwitter.API.Controllers
                 LastName = newUser.LastName,
                 Gender = newUser.Gender,
                 Email = newUser.Email,
-                UserID = newUser.Id
             };
 
             _userRepo.AddUser(mappedUser);
             _userRepo.Save();
+
 
             //Return a BadRequest message if User already exists
             //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
             //{
             //    return BadRequest();
             //}
+<<<<<<< HEAD
             
             return CreatedAtRoute("Get", new { Id = newUser.Id }, newUser);
+=======
+            return CreatedAtRoute("GetUserByID", new { id = mappedUser.UserID }, newUser);
+>>>>>>> master
         }
 
         // PUT: api/User/5
@@ -87,8 +124,8 @@ namespace NotTwitter.API.Controllers
                 }
                 Library.Models.User updatedUser = new Library.Models.User()
                 {
-                    UserID = user.Id,
-                    Username = user.Username,
+                    UserID = user.Id, // this is redundant, should be removed
+                    Username = user.Username, // technically also redundant since this should also not be changed according to the logic above
                     Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,

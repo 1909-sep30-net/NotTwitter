@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
-using NotTwitter.Library.Models;
 
 namespace NotTwitter.API.Controllers
 {
@@ -15,11 +11,46 @@ namespace NotTwitter.API.Controllers
     public class PostController : ControllerBase
     {
 		private readonly IPostRepository _repo;
+        private readonly IUserRepository _urepo;
 
-		public PostController(IPostRepository repo)
+		public PostController(IPostRepository repo, IUserRepository urepo)
 		{
-			_repo =repo ?? throw new ArgumentNullException(nameof(repo));
-		}
+			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
+        }
+
+        /// <summary>
+        /// Returns a post with comments
+        /// </summary>
+        /// <param name="postId">ID of specified post</param>
+        /// <returns></returns>
+        [HttpGet("{postId}", Name = "GetPostById")]
+        public PostModel GetPostById(int postId)
+        {
+            var post = _repo.GetPostById(postId);
+            var postComments = new List<CommentModel>();
+            foreach(var com in post.Comments)
+            {
+                postComments.Add(
+                    new CommentModel
+                    {
+                        CommentId = com.CommentId,
+                        Content = com.Content,
+                        TimeSent = com.TimeSent,
+                        UserId = com.Author.UserID
+                    }
+                );
+            }
+
+            return new PostModel
+            {
+                PostID = post.PostID,
+                UserID = post.User.UserID,
+                TimeSent = post.TimeSent,
+                Text = post.Content,
+                Comments = postComments
+            };
+        }
 
         /// <summary>
         /// Returns a list of posts from the user, including comments
@@ -27,8 +58,13 @@ namespace NotTwitter.API.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         // GET: api/Post/5
+<<<<<<< HEAD
         [HttpGet("{userId}")]
         public List<PostModel> Get(int userId)
+=======
+        [HttpGet("user/{userId}", Name = "GetPostsByUser")]
+        public List<PostModel> GetPostsByUser(int userId)
+>>>>>>> master
         {
             var posts = _repo.GetPostsByUser(userId);
             List<PostModel> ListPosts = new List<PostModel>();
@@ -36,8 +72,10 @@ namespace NotTwitter.API.Controllers
             {
                 var post = new PostModel
                 {
-                    User = p.User,
+                    PostID = p.PostID,
+                    UserID = userId,
                     Text = p.Content,
+                    TimeSent = p.TimeSent
                 };
                 ListPosts.Add(post);
             }
@@ -46,20 +84,32 @@ namespace NotTwitter.API.Controllers
 
         // POST: api/CreatePost
         [HttpPost]
-        public ActionResult CreatePost([FromBody] Models.PostModel postModel)
+        public ActionResult CreatePost(int authorId, string content)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var postAuthor = _urepo.GetUserByID(authorId);
 			var newPost = new Library.Models.Post
 			{
+<<<<<<< HEAD
 				User = postModel.User,
 				Content = postModel.Text,
+=======
+				Content = content,
+>>>>>>> master
 				TimeSent = DateTime.Now,
-				
+                User = postAuthor
 			};
-			_repo.CreatePost(newPost);
-			return CreatedAtRoute("Get", postModel, new { Id = postModel.User.UserID}); // TODO: Theres no method corresponding to this
+            _repo.CreatePost(newPost);
+            _repo.Save();
+
+			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
         }
 
-        /* TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?*/
+        // TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
 		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
 		//{
         //  var liked = _repo.GetPostById(post.PostID);
@@ -85,7 +135,7 @@ namespace NotTwitter.API.Controllers
 
 			var updatedPost = new Library.Models.Post
 			{
-				User = postModel.User,
+				User = _urepo.GetUserByID(postModel.UserID),
 				Content = postModel.Text,
 				TimeSent = DateTime.Now,
 			};
@@ -109,5 +159,6 @@ namespace NotTwitter.API.Controllers
 
 			return NoContent();
         }
+        
     }
 }
