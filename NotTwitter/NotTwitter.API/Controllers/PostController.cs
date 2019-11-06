@@ -16,7 +16,6 @@ namespace NotTwitter.API.Controllers
 		public PostController(IPostRepository repo, IUserRepository urepo)
 		{
 			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
-<<<<<<< HEAD
 			_urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
 		}
 
@@ -100,104 +99,14 @@ namespace NotTwitter.API.Controllers
 			}
 
 			var postAuthor = _urepo.GetUserByID(authorId);
-=======
-            _urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
-        }
-
-        /// <summary>
-        /// Returns a post with comments
-        /// </summary>
-        /// <param name="postId">ID of specified post</param>
-        /// <returns></returns>
-        [HttpGet("{postId}", Name = "GetPostById")]
-        public IActionResult GetPostById(int postId)
-        {
-            // Get post by Id; If post isn't found, return 404
-            var post = _repo.GetPostById(postId);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            // Create a list of comment models from the queried Post, add to post model
-            var postComments = new List<CommentModel>();
-            foreach(var com in post.Comments)
-            {
-                postComments.Add(
-                    new CommentModel
-                    {
-                        CommentId = com.CommentId,
-                        Content = com.Content,
-                        TimeSent = com.TimeSent,
-                        UserId = com.Author.UserID
-                    }
-                );
-            }
-
-            // Return post model
-            return Ok( new PostModel
-            {
-                PostID = post.PostID,
-                UserID = post.User.UserID,
-                TimeSent = post.TimeSent,
-                Text = post.Content,
-                Comments = postComments
-            });
-        }
-
-        /// <summary>
-        /// Returns a list of posts from the user, including comments
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        // GET: api/Post/5
-        [HttpGet("user/{userId}", Name = "GetPostsByUser")]
-        public List<PostModel> GetPostsByUser(int userId)
-        {
-            var posts = _repo.GetPostsByUser(userId);
-            if (posts == null)
-            {
-                //return NotFound();
-            }
-            List<PostModel> ListPosts = new List<PostModel>();
-            foreach (var p in posts)
-            {
-                var post = new PostModel
-                {
-                    PostID = p.PostID,
-                    UserID = userId,
-                    Text = p.Content,
-                    TimeSent = p.TimeSent
-                };
-                ListPosts.Add(post);
-            }
-            return ListPosts;
-        }
-
-        // POST: api/CreatePost
-        [HttpPost]
-        public ActionResult CreatePost(int authorId, string content)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var postAuthor = _urepo.GetUserByID(authorId);
->>>>>>> b079d5a4b9f69ba18d4d141c505c8b8a5c2812af
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
 				TimeSent = DateTime.Now,
 				User = postAuthor
 			};
-<<<<<<< HEAD
 			//_repo.CreatePost(newPost);
 			_repo.Save();
-=======
-            //_repo.CreatePost(newPost);
-            _repo.Save();
->>>>>>> b079d5a4b9f69ba18d4d141c505c8b8a5c2812af
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
 		}
@@ -238,17 +147,10 @@ namespace NotTwitter.API.Controllers
 			return NoContent();
 		}
 
-<<<<<<< HEAD
 		// DELETE: api/ApiWithActions/5
 		[HttpDelete("{postId}")]
 		public IActionResult Delete(int postId)
 		{
-=======
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{postId}")]
-        public IActionResult Delete(int postId)
-        {
->>>>>>> b079d5a4b9f69ba18d4d141c505c8b8a5c2812af
 			if (_repo.GetPostById(postId) is null)
 			{
 				return NotFound();
