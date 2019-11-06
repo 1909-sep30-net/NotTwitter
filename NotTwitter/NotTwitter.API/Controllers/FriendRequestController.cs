@@ -20,6 +20,10 @@ namespace NotTwitter.API.Controllers
 			_userRepo = user;
 		}
 
+		/// <summary>
+		/// List All Requests
+		/// </summary>
+		/// <param name="userId"></param>
 		[HttpGet("{userId}")]
 		public List<FriendRequestModel> Get(int userId)
 		{
@@ -38,7 +42,10 @@ namespace NotTwitter.API.Controllers
 			}
 			return requestList;
 		}
-
+		/// <summary>
+		/// Create Friend Request
+		/// </summary>
+		/// <param name="senderId", name="receiverId"></param>
 		[HttpPost]
 		[Route("Create")]
 		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
@@ -60,7 +67,10 @@ namespace NotTwitter.API.Controllers
 
 			return StatusCode(200);
 		}
-
+		/// <summary>
+		/// Accepted Request
+		/// </summary>
+		/// <param name="friendRequest"></param>
 		[HttpPatch]
 		[Route("Accepted")]
 		public ActionResult AcceptRequest([FromBody, Bind("SenderId, ReceiverId")] Library.Models.FriendRequest friendRequest)
