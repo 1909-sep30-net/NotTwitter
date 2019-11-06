@@ -151,7 +151,9 @@ namespace NotTwitter.DataAccess
         {
             return new Library.Models.Friendship
             {
-                //User1 = MapUsers(friendships.User1),
+
+				User1ID = friendships.User1ID,
+				User2ID = friendships.User2ID,
                 TimeRequestConfirmed = friendships.TimeRequestConfirmed,
             };
         }
@@ -160,7 +162,10 @@ namespace NotTwitter.DataAccess
         {
             return new Entities.Friendships
             {
-                TimeRequestConfirmed = friendships.TimeRequestConfirmed,
+
+				User1ID = friendships.User1ID,
+				User2ID = friendships.User2ID,
+				TimeRequestConfirmed = friendships.TimeRequestConfirmed,
             };
         }
 
@@ -169,7 +174,8 @@ namespace NotTwitter.DataAccess
 			return new Library.Models.FriendRequest
 			{
 				ReceiverId = friendRequests.ReceiverId,
-				SenderId = friendRequests.SenderId
+				SenderId = friendRequests.SenderId,
+				FriendRequestStatus = friendRequests.FriendRequestStatus
 			};
 		}
 
@@ -179,6 +185,7 @@ namespace NotTwitter.DataAccess
 			{
 				ReceiverId = friendRequests.ReceiverId,
 				SenderId = friendRequests.SenderId,
+				FriendRequestStatus = friendRequests.FriendRequestStatus
 			};
 		}
     }

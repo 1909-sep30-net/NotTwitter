@@ -6,12 +6,12 @@ using NotTwitter.Library.Interfaces;
 
 namespace NotTwitter.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PostController : ControllerBase
-    {
+	[Route("api/[controller]")]
+	[ApiController]
+	public class PostController : ControllerBase
+	{
 		private readonly IPostRepository _repo;
-        private readonly IUserRepository _urepo;
+		private readonly IUserRepository _urepo;
 
 		public PostController(IPostRepository repo, IUserRepository urepo)
 		{
@@ -107,20 +107,20 @@ namespace NotTwitter.API.Controllers
 			{
 				Content = content,
 				TimeSent = DateTime.Now,
-                User = postAuthor
+				User = postAuthor
 			};
-
             _repo.CreatePost(newPost,postAuthor);
 
             _repo.Save();
 
-			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
-        }
 
-        // TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
+			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
+		}
+
+		// TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
 		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
 		//{
-        //  var liked = _repo.GetPostById(post.PostID);
+		//  var liked = _repo.GetPostById(post.PostID);
 		//	if (liked is null)
 		//	{
 		//		return NotFound();
@@ -148,22 +148,22 @@ namespace NotTwitter.API.Controllers
             _repo.Save();
 
 			return NoContent();
-        }
+		}
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{postId}")]
-        public IActionResult Delete(int postId)
-        {
+		// DELETE: api/ApiWithActions/5
+		[HttpDelete("{postId}")]
+		public IActionResult Delete(int postId)
+		{
 			if (_repo.GetPostById(postId) is null)
-            {
-                return NotFound();
-            }
+			{
+				return NotFound();
+			}
 
-            _repo.DeletePost(postId);
-            _repo.Save();
+			_repo.DeletePost(postId);
+			_repo.Save();
 
 			return NoContent();
-        }
-        
-    }
+		}
+
+	}
 }

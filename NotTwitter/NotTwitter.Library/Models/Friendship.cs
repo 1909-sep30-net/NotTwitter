@@ -4,10 +4,12 @@ namespace NotTwitter.Library.Models
 {
     public class Friendship
     {
-        /// <summary>
-        /// User involved in the relationship; signified as the user sending a the friend request.
-        /// </summary>
-        public User User1 { get; set; }
+		public int User1ID { get; set; }
+		public int User2ID { get; set; }
+		/// <summary>
+		/// User involved in the relationship; signified as the user sending a the friend request.
+		/// </summary>
+		public User User1 { get; set; }
 
         /// <summary>
         /// User involved in the relationship; signified as the recipient of a request.

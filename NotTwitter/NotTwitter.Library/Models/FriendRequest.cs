@@ -12,7 +12,7 @@
         /// <summary>
         /// Sender nav prop
         /// </summary>
-		public User Sender { get; set; }
+		//public User Sender { get; set; }
 
         /// <summary>
         /// Foreign key for receiver
@@ -22,7 +22,7 @@
         /// <summary>
         /// Receiver nav prop
         /// </summary>
-		public User Receiver { get; set; }
+		//public User Receiver { get; set; }
 
         /// <summary>
         /// Status of the friendship

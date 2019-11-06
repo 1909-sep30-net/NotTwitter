@@ -108,6 +108,7 @@ namespace NotTwitter.API.Controllers
             //    return BadRequest();
             //}
             return CreatedAtRoute("GetUserByID", new { id = mappedUser.UserID }, newUser);
+
         }
 
         // PUT: api/User/5
