@@ -10,7 +10,7 @@ namespace NotTwitter.Library.Interfaces
         /// Stores new post in database
         /// </summary>
         /// <param name="post">Post to be stored</param>
-        public void CreatePost(Post post);
+        public void CreatePost(Post post, User author);
 
         /// <summary>
         /// Gets post by ID, including comments

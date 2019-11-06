@@ -57,11 +57,28 @@ namespace NotTwitter.DataAccess
         }
 
         /// <summary>
-        /// Map post without comments
+        /// Map post without comments without user
         /// </summary>
         /// <param name="posts"></param>
         /// <returns></returns>
-        public static Entities.Posts MapPosts(Library.Models.Post posts)
+        public static Entities.Posts MapPost(Library.Models.Post posts)
+        {
+            return new Entities.Posts
+            {
+                PostId = posts.PostID,
+                Content = posts.Content,
+                TimeSent = posts.TimeSent,
+                UserId = posts.User.UserID,
+                User = MapUsers(posts.User)
+            };
+        }
+
+        /// <summary>
+        /// Map post without comments with user
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <returns></returns>
+        public static Entities.Posts MapPostWithUser(Library.Models.Post posts)
         {
             return new Entities.Posts
             {
