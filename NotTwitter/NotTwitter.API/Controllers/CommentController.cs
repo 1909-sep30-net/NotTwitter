@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
-using NotTwitter.Library.Models;
 
 namespace NotTwitter.API.Controllers
 {
@@ -22,20 +17,23 @@ namespace NotTwitter.API.Controllers
 			_repo = repo;
 			_post = post;
 		}
+        
 
         // GET: api/Comment
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        //[HttpGet]
+        //public IEnumerable<string> Get()
+        //{
+        //    return new string[] { "value1", "value2" };
+        //}
 
         // GET: api/Comment/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //[HttpGet("{id}", Name = "Get")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
+
+        
 
         // POST: api/Comment
         [HttpPost]
@@ -92,6 +90,7 @@ namespace NotTwitter.API.Controllers
             _repo.Save();
 			return CreatedAtRoute("Get", postModel, new { Id = postId });
 		}
-	}
-    
+        
+    }
+
 }

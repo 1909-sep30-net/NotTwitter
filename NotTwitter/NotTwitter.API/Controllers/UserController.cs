@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NotTwitter.API.Models;
-using NotTwitter.DataAccess.Repositories;
 using NotTwitter.Library.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NotTwitter.API.Controllers
 {
+    /*
+     * Get FriendList
+     */
+
     [Route("api/[controller]")]
     [ApiController]
-
-    /*
-       * Get FriendList
-    */
-
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
@@ -28,7 +23,7 @@ namespace NotTwitter.API.Controllers
 
         // Get User by Name
         // GET: api/User/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUserByID")]
         public UserViewModel Get(int id)
         {
 
@@ -59,19 +54,18 @@ namespace NotTwitter.API.Controllers
                 LastName = newUser.LastName,
                 Gender = newUser.Gender,
                 Email = newUser.Email,
-                UserID = newUser.Id
             };
 
             _userRepo.AddUser(mappedUser);
             _userRepo.Save();
+
 
             //Return a BadRequest message if User already exists
             //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
             //{
             //    return BadRequest();
             //}
-            
-            return CreatedAtRoute("Get", new { Id = mappedUser.UserID }, newUser);
+            return CreatedAtRoute("GetUserByID", new { id = mappedUser.UserID }, newUser);
         }
 
         // PUT: api/User/5

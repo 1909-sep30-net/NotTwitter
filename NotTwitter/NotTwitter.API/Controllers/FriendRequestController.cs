@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NotTwitter.Library.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Library.Models.Enum;
 using NotTwitter.API.Models;
@@ -22,54 +18,54 @@ namespace NotTwitter.API.Controllers
 			_frRepo = repo;
 			_userRepo = user;
 		}
-		[HttpPost]
-		public ActionResult CreateRequest([FromBody] FriendRequestModel friendRequest)
-		{
-			if (_userRepo.GetUserByID(friendRequest.SenderId) is null || _userRepo.GetUserByID(friendRequest.ReceiverId) is null)
-			{
-				return NotFound();
-			}
-			var newRequest = new Library.Models.FriendRequest
-			{
-				SenderId = friendRequest.SenderId,
-				ReceiverId = friendRequest.ReceiverId,
-				Sender = friendRequest.Sender,
-				Receiver = friendRequest.Receiver,
-				FriendRequestStatus = (int)FriendRequestStatus.Pending
-			};
-			_frRepo.CreateFriendRequest(newRequest);
-            _frRepo.Save();
+        /*
+
+		//[HttpPost]
+		//public ActionResult CreateRequest([FromBody] FriendRequestModel friendRequest)
+		//{
+		//	if (_userRepo.GetUserByID(friendRequest.SenderId) is null || _userRepo.GetUserByID(friendRequest.ReceiverId) is null)
+		//	{
+		//		return NotFound();
+		//	}
+		//	var newRequest = new Library.Models.FriendRequest
+		//	{
+		//		SenderId = friendRequest.SenderId,
+		//		ReceiverId = friendRequest.ReceiverId,
+		//		Sender = friendRequest.Sender,
+		//		Receiver = friendRequest.Receiver,
+		//		FriendRequestStatus = (int)FriendRequestStatus.Pending
+		//	};
+		//	_frRepo.CreateFriendRequest(newRequest);
+  //          _frRepo.Save();
             
-			return CreatedAtRoute("Get", new { Id = newRequest.ReceiverId }, friendRequest);
-		}
+		//	return CreatedAtRoute("Get", new { Id = newRequest.ReceiverId }, friendRequest);
+		//}
 
-		[HttpPost]
-		public ActionResult AcceptRequest([FromBody] Library.Models.FriendRequest friendRequest)
-		{
-            // TODO: Enclose this in a try/catch block in case this fails
+		//[HttpPost]
+		//public ActionResult AcceptRequest([FromBody] Library.Models.FriendRequest friendRequest)
+		//{
+  //          try
+  //          {
+  //              friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
+  //              _frRepo.UpdateFriendRequest(friendRequest);
+  //              _frRepo.Save();
 
-            try
-            {
-                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
-                _frRepo.UpdateFriendRequest(friendRequest);
-                _frRepo.Save();
+  //              //TODO: Update the friend list of the users involved
+  //              //sender.Friends.Add(receiver)
+  //              //receiver.Friends.Add(sender)
+  //              //_userRepo.UpdateUser(sender)
+  //              //_userRepo.UpdateUser(receiver)
+  //              //_userRepo.Save()
 
-                //TODO: Update the friend list of the users involved
-                //sender.Friends.Add(receiver)
-                //receiver.Friends.Add(sender)
-                //_userRepo.UpdateUser(sender)
-                //_userRepo.UpdateUser(receiver)
-                //_userRepo.Save()
+  //              return RedirectToAction(nameof(MakeFriend));
+  //          }
+  //          catch
+  //          {
+  //              return NotFound();
+  //          }
 
-                return RedirectToAction(nameof(MakeFriend));
-            }
-            catch
-            {
-                return NotFound();
-            }
-
-		}
-
+		//}
+        [HttpPost("")]
 		public ActionResult MakeFriend([FromBody] Models.FriendRequestModel friendRequest)
 		{
 
@@ -79,7 +75,7 @@ namespace NotTwitter.API.Controllers
 				User2 = friendRequest.Receiver,
 				TimeRequestConfirmed = DateTime.Now
 			};
-			_userRepo.MakeFriends(newFriend);
+			_userRepo.MakeFriends(newFriend); // make the friendship two-way (add another MakeFriends)
             _userRepo.Save();
 			return CreatedAtRoute("Get", new { Id = friendRequest.ReceiverId }, friendRequest);
 		}
@@ -104,6 +100,7 @@ namespace NotTwitter.API.Controllers
                 return NotFound();
             }
 		}
-
+        
+        */
 	}
 }

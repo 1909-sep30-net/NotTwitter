@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
-using NotTwitter.Library.Models;
 
 namespace NotTwitter.API.Controllers
 {
@@ -20,6 +16,7 @@ namespace NotTwitter.API.Controllers
 		{
 			_repo =repo ?? throw new ArgumentNullException(nameof(repo));
 		}
+        
 
         /// <summary>
         /// Returns a list of posts from the user, including comments
@@ -52,7 +49,7 @@ namespace NotTwitter.API.Controllers
 			{
 				User = postModel.User,
 				Content = postModel.Text,
-				Likes = 0,
+				//Likes = 0,
 				TimeSent = DateTime.Now,
 				
 			};
@@ -60,7 +57,7 @@ namespace NotTwitter.API.Controllers
 			return CreatedAtRoute("Get", postModel, new { Id = postModel.User.UserID}); // TODO: Theres no method corresponding to this
         }
 
-        /* TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?*/
+        // TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
 		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
 		//{
         //  var liked = _repo.GetPostById(post.PostID);
@@ -110,5 +107,6 @@ namespace NotTwitter.API.Controllers
 
 			return NoContent();
         }
+        
     }
 }
