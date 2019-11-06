@@ -42,6 +42,10 @@ namespace NotTwitter.DataAccess.Repositories
         public User GetUserWithFriends(int id)
         {
             var userFriends = _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToList();
+            //if (GetUserByID(id) == null)
+            //{
+            //    return null;
+            //}
             var user = GetUserByID(id);
             //var user = _context.Users.Find(id);
             foreach(var fs in userFriends)
@@ -64,7 +68,6 @@ namespace NotTwitter.DataAccess.Repositories
                 .Where(u => ((u.FirstName + u.LastName).ToUpper())
                 .Contains(name.ToUpper()));
  
-
             if (x.Any())
             {
                 return x.Select(Mapper.MapUsers);

@@ -15,13 +15,63 @@ namespace NotTwitter.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepo;
+        private readonly IUserRepository _userRepo; 
+        private readonly IPostRepository _postRepo;
 
-        public UserController(IUserRepository urepo)
+        public UserController(IUserRepository urepo, IPostRepository prepo)
         {
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
+            _postRepo = prepo ?? throw new ArgumentNullException(nameof(prepo));
         }
 
+        [HttpGet("post/{id}", Name = "GetFriendPosts")]
+        public IActionResult GetFriendPost(int id)
+        {
+            //Check if user 1 is friend with user 2
+            var x = _userRepo.GetUserWithFriends(id);
+
+            var friendPostList = new List<PostModel>();
+
+            //if(x == null)
+            //{
+            //    return NotFound();
+            //}
+
+            foreach(Library.Models.User friend in x.Friends)
+            {
+                var friendPost = _postRepo.GetPostsByUser(friend.UserID);
+
+                foreach (Library.Models.Post fPost in friendPost)
+                {
+                    var commentList = new List<CommentModel>();
+
+                    foreach (var comment in fPost.Comments)
+                    {
+                        commentList.Add(new CommentModel
+                        {
+                            CommentId = comment.CommentId,
+                            UserId = comment.Author.UserID,
+                            Content = comment.Content,
+                            TimeSent = comment.TimeSent
+                        });
+                    }
+
+                    var postModel = new PostModel()
+                    {
+                        PostID = fPost.PostID,
+                        Text = fPost.Content,
+                        TimeSent = fPost.TimeSent,
+                        UserID = fPost.User.UserID,
+                        Comments = commentList
+                    };
+
+                    friendPostList.Add(postModel);
+                }
+            }
+            return Ok(friendPostList);
+        }
+
+        //Get User by Name
         [HttpGet("name/{name}", Name = "GetUserByName")]
         public IActionResult GetName(string name)
         {
@@ -46,8 +96,6 @@ namespace NotTwitter.API.Controllers
             }
             return Ok(userList);
         }
-
-
 
 
     // Get User by Name

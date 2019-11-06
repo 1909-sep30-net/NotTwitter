@@ -49,7 +49,7 @@ namespace NotTwitter.Library.Models
         /// <summary>
         /// Comments belonging to this post
         /// </summary>
-        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+        public IEnumerable<Comment> Comments { get; set; }
 
         /// <summary>
         /// Time that the post was submitted.

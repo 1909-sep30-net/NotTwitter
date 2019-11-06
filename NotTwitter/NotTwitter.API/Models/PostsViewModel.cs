@@ -13,5 +13,7 @@ namespace NotTwitter.API.Models
         public DateTime TimeSent { get; set; }
         public string Content { get; set; }
 
+        public int Likes { get; set; }
+
     }
 }
