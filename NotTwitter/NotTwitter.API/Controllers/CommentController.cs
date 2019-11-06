@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
-using NotTwitter.Library.Models;
 
 namespace NotTwitter.API.Controllers
 {
@@ -88,10 +84,13 @@ namespace NotTwitter.API.Controllers
             {
 				return NotFound();
             }
+
 			_repo.DeleteCommentsByPostId(postId);
             _repo.Save();
-			return CreatedAtRoute("Get", postModel, new { Id = postId });
+
+			return NoContent();
 		}
-	}
-    
+        
+    }
+
 }

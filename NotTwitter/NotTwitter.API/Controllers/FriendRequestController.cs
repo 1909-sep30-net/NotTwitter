@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NotTwitter.Library.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Library.Models.Enum;
 using NotTwitter.API.Models;
+using System.Collections.Generic;
 
 namespace NotTwitter.API.Controllers
 {
@@ -22,6 +19,7 @@ namespace NotTwitter.API.Controllers
 			_frRepo = repo;
 			_userRepo = user;
 		}
+
 		[HttpGet("{userId}")]
 		public List<FriendRequestModel> Get(int userId)
 		{
@@ -105,7 +103,6 @@ namespace NotTwitter.API.Controllers
 				_userRepo.Save();
 				
 				return StatusCode(200);
-				//return RedirectToAction(nameof(MakeFriend));
 			}
 			catch
             {
@@ -120,6 +117,7 @@ namespace NotTwitter.API.Controllers
 		/// </summary>
 		/// <param name="friendRequest"></param>
 		/// <returns></returns>
+
 		[HttpPost]
 		[Route("Declined")]
 
@@ -137,6 +135,5 @@ namespace NotTwitter.API.Controllers
                 return NotFound();
             }
 		}
-	
 	}
 }

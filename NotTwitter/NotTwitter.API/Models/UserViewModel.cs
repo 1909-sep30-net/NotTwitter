@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace NotTwitter.API.Models
 {
@@ -21,5 +19,7 @@ namespace NotTwitter.API.Models
         public string Email { get; set; }
 
         public int Gender { get; set; }
+
+        public List<FriendViewModel> Friends { get; set; } = new List<FriendViewModel>();
     }
 }
