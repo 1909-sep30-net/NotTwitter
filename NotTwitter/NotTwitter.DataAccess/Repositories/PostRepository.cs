@@ -62,6 +62,7 @@ namespace NotTwitter.DataAccess.Repositories
         {
             // Then get the post with comments
             var postWithComments = _context.Posts
+                .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c=>c.User)
                 .First(p => p.PostId == postId);

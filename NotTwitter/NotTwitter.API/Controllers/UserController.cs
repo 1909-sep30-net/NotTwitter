@@ -97,8 +97,8 @@ namespace NotTwitter.API.Controllers
                 }
                 Library.Models.User updatedUser = new Library.Models.User()
                 {
-                    UserID = user.Id,
-                    Username = user.Username,
+                    UserID = user.Id, // this is redundant, should be removed
+                    Username = user.Username, // technically also redundant since this should also not be changed according to the logic above
                     Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,

@@ -67,9 +67,10 @@ namespace NotTwitter.API.Controllers
             {
                 var post = new PostModel
                 {
+                    PostID = p.PostID,
                     UserID = userId,
                     Text = p.Content,
-
+                    TimeSent = p.TimeSent
                 };
                 ListPosts.Add(post);
             }
@@ -78,23 +79,21 @@ namespace NotTwitter.API.Controllers
 
         // POST: api/CreatePost
         [HttpPost]
-        public ActionResult CreatePost([FromBody] Models.PostModel postModel)
+        public ActionResult CreatePost(int authorId, string content)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var postAuthor = _urepo.GetUserByID(postModel.UserID);
+            var postAuthor = _urepo.GetUserByID(authorId);
 			var newPost = new Library.Models.Post
 			{
-				Content = postModel.Text,
+				Content = content,
 				TimeSent = DateTime.Now,
                 User = postAuthor
 			};
             _repo.CreatePost(newPost);
-            //postAuthor.Posts.Add(newPost);
-			//_urepo.UpdateUser(postAuthor);
             _repo.Save();
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);

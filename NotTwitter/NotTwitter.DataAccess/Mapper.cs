@@ -68,8 +68,8 @@ namespace NotTwitter.DataAccess
                 PostId = posts.PostID,
                 Content = posts.Content,
                 TimeSent = posts.TimeSent,
-                UserId = posts.User.UserID
-                //User = MapUsers(posts.User)
+                UserId = posts.User.UserID,
+                User = MapUsers(posts.User)
             };
         }
 
@@ -80,7 +80,8 @@ namespace NotTwitter.DataAccess
                PostID = posts.PostId,
                Content = posts.Content,
                TimeSent = posts.TimeSent,
-               Comments = posts.Comments.Select(MapComments).ToHashSet()
+               Comments = posts.Comments.Select(MapComments).ToHashSet(),
+               User = MapUsers(posts.User)
             };
         }
 
@@ -92,7 +93,8 @@ namespace NotTwitter.DataAccess
                 PostId = posts.PostID,
                 Content = posts.Content,
                 TimeSent = posts.TimeSent,
-                Comments = postComments
+                Comments = postComments,
+                User = MapUsers(posts.User)
             };
         }
 

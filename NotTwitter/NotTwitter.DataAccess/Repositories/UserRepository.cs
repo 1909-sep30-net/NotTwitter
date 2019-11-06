@@ -27,8 +27,8 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
-
+            //var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            var user = _context.Users.Find(id);
             if (user == null)
             {
                 return null;
@@ -41,11 +41,13 @@ namespace NotTwitter.DataAccess.Repositories
 
         public User GetUserWithFriends(int id)
         {
-            var userFriends = _context.Friendships.Where(fs => fs.User1ID == id);
+            var userFriends = _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToList();
             var user = GetUserByID(id);
+            //var user = _context.Users.Find(id);
             foreach(var fs in userFriends)
             {
-                user.Friends.Add( GetUserByID(fs.User2.UserID) );
+                var frond = GetUserByID(fs.User2ID);
+                user.Friends.Add( frond );
             }
             return user;
         }
