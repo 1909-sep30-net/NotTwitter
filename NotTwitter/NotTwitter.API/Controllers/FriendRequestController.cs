@@ -35,7 +35,6 @@ namespace NotTwitter.API.Controllers
 				{
 					SenderId = req.SenderId,
 					ReceiverId = req.ReceiverId,
-					FriendRequestStatus = req.FriendRequestStatus
 				};
 				requestList.Add(r);
 				
@@ -49,18 +48,18 @@ namespace NotTwitter.API.Controllers
         /// 
 		[HttpPost]
 		[Route("Create")]
-		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
+		public ActionResult CreateRequest([FromBody, Bind("SenderId, ReceiverId")] FriendRequestModel friendRequestModel) 
 		{
-			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(receiverId) is null)
+			if (_userRepo.GetUserByID(friendRequestModel.SenderId) is null || _userRepo.GetUserByID(friendRequestModel.ReceiverId) is null)
 			{
 				return NotFound();
 			}
-			var sender = _userRepo.GetUserByID(senderId);
-			var receiver = _userRepo.GetUserByID(receiverId);
+			var sender = _userRepo.GetUserByID(friendRequestModel.SenderId);
+			var receiver = _userRepo.GetUserByID(friendRequestModel.ReceiverId);
 			var newRequest = new Library.Models.FriendRequest
 			{
-				SenderId = senderId,
-				ReceiverId = receiverId,
+				SenderId = friendRequestModel.SenderId,
+				ReceiverId = friendRequestModel.ReceiverId,
 				FriendRequestStatus = (int)FriendRequestStatus.Pending
 			};
 			_frRepo.CreateFriendRequest(newRequest);
@@ -74,21 +73,32 @@ namespace NotTwitter.API.Controllers
 		/// <param name="friendRequest"></param>
 		[HttpPatch]
 		[Route("Accepted")]
-		public ActionResult AcceptRequest([FromBody, Bind("SenderId, ReceiverId")] Library.Models.FriendRequest friendRequest)
+		public ActionResult AcceptRequest([FromBody, Bind("SenderId, ReceiverId")] FriendRequestModel friendRequest)
 		{
             // TODO: Enclose this in a try/catch block in case this fails
 
             try
             {
+                var entityFriendRequest = _frRepo.GetFriendRequest(friendRequest.SenderId, friendRequest.ReceiverId);
+                if ( entityFriendRequest == null)
+                {
+                    return NotFound();
+                }
+
 				var sender = _userRepo.GetUserByID(friendRequest.SenderId);
 				var receiver = _userRepo.GetUserByID(friendRequest.ReceiverId);
 				int status = _frRepo.FriendRequestStatus(friendRequest.SenderId,friendRequest.ReceiverId);
 
 				if (status != 0)
-					return StatusCode(400);
-				
-				friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
-				_frRepo.UpdateFriendRequest(friendRequest);
+                {
+                    return StatusCode(400);
+                }
+
+                // Update the entity's FR status
+                entityFriendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
+
+                // Persist in db
+				_frRepo.UpdateFriendRequest(entityFriendRequest);
 				_frRepo.Save();
 
 				var newFriend = new Library.Models.Friendship
