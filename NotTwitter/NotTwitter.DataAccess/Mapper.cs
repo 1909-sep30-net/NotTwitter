@@ -151,8 +151,8 @@ namespace NotTwitter.DataAccess
         {
             return new Library.Models.Friendship
             {
+                //User1 = MapUsers(friendships.User1),
                 TimeRequestConfirmed = friendships.TimeRequestConfirmed,
-                TimeRequestSent = friendships.TimeRequestSent
             };
         }
 
@@ -161,7 +161,6 @@ namespace NotTwitter.DataAccess
             return new Entities.Friendships
             {
                 TimeRequestConfirmed = friendships.TimeRequestConfirmed,
-                TimeRequestSent = friendships.TimeRequestSent
             };
         }
 
