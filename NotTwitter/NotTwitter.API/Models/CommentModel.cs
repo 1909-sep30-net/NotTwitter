@@ -10,7 +10,6 @@ namespace NotTwitter.API.Models
 	public class CommentModel
 	{
 		public int CommentId { get; set; }
-		[Required]
 		public int PostId { get; set; }
 		[Required]
 		public int UserId { get; set; }
@@ -18,8 +17,5 @@ namespace NotTwitter.API.Models
         [MinLength(1)]
 		public string Content { get; set; }
 		public DateTime TimeSent { get; set; }
-
-		public User User { get; set; }
-		public Post Post { get; set; }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using NotTwitter.Library.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using NotTwitter.Library.Interfaces;
 using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,29 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            if (_context.Users.Find(id) != null)
+            //var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            var user = _context.Users.Find(id);
+            if (user == null)
             {
-                return Mapper.MapUsers(_context.Users.Find(id));
-            }
-            else
                 return null;
+            } 
+            else
+            {
+                return Mapper.MapUsers(user);
+            }
+        }
+
+        public User GetUserWithFriends(int id)
+        {
+            var userFriends = _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToList();
+            var user = GetUserByID(id);
+            //var user = _context.Users.Find(id);
+            foreach(var fs in userFriends)
+            {
+                var frond = GetUserByID(fs.User2ID);
+                user.Friends.Add( frond );
+            }
+            return user;
         }
 
         /// <summary>

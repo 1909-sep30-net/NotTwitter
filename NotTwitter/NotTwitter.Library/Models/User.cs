@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace NotTwitter.Library.Models
@@ -137,6 +138,11 @@ namespace NotTwitter.Library.Models
                 _password = value;
             }
         }
+
+        public DateTime DateCreated { get; set; }
+        public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
+        public ICollection<User> Friends { get; set; } = new HashSet<User>();
+
 
         /// <summary>
         /// Error handling for inserting a name

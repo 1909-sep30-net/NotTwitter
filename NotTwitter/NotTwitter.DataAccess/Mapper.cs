@@ -33,26 +33,68 @@ namespace NotTwitter.DataAccess
             };
         }
 
+        public static Library.Models.User MapUsersWithPostsAndComments(Entities.Users users)
+        {
+            var mapuser = MapUsers(users);
+            mapuser.Posts = users.Posts.Select(MapPostsWithComments).ToHashSet();
+            return mapuser;
+        }
+
+        /// <summary>
+        /// Map posts without comments
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <returns></returns>
         public static Library.Models.Post MapPosts(Entities.Posts posts)
+        {
+            return new Library.Models.Post
+            {
+                PostID = posts.PostId,
+                Content = posts.Content,
+                TimeSent = posts.TimeSent,
+                //User = MapUsers(posts.User)
+            };
+        }
+
+        /// <summary>
+        /// Map post without comments
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <returns></returns>
+        public static Entities.Posts MapPosts(Library.Models.Post posts)
+        {
+            return new Entities.Posts
+            {
+                PostId = posts.PostID,
+                Content = posts.Content,
+                TimeSent = posts.TimeSent,
+                UserId = posts.User.UserID,
+                User = MapUsers(posts.User)
+            };
+        }
+
+        public static Library.Models.Post MapPostsWithComments(Entities.Posts posts)
         {
             return new Library.Models.Post
             {
                PostID = posts.PostId,
                Content = posts.Content,
                TimeSent = posts.TimeSent,
-               Comments = posts.Comments.Select(MapComments).ToHashSet()
+               Comments = posts.Comments.Select(MapComments).ToHashSet(),
+               User = MapUsers(posts.User)
             };
         }
 
-        public static Entities.Posts MapPosts(Library.Models.Post posts)
+        public static Entities.Posts MapPostsWithComments(Library.Models.Post posts)
         {
-            posts.Comments.Select(MapComments);
+            var postComments = posts.Comments.Select(MapComments).ToHashSet();
             return new Entities.Posts
             {
                 PostId = posts.PostID,
                 Content = posts.Content,
-                TimeSent = posts.TimeSent
-
+                TimeSent = posts.TimeSent,
+                Comments = postComments,
+                User = MapUsers(posts.User)
             };
         }
 
@@ -73,6 +115,18 @@ namespace NotTwitter.DataAccess
                 CommentId = comments.CommentId,
                 Content = comments.Content,
                 TimeSent = comments.TimeSent
+            };
+        }
+
+        public static Library.Models.Comment MapCommentsWithUsers(Entities.Comments comments)
+        {
+
+            return new Library.Models.Comment
+            {
+                CommentId = comments.CommentId,
+                Content = comments.Content,
+                TimeSent = comments.TimeSent,
+                Author = MapUsers(comments.User)
             };
         }
 

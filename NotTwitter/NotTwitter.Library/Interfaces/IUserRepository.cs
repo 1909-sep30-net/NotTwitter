@@ -15,6 +15,13 @@ namespace NotTwitter.Library.Interfaces
         public User GetUserByID(int id);
 
         /// <summary>
+        /// Given an ID, returns matching user, including their list of friends from DB
+        /// </summary>
+        /// <param name="id">User ID to be searched for</param>
+        /// <returns>User matching the given ID</returns>
+        public User GetUserWithFriends(int id);
+
+        /// <summary>
         /// Returns list of users with name matching given string
         /// </summary>
         /// <param name="name"></param>

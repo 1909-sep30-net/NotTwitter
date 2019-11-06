@@ -16,8 +16,9 @@ namespace NotTwitter.DataAccess.Entities
 		public DateTime TimeSent { get; set; }
 		public string Content { get; set; }
 
-		[Range(0, int.MaxValue)]
-		public int Likes { get; set; }
+		//[Range(0, int.MaxValue)]
+		//public int Likes { get; set; }
+
 		public virtual Users User { get; set; }
         public virtual ICollection <Comments> Comments  { get; set; }
 
