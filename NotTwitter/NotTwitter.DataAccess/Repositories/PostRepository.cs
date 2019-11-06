@@ -71,13 +71,17 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public Post GetPostById(int postId)
         {
+            if (_context.Posts.Find(postId)==null)
+            {
+                return null;
+            }
             // Then get the post with comments
             var postWithComments = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c=>c.User)
-                .First(p => p.PostId == postId);
-
+                .FirstOrDefault(p => p.PostId == postId);
+            
             return Mapper.MapPostsWithComments(postWithComments);
         }
 

@@ -67,13 +67,16 @@ namespace NotTwitter.API.Controllers
         /// <returns></returns>
         // GET: api/Post/5
         [HttpGet("user/{userId}", Name = "GetPostsByUser")]
-        public List<PostModel> GetPostsByUser(int userId)
+        public IActionResult GetPostsByUser(int userId)
         {
+            // If user doesnt exist, return 404
             var posts = _repo.GetPostsByUser(userId);
             if (posts == null)
             {
-                //return NotFound();
+                return NotFound();
             }
+
+            // Populate representation models for posts by user
             List<PostModel> ListPosts = new List<PostModel>();
             foreach (var p in posts)
             {
@@ -86,7 +89,8 @@ namespace NotTwitter.API.Controllers
                 };
                 ListPosts.Add(post);
             }
-            return ListPosts;
+
+            return Ok(ListPosts);
         }
 
         // POST: api/CreatePost
@@ -105,7 +109,7 @@ namespace NotTwitter.API.Controllers
 				TimeSent = DateTime.Now,
                 User = postAuthor
 			};
-            _repo.CreatePost(newPost);
+            _repo.CreatePost(newPost,postAuthor);
             _repo.Save();
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
@@ -130,18 +134,15 @@ namespace NotTwitter.API.Controllers
 		[HttpPut("{id}")]
         public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
-            if (_repo.GetPostById(PostId) is null)
+            var currentPost = _repo.GetPostById(PostId);
+            if (currentPost is null)
             {
                 return NotFound();
             }
 
-			var updatedPost = new Library.Models.Post
-			{
-				User = _urepo.GetUserByID(postModel.UserID),
-				Content = postModel.Text,
-				TimeSent = DateTime.Now,
-			};
-			_repo.UpdatePost(updatedPost);
+            currentPost.Content = postModel.Text;
+
+			_repo.UpdatePost(currentPost);
             _repo.Save();
 
 			return NoContent();
