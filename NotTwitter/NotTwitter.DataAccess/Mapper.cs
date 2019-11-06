@@ -33,7 +33,14 @@ namespace NotTwitter.DataAccess
             };
         }
 
-        public static Library.Models.Post MapPosts(Entities.Posts posts)
+        public static Library.Models.User MapUsersWithPostsAndComments(Entities.Users users)
+        {
+            var mapuser = MapUsers(users);
+            mapuser.Posts = users.Posts.Select(MapPostsWithComments).ToHashSet();
+            return mapuser;
+        }
+
+        public static Library.Models.Post MapPostsWithComments(Entities.Posts posts)
         {
             return new Library.Models.Post
             {
@@ -44,9 +51,9 @@ namespace NotTwitter.DataAccess
             };
         }
 
-        public static Entities.Posts MapPosts(Library.Models.Post posts)
+        public static Entities.Posts MapPostsWithComments(Library.Models.Post posts)
         {
-            var postComments = posts.Comments.Select(MapComments).ToList();
+            var postComments = posts.Comments.Select(MapComments).ToHashSet();
             return new Entities.Posts
             {
                 PostId = posts.PostID,
@@ -73,6 +80,18 @@ namespace NotTwitter.DataAccess
                 CommentId = comments.CommentId,
                 Content = comments.Content,
                 TimeSent = comments.TimeSent
+            };
+        }
+
+        public static Library.Models.Comment MapCommentsWithUsers(Entities.Comments comments)
+        {
+
+            return new Library.Models.Comment
+            {
+                CommentId = comments.CommentId,
+                Content = comments.Content,
+                TimeSent = comments.TimeSent,
+                Author = MapUsers(comments.User)
             };
         }
 

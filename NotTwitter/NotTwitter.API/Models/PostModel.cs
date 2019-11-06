@@ -13,10 +13,12 @@ namespace NotTwitter.API.Models
 		public User User { get; set; }
 
 		[Required]
-		[Display(Name = "What do you think?")]
-
 		public string Text { get; set; }
-        public Comment Comments { get; set; }
+
+        public IEnumerable<CommentModel> Comments { get; set; }
+
+        [Required]
+        public DateTime TimeSent { get; set; }
 
 		/*[Display(Name = "Upload a photo")]
 		public IFormFile Photo { get; set; }*/

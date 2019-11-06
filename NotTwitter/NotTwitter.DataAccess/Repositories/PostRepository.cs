@@ -61,7 +61,7 @@ namespace NotTwitter.DataAccess.Repositories
             // Then get the post with comments
             var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
 
-            return Mapper.MapPosts(postWithComments);
+            return Mapper.MapPostsWithComments(postWithComments);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>All posts in data base</returns>
         public IEnumerable<Post> GetAllPosts()
         {
-            return _context.Posts.Select(Mapper.MapPosts);
+            return _context.Posts.Select(Mapper.MapPostsWithComments);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace NotTwitter.DataAccess.Repositories
             return _context.Posts
                 .Include(p=>p.Comments)
                 .Where(p => p.UserId == userId)
-                .Select(Mapper.MapPosts);
+                .Select(Mapper.MapPostsWithComments);
         }
 
         /// <summary>

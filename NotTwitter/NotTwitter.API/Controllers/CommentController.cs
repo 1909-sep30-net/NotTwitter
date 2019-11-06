@@ -17,23 +17,7 @@ namespace NotTwitter.API.Controllers
 			_repo = repo;
 			_post = post;
 		}
-        
-
-        // GET: api/Comment
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        // GET: api/Comment/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-        
+ 
 
         // POST: api/Comment
         [HttpPost]
@@ -86,9 +70,11 @@ namespace NotTwitter.API.Controllers
             {
 				return NotFound();
             }
+
 			_repo.DeleteCommentsByPostId(postId);
             _repo.Save();
-			return CreatedAtRoute("Get", postModel, new { Id = postId });
+
+			return NoContent();
 		}
         
     }

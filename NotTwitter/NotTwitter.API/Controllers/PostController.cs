@@ -14,9 +14,40 @@ namespace NotTwitter.API.Controllers
 
 		public PostController(IPostRepository repo)
 		{
-			_repo =repo ?? throw new ArgumentNullException(nameof(repo));
+			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
 		}
         
+        /// <summary>
+        /// Returns a post with comments
+        /// </summary>
+        /// <param name="postId">ID of specified post</param>
+        /// <returns></returns>
+        [HttpGet("{postId}", Name = "GetPostsById")]
+        public PostModel GetPostById(int postId)
+        {
+            var post = _repo.GetPostById(postId);
+            var postComments = new List<CommentModel>();
+            foreach(var com in post.Comments)
+            {
+                postComments.Add(
+                    new CommentModel
+                    {
+                        CommentId = com.CommentId,
+                        Content = com.Content,
+                        TimeSent = com.TimeSent,
+                        UserId = com.Author.UserID
+                    }
+                );
+            }
+
+            return new PostModel
+            {
+                User = post.User,
+                TimeSent = post.TimeSent,
+                Text = post.Content,
+                Comments = postComments
+            };
+        }
 
         /// <summary>
         /// Returns a list of posts from the user, including comments
@@ -24,7 +55,7 @@ namespace NotTwitter.API.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         // GET: api/Post/5
-        [HttpGet("{userId}", Name = "GetPostsByUser")]
+        [HttpGet("user/{userId}", Name = "GetPostsByUser")]
         public List<PostModel> GetPostsByUser(int userId)
         {
             var posts = _repo.GetPostsByUser(userId);
