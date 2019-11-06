@@ -7,12 +7,10 @@ using System.Collections.Generic;
 
 namespace NotTwitter.API.Controllers
 {
-    /*
-     * Get FriendList
-     */
 
     [Route("api/[controller]")]
     [ApiController]
+
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
@@ -101,12 +99,6 @@ namespace NotTwitter.API.Controllers
             _userRepo.AddUser(mappedUser);
             _userRepo.Save();
 
-
-            //Return a BadRequest message if User already exists
-            //if (_userRepo.GetUserByID(mappedUser.UserID) == null)
-            //{
-            //    return BadRequest();
-            //}
             return CreatedAtRoute("GetUserByID", new { id = mappedUser.UserID }, newUser);
 
         }

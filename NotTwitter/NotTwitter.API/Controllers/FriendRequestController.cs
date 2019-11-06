@@ -46,11 +46,12 @@ namespace NotTwitter.API.Controllers
 		/// Create Friend Request
 		/// </summary>
 		/// <param name="senderId", name="receiverId"></param>
+        /// 
 		[HttpPost]
 		[Route("Create")]
 		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
 		{
-			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(senderId) is null)
+			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(receiverId) is null)
 			{
 				return NotFound();
 			}
