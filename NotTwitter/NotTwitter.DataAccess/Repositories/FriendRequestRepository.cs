@@ -15,16 +15,21 @@ namespace NotTwitter.DataAccess.Repositories
 			_context = db;
 		}
 
+        public FriendRequest GetFriendRequest(int senderId, int receiverId)
+        {
+            return Mapper.MapFriendRequest(_context.FriendRequests
+                    .FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
+        }
+
         /// <summary>
         /// Returns a list of all pending requests for a user.
         /// </summary>
         /// <param name="userId">User with the pending requests</param>
         /// <returns>List of all pending friend requests</returns>
-        public IEnumerable<FriendRequest> GetAllPendingFriendRequests(int userId)
+        public IEnumerable<FriendRequest> GetAllFriendRequests(int userId)
         {
-            return _context.FriendRequests.Where(fr => fr.ReceiverId == userId 
-                && fr.FriendRequestStatus == (int)FriendRequestStatus.Pending)
-                .Select(Mapper.MapFriendRequest);
+			return _context.FriendRequests.Where(fr => fr.SenderId == userId)
+                .Select(Mapper.MapFriendRequest).ToList();
         }
 
         /// <summary>
@@ -33,9 +38,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="senderId"></param>
         /// <param name="receiverId"></param>
         /// <returns></returns>
-		public bool FriendRequestExists(FriendRequest request)
+		public int FriendRequestStatus(int senderId, int receiverId)
 		{
-			return _context.FriendRequests.Any(fr => fr.SenderId == request.SenderId && fr.ReceiverId == request.ReceiverId);
+			return _context.FriendRequests.Where(r => r.SenderId == senderId && r.ReceiverId == receiverId).FirstOrDefault().FriendRequestStatus;
 		}
 	    
         /// <summary>
@@ -44,6 +49,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="request">Request to be added</param>
 		public void CreateFriendRequest(FriendRequest request)
 		{
+			
 			_context.FriendRequests.Add(Mapper.MapFriendRequest(request));
 		}
 

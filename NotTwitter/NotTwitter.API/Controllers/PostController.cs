@@ -6,12 +6,12 @@ using NotTwitter.Library.Interfaces;
 
 namespace NotTwitter.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PostController : ControllerBase
-    {
+	[Route("api/[controller]")]
+	[ApiController]
+	public class PostController : ControllerBase
+	{
 		private readonly IPostRepository _repo;
-        private readonly IUserRepository _urepo;
+		private readonly IUserRepository _urepo;
 
 		public PostController(IPostRepository repo, IUserRepository urepo)
 		{
@@ -67,13 +67,16 @@ namespace NotTwitter.API.Controllers
         /// <returns></returns>
         // GET: api/Post/5
         [HttpGet("user/{userId}", Name = "GetPostsByUser")]
-        public List<PostModel> GetPostsByUser(int userId)
+        public IActionResult GetPostsByUser(int userId)
         {
+            // If user doesnt exist, return 404
             var posts = _repo.GetPostsByUser(userId);
             if (posts == null)
             {
-                //return NotFound();
+                return NotFound();
             }
+
+            // Populate representation models for posts by user
             List<PostModel> ListPosts = new List<PostModel>();
             foreach (var p in posts)
             {
@@ -86,7 +89,8 @@ namespace NotTwitter.API.Controllers
                 };
                 ListPosts.Add(post);
             }
-            return ListPosts;
+
+            return Ok(ListPosts);
         }
 
         // POST: api/CreatePost
@@ -103,18 +107,20 @@ namespace NotTwitter.API.Controllers
 			{
 				Content = content,
 				TimeSent = DateTime.Now,
-                User = postAuthor
+				User = postAuthor
 			};
-            //_repo.CreatePost(newPost);
+            _repo.CreatePost(newPost,postAuthor);
+
             _repo.Save();
 
-			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
-        }
 
-        // TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
+			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
+		}
+
+		// TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
 		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
 		//{
-        //  var liked = _repo.GetPostById(post.PostID);
+		//  var liked = _repo.GetPostById(post.PostID);
 		//	if (liked is null)
 		//	{
 		//		return NotFound();
@@ -127,40 +133,37 @@ namespace NotTwitter.API.Controllers
 
 
 		// PUT: api/Post/5
-		[HttpPut("{id}")]
+		[HttpPut("{PostId}")]
         public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
-            if (_repo.GetPostById(PostId) is null)
+            var currentPost = _repo.GetPostById(PostId);
+            if (currentPost is null)
             {
                 return NotFound();
             }
 
-			var updatedPost = new Library.Models.Post
-			{
-				User = _urepo.GetUserByID(postModel.UserID),
-				Content = postModel.Text,
-				TimeSent = DateTime.Now,
-			};
-			_repo.UpdatePost(updatedPost);
+            currentPost.Content = postModel.Text;
+
+			//_repo.UpdatePost(currentPost);
             _repo.Save();
 
 			return NoContent();
-        }
+		}
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{postId}")]
-        public IActionResult Delete(int postId)
-        {
+		// DELETE: api/ApiWithActions/5
+		[HttpDelete("{postId}")]
+		public IActionResult Delete(int postId)
+		{
 			if (_repo.GetPostById(postId) is null)
-            {
-                return NotFound();
-            }
+			{
+				return NotFound();
+			}
 
-            _repo.DeletePost(postId);
-            _repo.Save();
+			_repo.DeletePost(postId);
+			_repo.Save();
 
 			return NoContent();
-        }
-        
-    }
+		}
+
+	}
 }
