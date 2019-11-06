@@ -109,7 +109,9 @@ namespace NotTwitter.API.Controllers
 				TimeSent = DateTime.Now,
                 User = postAuthor
 			};
+
             _repo.CreatePost(newPost,postAuthor);
+
             _repo.Save();
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
