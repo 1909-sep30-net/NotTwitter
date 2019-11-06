@@ -40,12 +40,7 @@ namespace NotTwitter.Library.Interfaces
         /// <param name="id"></param>
         public void DeleteUserByID(int id);
 
-		/// <summary>
-		/// Check Friendship
-		/// </summary>
-		/// <param name="senderId", name="receiverId"></param>
-		public bool CheckIfFriends(int senderId, int receiverId);
-		
+	
 		/// <summary>
 		/// Add Friend
 		/// </summary>

@@ -20,11 +20,10 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="userId">User with the pending requests</param>
         /// <returns>List of all pending friend requests</returns>
-        public IEnumerable<FriendRequest> GetAllPendingFriendRequests(int userId)
+        public IEnumerable<FriendRequest> GetAllFriendRequests(int userId)
         {
-            return _context.FriendRequests.Where(fr => fr.ReceiverId == userId 
-                && fr.FriendRequestStatus == (int)FriendRequestStatus.Pending)
-                .Select(Mapper.MapFriendRequest);
+			return _context.FriendRequests.Where(fr => fr.SenderId == userId)
+                .Select(Mapper.MapFriendRequest).ToList();
         }
 
         /// <summary>
@@ -33,9 +32,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="senderId"></param>
         /// <param name="receiverId"></param>
         /// <returns></returns>
-		public bool FriendRequestExists(FriendRequest request)
+		public int FriendRequestStatus(int senderId, int receiverId)
 		{
-			return _context.FriendRequests.Any(fr => fr.SenderId == request.SenderId && fr.ReceiverId == request.ReceiverId);
+			return _context.FriendRequests.Where(r => r.SenderId == senderId && r.ReceiverId == receiverId).FirstOrDefault().FriendRequestStatus;
 		}
 	    
         /// <summary>

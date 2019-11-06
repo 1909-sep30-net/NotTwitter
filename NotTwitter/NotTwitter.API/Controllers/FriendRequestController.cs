@@ -22,26 +22,39 @@ namespace NotTwitter.API.Controllers
 			_frRepo = repo;
 			_userRepo = user;
 		}
-		[HttpGet("{id}")]
-		public string Get(int id)
+		[HttpGet("{userId}")]
+		public List<FriendRequestModel> Get(int userId)
 		{
-			return "value";
+			var requests = _frRepo.GetAllFriendRequests(userId);
+			List<FriendRequestModel> requestList = new List<FriendRequestModel>();
+			foreach (var req in requests)
+			{
+				var r = new FriendRequestModel
+				{
+					SenderId = req.SenderId,
+					ReceiverId = req.ReceiverId,
+					FriendRequestStatus = req.FriendRequestStatus
+				};
+				requestList.Add(r);
+				
+			}
+			return requestList;
 		}
 
 		[HttpPost]
 		[Route("Create")]
-		public ActionResult CreateRequest([FromBody, Bind("SenderId,ReceiverId,FriendRequestStatus")] FriendRequestModel friendRequest)
+		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
 		{
-			if (_userRepo.GetUserByID(friendRequest.SenderId) is null || _userRepo.GetUserByID(friendRequest.ReceiverId) is null)
+			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(senderId) is null)
 			{
 				return NotFound();
 			}
-			var sender = _userRepo.GetUserByID(friendRequest.SenderId);
-			var receiver = _userRepo.GetUserByID(friendRequest.ReceiverId);
+			var sender = _userRepo.GetUserByID(senderId);
+			var receiver = _userRepo.GetUserByID(receiverId);
 			var newRequest = new Library.Models.FriendRequest
 			{
-				SenderId = friendRequest.SenderId,
-				ReceiverId = friendRequest.ReceiverId,
+				SenderId = senderId,
+				ReceiverId = receiverId,
 				FriendRequestStatus = (int)FriendRequestStatus.Pending
 			};
 			_frRepo.CreateFriendRequest(newRequest);
@@ -58,20 +71,17 @@ namespace NotTwitter.API.Controllers
 
             try
             {
-                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
-                _frRepo.UpdateFriendRequest(friendRequest);
-                _frRepo.Save();
-
 				var sender = _userRepo.GetUserByID(friendRequest.SenderId);
 				var receiver = _userRepo.GetUserByID(friendRequest.ReceiverId);
+				int status = _frRepo.FriendRequestStatus(friendRequest.SenderId,friendRequest.ReceiverId);
 
-				//TODO: Update the friend list of the users involved
-				//sender.Friends.Add(receiver)
-				//receiver.Friends.Add(sender)
-				//_userRepo.UpdateUser(sender)
-				//_userRepo.UpdateUser(receiver)
-				//_userRepo.Save()
+				if (status != 0)
+					return StatusCode(400);
 				
+				friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Accepted;
+				_frRepo.UpdateFriendRequest(friendRequest);
+				_frRepo.Save();
+
 				var newFriend = new Library.Models.Friendship
 				{
 					User1ID = sender.UserID,
@@ -103,40 +113,7 @@ namespace NotTwitter.API.Controllers
             }
 
 		}
-		/*
-		 [HttpPost]
-		 [Route("AcceptedFriend")]
-		public string MakeFriend(int id1, int id2)
-		{
-
-			var sender = _userRepo.GetUserByID(id1);
-			var receiver = _userRepo.GetUserByID(id2);
-			
-			var newFriend = new Library.Models.Friendship
-			{
-				User1ID = sender.UserID,
-				User2ID = receiver.UserID,
-				User1 = sender,
-				User2 = receiver,
-				TimeRequestConfirmed = DateTime.Now
-			};
-			
-			var newFriendToReceiver = new Library.Models.Friendship
-			{
-				User1ID = receiver.UserID,
-				User2ID = sender.UserID,
-				User1 = receiver,
-				User2 = sender,
-				TimeRequestConfirmed = DateTime.Now
-			};
-			
-			_userRepo.AddFriendShip(newFriend);
-			_userRepo.AddFriendShip(newFriendToReceiver);
-			_userRepo.Save();
-			
-			return ("tested");
-		}
-		*/
+		
 	
 		/// <summary>
 		/// Declines the request and updates the database
