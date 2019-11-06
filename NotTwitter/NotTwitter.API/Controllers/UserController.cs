@@ -25,10 +25,14 @@ namespace NotTwitter.API.Controllers
         // Get User by Name
         // GET: api/User/5
         [HttpGet("{id}", Name = "GetUserByID")]
-        public UserViewModel Get(int id)
+        public IActionResult Get(int id)
         {
 
             var x = _userRepo.GetUserWithFriends(id);
+            if (x == null)
+            {
+                return NotFound();
+            }
             var modelFriends = new List<FriendViewModel>();
             // Populate friend view model using x's populated friend list
             // business model -> representational model
@@ -44,7 +48,7 @@ namespace NotTwitter.API.Controllers
             }
 
             // Create and return representational model of user
-            return new UserViewModel()
+            return Ok(new UserViewModel()
             {
                 Username = x.Username,
                 FirstName = x.FirstName,
@@ -53,7 +57,7 @@ namespace NotTwitter.API.Controllers
                 Email = x.Email,
                 Id = x.UserID,
                 Friends = modelFriends
-            };
+            });
 
         }
 

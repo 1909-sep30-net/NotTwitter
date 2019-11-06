@@ -78,6 +78,7 @@ namespace NotTwitter.DataAccess.Repositories
         public IEnumerable<Post> GetPostsByUser(int userId)
         {
             return _context.Posts
+                .Include(p=>p.User)
                 .Include(p=>p.Comments)
                     .ThenInclude(c=>c.User)
                 .Where(p => p.UserId == userId)
