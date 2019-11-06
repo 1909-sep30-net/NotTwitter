@@ -22,6 +22,28 @@ namespace NotTwitter.API.Controllers
             _userRepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
+        [HttpGet("{name}", Name = "GetUserByName")]
+        public IEnumerable<UserViewModel> GetName(string name)
+        {
+            var x = _userRepo.GetUsersByName(name);
+            var userList = new List<UserViewModel>();
+            foreach (Library.Models.User user in x)
+            {
+                userList.Add(new UserViewModel()
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    Id = user.UserID
+                });
+            }
+            return userList;
+        }
+
+
         // Get User by Name
         // GET: api/User/5
         [HttpGet("{id}", Name = "GetUserByID")]
