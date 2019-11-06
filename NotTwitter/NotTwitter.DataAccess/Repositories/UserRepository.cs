@@ -28,13 +28,26 @@ namespace NotTwitter.DataAccess.Repositories
         public User GetUserByID(int id)
         {
             var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+
             if (user == null)
             {
                 return null;
-            } else
+            } 
+            else
             {
                 return Mapper.MapUsers(user);
             }
+        }
+
+        public User GetUserWithFriends(int id)
+        {
+            var userFriends = _context.Friendships.Where(fs => fs.User1ID == id);
+            var user = GetUserByID(id);
+            foreach(var fs in userFriends)
+            {
+                user.Friends.Add( GetUserByID(fs.User2.UserID) );
+            }
+            return user;
         }
 
         /// <summary>

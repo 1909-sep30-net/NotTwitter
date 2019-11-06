@@ -3,6 +3,7 @@ using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace NotTwitter.API.Controllers
 {
@@ -27,8 +28,22 @@ namespace NotTwitter.API.Controllers
         public UserViewModel Get(int id)
         {
 
-            var x = _userRepo.GetUserByID(id);
+            var x = _userRepo.GetUserWithFriends(id);
+            var modelFriends = new List<FriendViewModel>();
+            // Populate friend view model using x's populated friend list
+            // business model -> representational model
+            foreach (var friend in x.Friends)
+            {
+                var f = new FriendViewModel
+                {
+                    UserId = friend.UserID,
+                    FirstName = friend.FirstName,
+                    LastName = friend.LastName
+                };
+                modelFriends.Add(f);
+            }
 
+            // Create and return representational model of user
             return new UserViewModel()
             {
                 Username = x.Username,
@@ -36,7 +51,8 @@ namespace NotTwitter.API.Controllers
                 LastName = x.LastName,
                 Gender = x.Gender,
                 Email = x.Email,
-                Id = x.UserID
+                Id = x.UserID,
+                Friends = modelFriends
             };
 
         }
