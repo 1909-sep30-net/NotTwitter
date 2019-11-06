@@ -26,7 +26,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="post">Post to be stored</param>
         public void CreatePost(Post post)
         {
-            _context.Add(Mapper.MapPosts(post));
+            var entity = Mapper.MapPosts(post);
+            entity.PostId = 0;
+            _context.Posts.Add(entity);
         }
 
         /// <summary>
@@ -52,16 +54,33 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets post by ID, including comments
+        /// Gets post by ID, including comments, including authors
         /// </summary>
-        /// <param name="postId"></param>
+        /// <param name="postId">Id of the specified post</param>
         /// <returns></returns>
         public Post GetPostById(int postId)
         {
             // Then get the post with comments
-            var postWithComments = _context.Posts.Include(p => p.Comments).First(p => p.PostId == postId);
+            var postWithComments = _context.Posts
+                .Include(p => p.Comments)
+                    .ThenInclude(c=>c.User)
+                .First(p => p.PostId == postId);
 
             return Mapper.MapPostsWithComments(postWithComments);
+        }
+
+        /// <summary>
+        /// Gets posts from user, including comments
+        /// </summary>
+        /// <param name="userId">User id to get posts from</param>
+        /// <returns></returns>
+        public IEnumerable<Post> GetPostsByUser(int userId)
+        {
+            return _context.Posts
+                .Include(p=>p.Comments)
+                    .ThenInclude(c=>c.User)
+                .Where(p => p.UserId == userId)
+                .Select(Mapper.MapPostsWithComments);
         }
 
         /// <summary>
@@ -74,25 +93,12 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets posts from user, including comments
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public IEnumerable<Post> GetPostsByUser(int userId)
-        {
-            return _context.Posts
-                .Include(p=>p.Comments)
-                .Where(p => p.UserId == userId)
-                .Select(Mapper.MapPostsWithComments);
-        }
-
-        /// <summary>
         /// Updates database with given post
         /// </summary>
         /// <param name="post">Post to be updated</param>
         public void UpdatePost(Post post)
         {
-            var newEntity = Mapper.MapPosts(post);
+            var newEntity = Mapper.MapPostsWithComments(post);
             var oldEntity = _context.Posts.Find(post.PostID);
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }

@@ -40,6 +40,39 @@ namespace NotTwitter.DataAccess
             return mapuser;
         }
 
+        /// <summary>
+        /// Map posts without comments
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <returns></returns>
+        public static Library.Models.Post MapPosts(Entities.Posts posts)
+        {
+            return new Library.Models.Post
+            {
+                PostID = posts.PostId,
+                Content = posts.Content,
+                TimeSent = posts.TimeSent,
+                //User = MapUsers(posts.User)
+            };
+        }
+
+        /// <summary>
+        /// Map post without comments
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <returns></returns>
+        public static Entities.Posts MapPosts(Library.Models.Post posts)
+        {
+            return new Entities.Posts
+            {
+                PostId = posts.PostID,
+                Content = posts.Content,
+                TimeSent = posts.TimeSent,
+                UserId = posts.User.UserID
+                //User = MapUsers(posts.User)
+            };
+        }
+
         public static Library.Models.Post MapPostsWithComments(Entities.Posts posts)
         {
             return new Library.Models.Post

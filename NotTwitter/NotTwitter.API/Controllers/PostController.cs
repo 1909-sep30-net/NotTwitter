@@ -11,18 +11,20 @@ namespace NotTwitter.API.Controllers
     public class PostController : ControllerBase
     {
 		private readonly IPostRepository _repo;
+        private readonly IUserRepository _urepo;
 
-		public PostController(IPostRepository repo)
+		public PostController(IPostRepository repo, IUserRepository urepo)
 		{
 			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
-		}
-        
+            _urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
+        }
+
         /// <summary>
         /// Returns a post with comments
         /// </summary>
         /// <param name="postId">ID of specified post</param>
         /// <returns></returns>
-        [HttpGet("{postId}", Name = "GetPostsById")]
+        [HttpGet("{postId}", Name = "GetPostById")]
         public PostModel GetPostById(int postId)
         {
             var post = _repo.GetPostById(postId);
@@ -42,7 +44,8 @@ namespace NotTwitter.API.Controllers
 
             return new PostModel
             {
-                User = post.User,
+                PostID = post.PostID,
+                UserID = post.User.UserID,
                 TimeSent = post.TimeSent,
                 Text = post.Content,
                 Comments = postComments
@@ -64,8 +67,9 @@ namespace NotTwitter.API.Controllers
             {
                 var post = new PostModel
                 {
-                    User = p.User,
+                    UserID = userId,
                     Text = p.Content,
+
                 };
                 ListPosts.Add(post);
             }
@@ -76,16 +80,24 @@ namespace NotTwitter.API.Controllers
         [HttpPost]
         public ActionResult CreatePost([FromBody] Models.PostModel postModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var postAuthor = _urepo.GetUserByID(postModel.UserID);
 			var newPost = new Library.Models.Post
 			{
-				User = postModel.User,
 				Content = postModel.Text,
-				//Likes = 0,
 				TimeSent = DateTime.Now,
-				
+                User = postAuthor
 			};
-			_repo.CreatePost(newPost);
-			return CreatedAtRoute("Get", postModel, new { Id = postModel.User.UserID}); // TODO: Theres no method corresponding to this
+            _repo.CreatePost(newPost);
+            //postAuthor.Posts.Add(newPost);
+			//_urepo.UpdateUser(postAuthor);
+            _repo.Save();
+
+			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
         }
 
         // TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
@@ -114,7 +126,7 @@ namespace NotTwitter.API.Controllers
 
 			var updatedPost = new Library.Models.Post
 			{
-				User = postModel.User,
+				User = _urepo.GetUserByID(postModel.UserID),
 				Content = postModel.Text,
 				TimeSent = DateTime.Now,
 			};

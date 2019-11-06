@@ -9,8 +9,10 @@ namespace NotTwitter.API.Models
 {
 	public class PostModel
 	{
+        
+        public int PostID { get; set; }
 		[Required]
-		public User User { get; set; }
+		public int UserID { get; set; }
 
 		[Required]
 		public string Text { get; set; }

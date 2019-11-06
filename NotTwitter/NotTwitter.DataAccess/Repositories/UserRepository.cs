@@ -1,4 +1,5 @@
-﻿using NotTwitter.Library.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using NotTwitter.Library.Interfaces;
 using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,14 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            if (_context.Users.Find(id) != null)
+            var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            if (user == null)
             {
-                return Mapper.MapUsers(_context.Users.Find(id));
-            }
-            else
                 return null;
+            } else
+            {
+                return Mapper.MapUsers(user);
+            }
         }
 
         /// <summary>
