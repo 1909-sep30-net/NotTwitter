@@ -116,7 +116,11 @@ namespace NotTwitter.DataAccess.Repositories
         public void UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPostsWithComments(post);
-            var oldEntity = _context.Posts.Find(post.PostID);
+            var oldEntity = _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.User)
+                .FirstOrDefault(p => p.PostId == post.PostID);
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 

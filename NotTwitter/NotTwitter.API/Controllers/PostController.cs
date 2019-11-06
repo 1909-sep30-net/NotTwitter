@@ -131,7 +131,7 @@ namespace NotTwitter.API.Controllers
 
 
 		// PUT: api/Post/5
-		[HttpPut("{id}")]
+		[HttpPut("{PostId}")]
         public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
             var currentPost = _repo.GetPostById(PostId);
@@ -142,7 +142,7 @@ namespace NotTwitter.API.Controllers
 
             currentPost.Content = postModel.Text;
 
-			_repo.UpdatePost(currentPost);
+			//_repo.UpdatePost(currentPost);
             _repo.Save();
 
 			return NoContent();
