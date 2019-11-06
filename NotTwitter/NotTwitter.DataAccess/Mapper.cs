@@ -103,7 +103,9 @@ namespace NotTwitter.DataAccess
 			return new Library.Models.FriendRequest
 			{
 				ReceiverId = friendRequests.ReceiverId,
-				SenderId = friendRequests.SenderId
+				SenderId = friendRequests.SenderId,
+				FriendRequestStatus = friendRequests.FriendRequestStatus
+
 			};
 		}
 
@@ -113,6 +115,7 @@ namespace NotTwitter.DataAccess
 			{
 				ReceiverId = friendRequests.ReceiverId,
 				SenderId = friendRequests.SenderId,
+				FriendRequestStatus = friendRequests.FriendRequestStatus
 			};
 		}
     }

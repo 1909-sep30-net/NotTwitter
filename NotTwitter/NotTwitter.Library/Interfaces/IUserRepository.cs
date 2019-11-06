@@ -50,7 +50,7 @@ namespace NotTwitter.Library.Interfaces
 		/// Add Friend
 		/// </summary>
 		/// <param name="senderId", name="receiverId"></param>
-		public void MakeFriends(Friendship newFriend);
+		public void AddFriendShip(Friendship newFriend);
 
 		/// <summary>
 		/// Saves changes to database

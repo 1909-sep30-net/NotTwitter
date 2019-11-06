@@ -81,7 +81,7 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Remove(entityToBeRemoved);
         }
 
-		public void MakeFriends(Friendship newFriend)
+		public void AddFriendShip(Friendship newFriend)
 		{
 			if (!CheckIfFriends(newFriend.User1.UserID, newFriend.User2.UserID))
 			{

@@ -10,7 +10,6 @@ namespace NotTwitter.API.Models
 {
 	public class FriendRequestModel
 	{
-		public int FriendRequestId { get; set; }
 		[Required]
 		public int SenderId { get; set; }
 

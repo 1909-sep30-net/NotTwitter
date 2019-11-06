@@ -44,6 +44,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="request">Request to be added</param>
 		public void CreateFriendRequest(FriendRequest request)
 		{
+			
 			_context.FriendRequests.Add(Mapper.MapFriendRequest(request));
 		}
 
