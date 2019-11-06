@@ -21,14 +21,25 @@ namespace NotTwitter.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Stores new post in database
+        /// Stores new post in database, associated with a user
         /// </summary>
         /// <param name="post">Post to be stored</param>
-        public void CreatePost(Post post)
+        public void CreatePost(Post post, User author = null)
         {
-            var entity = Mapper.MapPosts(post);
-            entity.PostId = 0;
-            _context.Posts.Add(entity);
+            if (author != null)
+            {
+                var authorEntity = _context.Users
+                    .Include(u => u.Posts)
+                    .First(u => u.UserID == author.UserID);
+                var postEntity = Mapper.MapPost(post);
+                authorEntity.Posts.Add(postEntity);
+            }
+            else
+            {
+                var entity = Mapper.MapPost(post);
+                entity.PostId = 0;
+                _context.Posts.Add(entity);
+            }
         }
 
         /// <summary>
@@ -78,6 +89,7 @@ namespace NotTwitter.DataAccess.Repositories
         public IEnumerable<Post> GetPostsByUser(int userId)
         {
             return _context.Posts
+                .Include(p=>p.User)
                 .Include(p=>p.Comments)
                     .ThenInclude(c=>c.User)
                 .Where(p => p.UserId == userId)

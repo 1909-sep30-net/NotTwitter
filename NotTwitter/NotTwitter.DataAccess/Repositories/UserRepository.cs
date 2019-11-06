@@ -27,8 +27,8 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            //var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
-            var user = _context.Users.Find(id);
+            var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            //var user = _context.Users.Find(id);
             if (user == null)
             {
                 return null;

@@ -25,9 +25,16 @@ namespace NotTwitter.API.Controllers
         /// <param name="postId">ID of specified post</param>
         /// <returns></returns>
         [HttpGet("{postId}", Name = "GetPostById")]
-        public PostModel GetPostById(int postId)
+        public IActionResult GetPostById(int postId)
         {
+            // Get post by Id; If post isn't found, return 404
             var post = _repo.GetPostById(postId);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            // Create a list of comment models from the queried Post, add to post model
             var postComments = new List<CommentModel>();
             foreach(var com in post.Comments)
             {
@@ -42,14 +49,15 @@ namespace NotTwitter.API.Controllers
                 );
             }
 
-            return new PostModel
+            // Return post model
+            return Ok( new PostModel
             {
                 PostID = post.PostID,
                 UserID = post.User.UserID,
                 TimeSent = post.TimeSent,
                 Text = post.Content,
                 Comments = postComments
-            };
+            });
         }
 
         /// <summary>
@@ -62,6 +70,10 @@ namespace NotTwitter.API.Controllers
         public List<PostModel> GetPostsByUser(int userId)
         {
             var posts = _repo.GetPostsByUser(userId);
+            if (posts == null)
+            {
+                //return NotFound();
+            }
             List<PostModel> ListPosts = new List<PostModel>();
             foreach (var p in posts)
             {
@@ -136,7 +148,7 @@ namespace NotTwitter.API.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{postId}")]
         public IActionResult Delete(int postId)
         {
 			if (_repo.GetPostById(postId) is null)
