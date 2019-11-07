@@ -142,12 +142,23 @@ namespace NotTwitter.API.Controllers
 		[HttpPost]
 		[Route("Declined")]
 
-		public ActionResult DeclineRequest([FromBody] Library.Models.FriendRequest friendRequest)
+		public ActionResult DeclineRequest([FromBody] FriendRequestModel friendRequest)
 		{
             try
             {
-                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Declined;
-                _frRepo.UpdateFriendRequest(friendRequest);
+				var entityFriendRequest = _frRepo.GetFriendRequest(friendRequest.SenderId, friendRequest.ReceiverId);
+				if (entityFriendRequest is null)
+				{
+					return NotFound();
+				}
+				int status = _frRepo.FriendRequestStatus(friendRequest.SenderId, friendRequest.ReceiverId);
+
+				if (status != 0)
+				{
+					return StatusCode(400);
+				}
+				entityFriendRequest.FriendRequestStatus = (int)FriendRequestStatus.Declined;
+                _frRepo.UpdateFriendRequest(entityFriendRequest);
                 _frRepo.Save();
 				return StatusCode(200);
             }
