@@ -116,7 +116,7 @@ namespace NotTwitter.DataAccess
                Content = post.Content,
                TimeSent = post.TimeSent,
                Comments = post.Comments.Select(MapComments).ToHashSet(),
-               //User = MapUsers(post.User)
+               User = MapUsers(post.User)
             };
         }
 
@@ -133,7 +133,7 @@ namespace NotTwitter.DataAccess
                 Content = post.Content,
                 TimeSent = post.TimeSent,
                 Comments = post.Comments.Select(MapComments).ToHashSet(),
-                User = MapUsers(post.User)
+                //User = MapUsers(post.User)
             };
         }
 

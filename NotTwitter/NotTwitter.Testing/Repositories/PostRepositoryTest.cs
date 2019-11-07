@@ -63,7 +63,7 @@ namespace NotTwitter.Testing.Repositories
             arrangeContext.Posts.Add(arrangePost);
             arrangeContext.SaveChanges();
 
-            var actRepo = new PostRepository(arrangeContext);
+            var actRepo = new GenericRepository(arrangeContext);
 
             // Act
             var assertPost = actRepo.GetPostById(postId);
@@ -179,7 +179,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public async Task UpdatePostShouldUpdate()
+        public async Task UpdatePostShouldUpdateEntity()
         {
             // Assemble
             var oldContent = "oldcontent..";
@@ -206,17 +206,18 @@ namespace NotTwitter.Testing.Repositories
 
             // Assemble context
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
-                .UseInMemoryDatabase("UpdatePostShouldUpdate")
+                .UseInMemoryDatabase("UpdatePostShouldUpdateEntity")
                 .Options;
             using var assembleContext = new NotTwitterDbContext(options);
             assembleContext.Posts.Add(postInDb);
+            await assembleContext.SaveChangesAsync();
 
             using var actContext = new NotTwitterDbContext(options);
             var repo = new GenericRepository(actContext);
 
             // Act
             await repo.UpdatePost(postToUpdate);
-            actContext.SaveChanges();
+            await actContext.SaveChangesAsync();
 
             // Assert
             var assertPost = actContext.Posts.First();
@@ -255,7 +256,7 @@ namespace NotTwitter.Testing.Repositories
             assembleContext.SaveChanges();
 
             using var actContext = new NotTwitterDbContext(options);
-            var repo = new PostRepository(actContext);
+            var repo = new GenericRepository(actContext);
 
             // Act
             await repo.DeletePost(postId);

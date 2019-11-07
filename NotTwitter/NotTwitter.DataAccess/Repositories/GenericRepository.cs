@@ -275,8 +275,13 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public async Task<FriendRequest> GetFriendRequest(int senderId, int receiverId)
         {
-            return Mapper.MapFriendRequest(await _context.FriendRequests
-                    .FirstOrDefaultAsync(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
+            var fr = await _context.FriendRequests
+                    .FirstOrDefaultAsync(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
+            if (fr == null)
+            {
+                return null;
+            }
+            return Mapper.MapFriendRequest(fr);
         }
 
         /// <summary>
@@ -287,7 +292,7 @@ namespace NotTwitter.DataAccess.Repositories
         public async Task<IEnumerable<FriendRequest>> GetAllFriendRequests(int userId)
         {
             var friendRequests = await _context.FriendRequests
-                .Where(fr => fr.SenderId == userId)
+                .Where(fr => fr.ReceiverId == userId)
                 .ToListAsync();
             return friendRequests.Select(Mapper.MapFriendRequest);
         }
