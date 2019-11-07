@@ -143,10 +143,10 @@ namespace NotTwitter.DataAccess.Repositories
 		//	return Mapper.MapPosts(PostWithLikes);
 		//}
 
-        public async Task Save()
+        public void Save()
         {
             // todo: log
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls

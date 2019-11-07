@@ -11,13 +11,11 @@ namespace NotTwitter.API.Controllers
 	[ApiController]
 	public class PostController : ControllerBase
 	{
-		private readonly IPostRepository _repo;
-		private readonly IUserRepository _urepo;
+        private readonly IGenericRepository _repo;
 
-		public PostController(IPostRepository repo, IUserRepository urepo)
+		public PostController(IGenericRepository repo)
 		{
 			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
-            _urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
         /// <summary>
@@ -103,7 +101,7 @@ namespace NotTwitter.API.Controllers
                 return BadRequest();
             }
 
-            var postAuthor = _urepo.GetUserByID(authorId);
+            var postAuthor = _repo.GetUserByID(authorId);
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
@@ -112,7 +110,7 @@ namespace NotTwitter.API.Controllers
 			};
             await _repo.CreatePost(newPost,postAuthor);
 
-            await _repo.Save();
+            _repo.Save();
 
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
@@ -146,7 +144,7 @@ namespace NotTwitter.API.Controllers
             currentPost.Content = postModel.Text;
 
 			//_repo.UpdatePost(currentPost);
-            await _repo.Save();
+            _repo.Save();
 
 			return NoContent();
 		}
@@ -161,7 +159,7 @@ namespace NotTwitter.API.Controllers
 			}
 
 			await _repo.DeletePost(postId);
-			await _repo.Save();
+			_repo.Save();
 
 			return NoContent();
 		}

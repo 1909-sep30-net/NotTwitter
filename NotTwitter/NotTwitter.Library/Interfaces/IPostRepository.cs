@@ -55,6 +55,6 @@ namespace NotTwitter.Library.Interfaces
         /// <summary>
         /// Persist changes to the database
         /// </summary>
-        public Task Save();
+        public void Save();
     }
 }
