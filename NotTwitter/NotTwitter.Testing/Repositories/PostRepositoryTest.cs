@@ -13,6 +13,37 @@ namespace NotTwitter.Testing.Repositories
 {
     public class PostRepositoryTest
     {
+        Users testEntityUser = new Users
+        {
+            UserID = 1,
+            FirstName = "MyFirstName",
+            LastName = "MyLastName",
+            Email = "valid@email.com",
+            Username = "myUsername",
+            Password = "myPassword",
+            Gender = 0,
+            Posts = new List<Posts>(),
+            Comments = new List<Comments>(),
+            
+        };
+
+        Posts testEntityPost = new Posts
+        {
+            PostId = 1,
+            Comments = new List<Comments>(),
+            TimeSent = new DateTime(2001,6,6),
+            Content = "post content",
+            UserId = 1,
+        };
+
+        Comments testEntityComment = new Comments
+        {
+            CommentId = 1,
+            Content = "comment content",
+            TimeSent = new DateTime(2001,5,5),
+            UserId = 1,
+        };
+
         [Fact]
         public void GetPostShouldReturnResult()
         {
@@ -49,7 +80,7 @@ namespace NotTwitter.Testing.Repositories
                 .UseInMemoryDatabase("CreatePostShouldStorePost")
                 .Options;
             using var arrangeContext = new NotTwitterDbContext(options);
-            var repo = new PostRepository(arrangeContext);
+            var repo = new GenericRepository(arrangeContext);
 
             var arrangePost = new Post
             {
@@ -74,20 +105,20 @@ namespace NotTwitter.Testing.Repositories
         public async Task GetPostsFromUserShouldReturnList()
         {
             // Assemble
-            int userId = 1;
+            int userId = testEntityUser.UserID;
 
             // Assemble context
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("GetPostsFromUserShouldReturnList")
                 .Options;
-            var assembleContext = new NotTwitterDbContext(options);
+            using var assembleContext = new NotTwitterDbContext(options);
 
             // Posts to populate the context
             var assemblePosts = new List<Posts>
             {
-                new Posts{PostId = 1, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId},
-                new Posts{PostId = 2, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId},
-                new Posts{PostId = 3, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId}
+                new Posts{PostId = 1, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId, User = testEntityUser},
+                new Posts{PostId = 2, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId, User = testEntityUser},
+                new Posts{PostId = 3, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow", UserId = userId, User = testEntityUser}
             };
 
             // Add the posts to the context
@@ -95,13 +126,14 @@ namespace NotTwitter.Testing.Repositories
             {
                 assembleContext.Posts.Add(post);
             }
-            assembleContext.SaveChanges();
+            await assembleContext.SaveChangesAsync();
 
-            var repo = new PostRepository(assembleContext);
+            using var assertContext = new NotTwitterDbContext(options);
+            var repo = new GenericRepository(assertContext);
 
             // Act
             var postsAssert = await repo.GetPostsByUser(userId);
-
+            var posts = assertContext.Posts.Where(p => p.UserId == userId);
             // Assert
             Assert.NotNull(postsAssert);
             Assert.Equal(assemblePosts.Count(), postsAssert.Count());
@@ -117,14 +149,14 @@ namespace NotTwitter.Testing.Repositories
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("GetAllPostsShouldReturnList")
                 .Options;
-            var assembleContext = new NotTwitterDbContext(options);
+            using var assembleContext = new NotTwitterDbContext(options);
 
             // Posts to populate the context
             var assemblePosts = new List<Posts>
             {
-                new Posts{PostId = 1, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow"},
-                new Posts{PostId = 2, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow"},
-                new Posts{PostId = 3, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "Mow"}
+                new Posts{PostId = 1, Comments = new List<Comments>{ testEntityComment }, TimeSent = DateTime.Now, Content = "post content", User = testEntityUser},
+                new Posts{PostId = 2, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "post content", User = testEntityUser},
+                new Posts{PostId = 3, Comments = new List<Comments>(), TimeSent = DateTime.Now, Content = "post content", User = testEntityUser}
             };
 
             // Add the posts to the context
@@ -132,9 +164,10 @@ namespace NotTwitter.Testing.Repositories
             {
                 assembleContext.Posts.Add(post);
             }
-            assembleContext.SaveChanges();
+            await assembleContext.SaveChangesAsync();
 
-            var repo = new PostRepository(assembleContext);
+            using var actContext = new NotTwitterDbContext(options);
+            var repo = new GenericRepository(actContext);
 
             // Act
             var postsAssert = await repo.GetAllPosts();
@@ -158,7 +191,8 @@ namespace NotTwitter.Testing.Repositories
                 PostID = 1,
                 Comments = new List<Comment>(),
                 TimeSent = DateTime.Now,
-                Content = newContent
+                Content = newContent,
+
             };
 
             var postInDb = new Posts
@@ -166,24 +200,26 @@ namespace NotTwitter.Testing.Repositories
                 PostId = 1,
                 Comments = new List<Comments>(),
                 TimeSent = DateTime.Now,
-                Content = oldContent
+                Content = oldContent,
+                User = testEntityUser
             };
 
             // Assemble context
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("UpdatePostShouldUpdate")
                 .Options;
-            var assembleContext = new NotTwitterDbContext(options);
+            using var assembleContext = new NotTwitterDbContext(options);
             assembleContext.Posts.Add(postInDb);
 
-            var repo = new PostRepository(assembleContext);
+            using var actContext = new NotTwitterDbContext(options);
+            var repo = new GenericRepository(actContext);
 
             // Act
             await repo.UpdatePost(postToUpdate);
-            assembleContext.SaveChanges();
+            actContext.SaveChanges();
 
             // Assert
-            var assertPost = assembleContext.Posts.First();
+            var assertPost = actContext.Posts.First();
             Assert.Equal(newContent, assertPost.Content);
 
         }

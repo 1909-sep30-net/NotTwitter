@@ -177,10 +177,10 @@ namespace NotTwitter.DataAccess.Repositories
         public async Task<IEnumerable<Post>> GetPostsByUser(int userId)
         {
             var posts = await _context.Posts
+                .Where(p => p.UserId == userId)
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.User)
-                .Where(p => p.UserId == userId)
                 .ToListAsync();
 
             return posts.Select(Mapper.MapPostsWithComments);
@@ -193,7 +193,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>All posts in data base</returns>
         public async Task<IEnumerable<Post>> GetAllPosts()
         {
-            var posts = await _context.Posts.ToListAsync();
+            var posts = await _context.Posts.Include(p=>p.Comments).ThenInclude(c=>c.User).ToListAsync();
             return posts.Select(Mapper.MapPostsWithComments);
         }
 

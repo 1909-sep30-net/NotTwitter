@@ -57,7 +57,6 @@ namespace NotTwitter.Testing.Controllers
             var asyncResult = result.Result;
             // Asserts
             var viewresult = Assert.IsAssignableFrom<NotFoundResult>(asyncResult);
-            Assert.Null(viewresult);
         }
 
         [Fact]
