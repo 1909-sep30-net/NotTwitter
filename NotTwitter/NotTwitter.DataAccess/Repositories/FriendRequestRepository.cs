@@ -15,6 +15,12 @@ namespace NotTwitter.DataAccess.Repositories
 			_context = db;
 		}
 
+        public FriendRequest GetFriendRequest(int senderId, int receiverId)
+        {
+            return Mapper.MapFriendRequest(_context.FriendRequests
+                    .FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
+        }
+
         /// <summary>
         /// Returns a list of all pending requests for a user.
         /// </summary>

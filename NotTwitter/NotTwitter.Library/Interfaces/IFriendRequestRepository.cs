@@ -6,12 +6,15 @@ namespace NotTwitter.Library.Interfaces
 	public interface IFriendRequestRepository
 	{
 		public int FriendRequestStatus(int senderId, int receiverId);
-		/// <summary>
-		/// Get all pending friend requests pending for a user
-		/// </summary>
-		/// <param name="userId">User's id</param>
-		/// <returns>List of friend requests for the given user</returns>
-		public IEnumerable<FriendRequest> GetAllFriendRequests(int userId);
+
+        public FriendRequest GetFriendRequest(int senderId, int receiverId);
+
+        /// <summary>
+        /// Get all pending friend requests pending for a user
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <returns>List of friend requests for the given user</returns>
+        public IEnumerable<FriendRequest> GetAllFriendRequests(int userId);
 
         /// <summary>
         /// Creates a new friend request inside database

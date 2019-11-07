@@ -151,10 +151,10 @@ namespace NotTwitter.DataAccess
         {
             return new Library.Models.Friendship
             {
+
 				User1ID = friendships.User1ID,
 				User2ID = friendships.User2ID,
                 TimeRequestConfirmed = friendships.TimeRequestConfirmed,
-                TimeRequestSent = friendships.TimeRequestSent
             };
         }
 
@@ -162,10 +162,10 @@ namespace NotTwitter.DataAccess
         {
             return new Entities.Friendships
             {
+
 				User1ID = friendships.User1ID,
 				User2ID = friendships.User2ID,
 				TimeRequestConfirmed = friendships.TimeRequestConfirmed,
-                TimeRequestSent = friendships.TimeRequestSent
             };
         }
 
@@ -176,7 +176,6 @@ namespace NotTwitter.DataAccess
 				ReceiverId = friendRequests.ReceiverId,
 				SenderId = friendRequests.SenderId,
 				FriendRequestStatus = friendRequests.FriendRequestStatus
-
 			};
 		}
 
