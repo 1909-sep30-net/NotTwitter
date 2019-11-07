@@ -15,7 +15,7 @@ namespace NotTwitter.Testing.Controllers
     {
         
         [Fact]
-        public void GetShouldReturnOk()
+        public void GetValidIdShouldReturnOk()
         {
             // Assemble 
             var userIdForTest = 2;
@@ -39,6 +39,25 @@ namespace NotTwitter.Testing.Controllers
             // Asserts
             var viewresult = Assert.IsAssignableFrom<OkObjectResult>(asyncResult);
             Assert.NotNull(viewresult);
+        }
+
+        [Fact]
+        public void GetInvalidIdShouldReturnNotFound()
+        {
+            // Assemble 
+            var userIdForTest = 2;
+            var mockRepo = new Mock<IGenericRepository>();
+            mockRepo.Setup(x => x.GetUserWithFriends(It.IsAny<int>()))
+                .ReturnsAsync((User)null);
+
+            var controller = new UserController(mockRepo.Object);
+
+            // Act
+            var result = controller.Get(userIdForTest);
+            var asyncResult = result.Result;
+            // Asserts
+            var viewresult = Assert.IsAssignableFrom<NotFoundResult>(asyncResult);
+            Assert.Null(viewresult);
         }
 
         [Fact]
