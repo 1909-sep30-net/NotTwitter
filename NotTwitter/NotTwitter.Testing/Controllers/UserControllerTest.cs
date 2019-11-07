@@ -19,6 +19,7 @@ namespace NotTwitter.Testing.Controllers
             // Assemble 
             var userIdForTest = 2;
             var mockRepo = new Mock<IUserRepository>();
+            var mockPostRepo = new Mock<IPostRepository>();
             mockRepo.Setup(x => x.GetUserByID(It.IsAny<int>()))
                 .Returns(new User
                 {
@@ -30,7 +31,7 @@ namespace NotTwitter.Testing.Controllers
                     Gender = 1
                 });
 
-            var controller = new UserController(mockRepo.Object);
+            var controller = new UserController(mockRepo.Object, mockPostRepo.Object);
 
             // Act
             var result = controller.Get(userIdForTest);
@@ -63,13 +64,15 @@ namespace NotTwitter.Testing.Controllers
 
 
             var mockRepo = new Mock<IUserRepository>();
+            var mockPostRepo = new Mock<IPostRepository>();
+
             mockRepo.Setup(x => x.AddUser(It.IsAny<User>()))
                 .Callback(() => 
                 {
                     userList.Add(new User { UserID = 4, FirstName = "abc", LastName = "abc" });
                 });
 
-            var controller = new UserController(mockRepo.Object);
+            var controller = new UserController(mockRepo.Object, mockPostRepo.Object);
 
             // Act
             var response = controller.Post(newUser);
@@ -83,6 +86,12 @@ namespace NotTwitter.Testing.Controllers
             Assert.NotNull(responseContent);
 
         }
-        
+
+        public void GetFriendPostShouldReturnPost()
+        {
+
+        }
+
+
     }
 }
