@@ -48,18 +48,18 @@ namespace NotTwitter.API.Controllers
 		/// <param name="senderId", name="receiverId"></param>
 		[HttpPost]
 		[Route("Create")]
-		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
+		public ActionResult CreateRequest([FromBody, Bind("SenderId, ReceiveId")] Models.FriendRequestModel friendRequest) 
 		{
-			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(senderId) is null)
+			if (_userRepo.GetUserByID(friendRequest.SenderId) is null || _userRepo.GetUserByID(friendRequest.ReceiverId) is null)
 			{
 				return NotFound();
 			}
-			var sender = _userRepo.GetUserByID(senderId);
-			var receiver = _userRepo.GetUserByID(receiverId);
+			var sender = _userRepo.GetUserByID(friendRequest.SenderId);
+			var receiver = _userRepo.GetUserByID(friendRequest.ReceiverId);
 			var newRequest = new Library.Models.FriendRequest
 			{
-				SenderId = senderId,
-				ReceiverId = receiverId,
+				SenderId = friendRequest.SenderId,
+				ReceiverId = friendRequest.ReceiverId,
 				FriendRequestStatus = (int)FriendRequestStatus.Pending
 			};
 			_frRepo.CreateFriendRequest(newRequest);
