@@ -48,18 +48,18 @@ namespace NotTwitter.API.Controllers
         /// 
 		[HttpPost]
 		[Route("Create")]
-		public ActionResult CreateRequest([FromBody, Bind("SenderId, ReceiverId")] FriendRequestModel friendRequestModel) 
+		public ActionResult CreateRequest([FromBody] int senderId, int receiverId) 
 		{
-			if (_userRepo.GetUserByID(friendRequestModel.SenderId) is null || _userRepo.GetUserByID(friendRequestModel.ReceiverId) is null)
+			if (_userRepo.GetUserByID(senderId) is null || _userRepo.GetUserByID(senderId) is null)
 			{
 				return NotFound();
 			}
-			var sender = _userRepo.GetUserByID(friendRequestModel.SenderId);
-			var receiver = _userRepo.GetUserByID(friendRequestModel.ReceiverId);
+			var sender = _userRepo.GetUserByID(senderId);
+			var receiver = _userRepo.GetUserByID(receiverId);
 			var newRequest = new Library.Models.FriendRequest
 			{
-				SenderId = friendRequestModel.SenderId,
-				ReceiverId = friendRequestModel.ReceiverId,
+				SenderId = senderId,
+				ReceiverId = receiverId,
 				FriendRequestStatus = (int)FriendRequestStatus.Pending
 			};
 			_frRepo.CreateFriendRequest(newRequest);
@@ -142,12 +142,23 @@ namespace NotTwitter.API.Controllers
 		[HttpPost]
 		[Route("Declined")]
 
-		public ActionResult DeclineRequest([FromBody] Library.Models.FriendRequest friendRequest)
+		public ActionResult DeclineRequest([FromBody] FriendRequestModel friendRequest)
 		{
             try
             {
-                friendRequest.FriendRequestStatus = (int)FriendRequestStatus.Declined;
-                _frRepo.UpdateFriendRequest(friendRequest);
+				var entityFriendRequest = _frRepo.GetFriendRequest(friendRequest.SenderId, friendRequest.ReceiverId);
+				if (entityFriendRequest is null)
+				{
+					return NotFound();
+				}
+				int status = _frRepo.FriendRequestStatus(friendRequest.SenderId, friendRequest.ReceiverId);
+
+				if (status != 0)
+				{
+					return StatusCode(400);
+				}
+				entityFriendRequest.FriendRequestStatus = (int)FriendRequestStatus.Declined;
+                _frRepo.UpdateFriendRequest(entityFriendRequest);
                 _frRepo.Save();
 				return StatusCode(200);
             }
