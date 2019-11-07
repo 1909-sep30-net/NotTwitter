@@ -10,25 +10,25 @@ namespace NotTwitter.Library.Interfaces
     {
         /* Comment Repository */
         public void CreateComment(Comment newComment);
-        public IEnumerable<Comment> GetCommentsByPostId(int postId);
-        public IEnumerable<Comment> GetCommentsByUserId(int userId);
-        public void UpdateComment(Comment newComment);
-        public void DeleteCommentsByPostId(int postId);
+        public Task<IEnumerable<Comment>> GetCommentsByPostId(int postId);
+        public Task<IEnumerable<Comment>> GetCommentsByUserId(int userId);
+        public Task UpdateComment(Comment newComment);
+        public Task DeleteCommentsByPostId(int postId);
 
         /* End */
 
         /* FriendRequest Repository */
 
-        public int FriendRequestStatus(int senderId, int receiverId);
+        public Task<int> FriendRequestStatus(int senderId, int receiverId);
 
-        public FriendRequest GetFriendRequest(int senderId, int receiverId);
+        public Task<FriendRequest> GetFriendRequest(int senderId, int receiverId);
 
         /// <summary>
         /// Get all pending friend requests pending for a user
         /// </summary>
         /// <param name="userId">User's id</param>
         /// <returns>List of friend requests for the given user</returns>
-        public IEnumerable<FriendRequest> GetAllFriendRequests(int userId);
+        public Task<IEnumerable<FriendRequest>> GetAllFriendRequests(int userId);
 
         /// <summary>
         /// Creates a new friend request inside database
@@ -41,8 +41,8 @@ namespace NotTwitter.Library.Interfaces
         /// </summary>
         /// <param name="request">Request model to be updated</param>
         /// <remarks>Status may be changed to Accepted, Declined, etc</remarks>
-        public void UpdateFriendRequest(FriendRequest request);
-        public void DeleteFriendRequest(FriendRequest request);
+        public Task UpdateFriendRequest(FriendRequest request);
+        public Task DeleteFriendRequest(FriendRequest request);
         /* End */
 
         /* Post Repository */
@@ -92,14 +92,14 @@ namespace NotTwitter.Library.Interfaces
         /// </summary>
         /// <param name="id">User ID to be searched for</param>
         /// <returns>User matching the given ID</returns>
-        public User GetUserByID(int id);
+        public Task<User> GetUserByID(int id);
 
         /// <summary>
         /// Given an ID, returns matching user, including their list of friends from DB
         /// </summary>
         /// <param name="id">User ID to be searched for</param>
         /// <returns>User matching the given ID</returns>
-        public User GetUserWithFriends(int id);
+        public Task<User> GetUserWithFriends(int id);
 
         /// <summary>
         /// Returns list of users with name matching given string
@@ -107,7 +107,7 @@ namespace NotTwitter.Library.Interfaces
         /// <param name="name"></param>
         /// <remarks>Checks combination of user's first and last name</remarks>
         /// <returns></returns>
-        public IEnumerable<User> GetUsersByName(string name);
+        public Task<IEnumerable<User>> GetUsersByName(string name);
 
         /// <summary>
         /// Given a business model user, add user to database
@@ -119,13 +119,13 @@ namespace NotTwitter.Library.Interfaces
         /// Update the database with new user information
         /// </summary>
         /// <param name="user">User to update</param>
-        public void UpdateUser(User user);
+        public Task UpdateUser(User user);
 
         /// <summary>
         /// Deletes user from database
         /// </summary>
         /// <param name="id">ID of User to delete</param>
-        public void DeleteUserByID(int id);
+        public Task DeleteUserByID(int id);
 
         /// <summary>
         /// Creates new friendship

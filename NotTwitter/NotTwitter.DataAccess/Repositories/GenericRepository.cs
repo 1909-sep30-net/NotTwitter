@@ -22,10 +22,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="id">User ID to be searched for</param>
         /// <returns>User matching the given ID</returns>
-        public User GetUserByID(int id)
+        public async Task<User> GetUserByID(int id)
         {
-            var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.UserID == id);
-            //var user = _context.Users.Find(id);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserID == id);
             if (user == null)
             {
                 return null;
@@ -36,14 +35,14 @@ namespace NotTwitter.DataAccess.Repositories
             }
         }
 
-        public User GetUserWithFriends(int id)
+        public async Task<User> GetUserWithFriends(int id)
         {
-            var userFriends = _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToList();
-            var user = GetUserByID(id);
+            var userFriends = await _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToListAsync();
+            var user = await GetUserByID(id);
             //var user = _context.Users.Find(id);
             foreach (var fs in userFriends)
             {
-                var frond = GetUserByID(fs.User2ID);
+                var frond = await GetUserByID(fs.User2ID);
                 user.Friends.Add(frond);
             }
             return user;
@@ -55,12 +54,14 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="name"></param>
         /// <remarks>Checks combination of user's first and last name</remarks>
         /// <returns></returns>
-        public IEnumerable<User> GetUsersByName(string name)
+        public async Task<IEnumerable<User>> GetUsersByName(string name)
         {
-            return _context.Users
+            var result = await _context.Users
                 .Where(u => ((u.FirstName + u.LastName).ToUpper())
                 .Contains(name.ToUpper()))
-                .Select(Mapper.MapUsers);
+                .ToListAsync();
+
+            return result.Select(Mapper.MapUsers);
         }
 
         /// <summary>
@@ -78,9 +79,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// Update the database with new user information
         /// </summary>
         /// <param name="user"></param>
-        public void UpdateUser(User user)
+        public async Task UpdateUser(User user)
         {
-            var oldEntity = _context.Users.Find(user.UserID);
+            var oldEntity = await _context.Users.FindAsync(user.UserID);
             var updatedEntity = Mapper.MapUsers(user);
 
             _context.Entry(oldEntity).CurrentValues.SetValues(updatedEntity);
@@ -90,9 +91,9 @@ namespace NotTwitter.DataAccess.Repositories
         /// Deletes user from database
         /// </summary>
         /// <param name="id">ID of the user to be deleted</param>
-        public void DeleteUserByID(int id)
+        public async Task DeleteUserByID(int id)
         {
-            var entityToBeRemoved = _context.Users.Find(id);
+            var entityToBeRemoved = await _context.Users.FindAsync(id);
             _context.Remove(entityToBeRemoved);
         }
 
@@ -212,18 +213,20 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
+        /// <summary>
+        /// Add new comment to database
+        /// </summary>
+        /// <param name="newComment">Comment to be added</param>
         public void CreateComment(Comment newComment)
         {
-
             var newEntity = Mapper.MapComments(newComment);
             _context.Add(newEntity);
-            _context.SaveChanges();
         }
 
-        public void UpdateComment(Comment newComment)
+        public async Task UpdateComment(Comment newComment)
         {
             var newEntity = Mapper.MapComments(newComment);
-            var oldEntity = _context.Comments.Find(newComment.CommentId);
+            var oldEntity = await _context.Comments.FindAsync(newComment.CommentId);
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
@@ -232,14 +235,13 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <remarks>Used in conjunction with post deletion</remarks>
         /// <param name="postId"></param>
-		public void DeleteCommentsByPostId(int postId)
+		public async Task DeleteCommentsByPostId(int postId)
         {
-            var comments = _context.Comments.Where(p => p.PostId == postId);
+            var comments = await _context.Comments.Where(p => p.PostId == postId).ToListAsync();
             foreach (var comment in comments)
             {
                 _context.Remove(comment);
             }
-
         }
 
         /// <summary>
@@ -248,20 +250,33 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="postId"></param>
         /// <remarks>Orders comments by time sent, descending</remarks>
         /// <returns></returns>
-		public IEnumerable<Comment> GetCommentsByPostId(int postId)
+		public async Task<IEnumerable<Comment>> GetCommentsByPostId(int postId)
         {
-            return _context.Comments.Where(p => p.PostId == postId).OrderByDescending(d => d.TimeSent).Select(Mapper.MapComments);
+            var comments = await _context.Comments.Where(p => p.PostId == postId).OrderByDescending(d => d.TimeSent).ToListAsync();
+            return comments.Select(Mapper.MapComments);
         }
 
-        public IEnumerable<Comment> GetCommentsByUserId(int userId)
+        /// <summary>
+        /// Gets all comments from a user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Comment>> GetCommentsByUserId(int userId)
         {
-            return _context.Comments.Where(c => c.UserId == userId).Select(Mapper.MapComments);
+            var comments = await _context.Comments.Where(c => c.UserId == userId).ToListAsync();
+            return comments.Select(Mapper.MapComments);
         }
 
-        public FriendRequest GetFriendRequest(int senderId, int receiverId)
+        /// <summary>
+        /// Get specific friend request
+        /// </summary>
+        /// <param name="senderId"></param>
+        /// <param name="receiverId"></param>
+        /// <returns></returns>
+        public async Task<FriendRequest> GetFriendRequest(int senderId, int receiverId)
         {
-            return Mapper.MapFriendRequest(_context.FriendRequests
-                    .FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
+            return Mapper.MapFriendRequest(await _context.FriendRequests
+                    .FirstOrDefaultAsync(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
         }
 
         /// <summary>
@@ -269,21 +284,26 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="userId">User with the pending requests</param>
         /// <returns>List of all pending friend requests</returns>
-        public IEnumerable<FriendRequest> GetAllFriendRequests(int userId)
+        public async Task<IEnumerable<FriendRequest>> GetAllFriendRequests(int userId)
         {
-            return _context.FriendRequests.Where(fr => fr.SenderId == userId)
-                .Select(Mapper.MapFriendRequest).ToList();
+            var friendRequests = await _context.FriendRequests
+                .Where(fr => fr.SenderId == userId)
+                .ToListAsync();
+            return friendRequests.Select(Mapper.MapFriendRequest);
         }
 
         /// <summary>
-        /// Checks if a given friend request already exists
+        /// Get's the status of a specific friend request
         /// </summary>
         /// <param name="senderId"></param>
         /// <param name="receiverId"></param>
         /// <returns></returns>
-		public int FriendRequestStatus(int senderId, int receiverId)
+		public async Task<int> FriendRequestStatus(int senderId, int receiverId)
         {
-            return _context.FriendRequests.Where(r => r.SenderId == senderId && r.ReceiverId == receiverId).FirstOrDefault().FriendRequestStatus;
+            var fr = await _context.FriendRequests
+                .Where(r => r.SenderId == senderId && r.ReceiverId == receiverId)
+                .FirstOrDefaultAsync();
+            return fr.FriendRequestStatus;
         }
 
         /// <summary>
@@ -292,7 +312,6 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="request">Request to be added</param>
         public void CreateFriendRequest(FriendRequest request)
         {
-
             _context.FriendRequests.Add(Mapper.MapFriendRequest(request));
         }
 
@@ -301,12 +320,12 @@ namespace NotTwitter.DataAccess.Repositories
         /// Updates friend request in the database with new values
         /// </summary>
         /// <param name="request">Request to be updated</param>
-        public void UpdateFriendRequest(FriendRequest request)
+        public async Task UpdateFriendRequest(FriendRequest request)
         {
             var newEntity = Mapper.MapFriendRequest(request);
-            var oldEntity = _context.FriendRequests
+            var oldEntity = await _context.FriendRequests
                 .Where(r => r.SenderId == request.SenderId && r.ReceiverId == request.ReceiverId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 
@@ -314,11 +333,11 @@ namespace NotTwitter.DataAccess.Repositories
         /// Deletes request from the database
         /// </summary>
         /// <param name="request">Request to be deleted</param>
-		public void DeleteFriendRequest(FriendRequest request)
+		public async Task DeleteFriendRequest(FriendRequest request)
         {
-            var requestEntity = _context.FriendRequests
+            var requestEntity = await _context.FriendRequests
                 .Where(r => r.SenderId == request.SenderId && r.ReceiverId == request.ReceiverId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             _context.FriendRequests.Remove(requestEntity);
         }

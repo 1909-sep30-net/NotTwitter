@@ -101,14 +101,14 @@ namespace NotTwitter.API.Controllers
                 return BadRequest();
             }
 
-            var postAuthor = _repo.GetUserByID(authorId);
+            var postAuthor = await _repo.GetUserByID(authorId);
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
 				TimeSent = DateTime.Now,
 				User = postAuthor
 			};
-            await _repo.CreatePost(newPost,postAuthor);
+            await _repo.CreatePost(newPost, postAuthor);
 
             await _repo.Save();
 
