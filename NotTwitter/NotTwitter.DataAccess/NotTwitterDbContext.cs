@@ -55,12 +55,12 @@ namespace NotTwitter.DataAccess
 
                 // Username NVARCHAR(50)
                 entity.Property(u => u.Username)
-                   .HasMaxLength(50)
-                   .IsRequired();
+                    .HasMaxLength(50)
+                    .IsRequired();
                  
                 // Password ??
                 entity.Property(u => u.Password)
-                   .IsRequired();
+                    .IsRequired();
             });
 
             modelBuilder.Entity<Comments>(entity =>
@@ -71,22 +71,16 @@ namespace NotTwitter.DataAccess
                     .UseIdentityColumn();
 
                 entity.Property(c => c.PostId)
-                    .IsRequired()
-                    .HasMaxLength(281);
+                    .IsRequired();
 
-                entity.Property(c => c.UserId);
-                entity.Property(c => c.Content);
-                entity.Property(c => c.TimeSent);
+                entity.Property(c => c.UserId)
+                    .IsRequired();
 
-                //Establishing Multiplicities as shown in PokeApp codefirst example, missing .HasForeignKey() (Not sure if it is included inside NPGSQL)
-                /*
-                   Example from PokeApp project: 
-                   entity.HasOne(c => pt.Pokemon) // configure one nav property
-                   .WithMany(p => p.PokemonTypeJoins) // configure the opposite nav property
-                   .HasForeignKey(pt => pt.PokemonId) // configure the foreign key property
-                   .IsRequired() // NOT NULL
-                   .OnDelete(DeleteBehavior.Cascade); // ON DELETE CASCADE
-                 */
+                entity.Property(c => c.Content)
+                    .IsRequired();
+
+                entity.Property(c => c.TimeSent)
+                    .IsRequired();
 
                 // Multiplicities for Users
                 entity.HasOne(c => c.User)
@@ -118,6 +112,12 @@ namespace NotTwitter.DataAccess
 
                 entity.Property(p => p.TimeSent)
                     .IsRequired();
+
+                entity.HasOne(p => p.User)
+                    .WithMany(u => u.Posts)
+                    .HasForeignKey(p => p.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Friendships>(entity =>
@@ -133,46 +133,29 @@ namespace NotTwitter.DataAccess
                 entity.Property(f => f.User2ID)
                     .IsRequired();
 
-                // Navigation property User1
-                //entity.HasOne(f => f.User1)
-                //    .WithMany(u => u.Friends)
-                //    .HasForeignKey(f => f.User1ID )
-                //    .IsRequired()
-                //    .OnDelete(DeleteBehavior.Cascade);
-
-
-
-                //entity.HasOne(f => f.User2)
-                //    .WithMany(u => u.Friends)
-                //    .HasForeignKey(f => f.User2ID)
-                //    .IsRequired()
-                //    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.Property(f => f.TimeRequestSent)
-                    .IsRequired();
-
                 entity.Property(f => f.TimeRequestConfirmed)
                     .IsRequired();
+
+                // Navigation property User1
+                entity.HasOne(f => f.User1)
+                    .WithMany(u => u.OutgoingFriends)
+                    .HasForeignKey(f => f.User1ID)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Navigation property User2
+                entity.HasOne(f => f.User2)
+                    .WithMany(u => u.IncomingFriends)
+                    .HasForeignKey(f => f.User2ID)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
             });
 
 			modelBuilder.Entity<FriendRequests>(entity =>
 			{
                 // Composite key of senderId and receiverId
                 entity.HasKey(fr => new { fr.SenderId, fr.ReceiverId });
-
-                // Navigation property for Sender
-				entity.HasOne(f => f.Sender)
-					.WithMany(u => u.FriendRequestsSent)
-					.HasForeignKey(f => f.SenderId)
-                    .IsRequired()
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                // Navigation property for Receiver
-                entity.HasOne(f => f.Receiver)
-					.WithMany(u => u.FriendRequestsReceived)
-					.HasForeignKey(f => f.ReceiverId)
-                    .IsRequired()
-                    .OnDelete(DeleteBehavior.Cascade);
 
                 // SenderId
                 entity.Property(f => f.SenderId)
@@ -185,6 +168,20 @@ namespace NotTwitter.DataAccess
                 // FriendRequestStatus
                 entity.Property(f => f.FriendRequestStatus)
                    .IsRequired();
+
+                // Navigation property for Sender
+                entity.HasOne(f => f.Sender)
+                    .WithMany(u => u.FriendRequestsSent)
+                    .HasForeignKey(f => f.SenderId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Navigation property for Receiver
+                entity.HasOne(f => f.Receiver)
+                    .WithMany(u => u.FriendRequestsReceived)
+                    .HasForeignKey(f => f.ReceiverId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
 
             });
         }

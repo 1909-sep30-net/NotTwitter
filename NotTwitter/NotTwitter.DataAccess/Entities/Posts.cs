@@ -11,13 +11,11 @@ namespace NotTwitter.DataAccess.Entities
         {
             Comments = new HashSet<Comments>();
         }
+
 		public int PostId { get; set; }
 		public int UserId { get; set; }
-		public DateTime TimeSent { get; set; }
 		public string Content { get; set; }
-
-		//[Range(0, int.MaxValue)]
-		//public int Likes { get; set; }
+		public DateTime TimeSent { get; set; }
 
 		public virtual Users User { get; set; }
         public virtual ICollection <Comments> Comments  { get; set; }

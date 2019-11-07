@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NotTwitter.DataAccess.Repositories
 {
@@ -24,13 +25,13 @@ namespace NotTwitter.DataAccess.Repositories
         /// Stores new post in database, associated with a user
         /// </summary>
         /// <param name="post">Post to be stored</param>
-        public void CreatePost(Post post, User author = null)
+        public async Task CreatePost(Post post, User author = null)
         {
             if (author != null)
             {
-                var authorEntity = _context.Users
+                var authorEntity = await _context.Users
                     .Include(u => u.Posts)
-                    .First(u => u.UserID == author.UserID);
+                    .FirstOrDefaultAsync(u => u.UserID == author.UserID);
                 var postEntity = Mapper.MapPost(post);
                 authorEntity.Posts.Add(postEntity);
             }
@@ -46,13 +47,12 @@ namespace NotTwitter.DataAccess.Repositories
         /// Deletes post and its comments from database
         /// </summary>
         /// <param name="postId">Id of the post to be removed</param>
-        public void DeletePost(int postId)
+        public async Task DeletePost(int postId)
         {
             // Find post and eager load its comments
-            var post = _context.Posts
-                .Where(p => p.PostId == postId)
+            var post = await _context.Posts
                 .Include(p => p.Comments)
-                .Single();
+                .FirstOrDefaultAsync(p => p.PostId == postId);
 
             // Delete all comments from post
             foreach (var comment in post.Comments)
@@ -69,15 +69,21 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="postId">Id of the specified post</param>
         /// <returns></returns>
-        public Post GetPostById(int postId)
+        public async Task<Post> GetPostById(int postId)
         {
+            // Immediately return null if post does not exist
+            if (await _context.Posts.FindAsync(postId) == null)
+            {
+                return null;
+            }
+
             // Then get the post with comments
-            var postWithComments = _context.Posts
+            var postWithComments = await _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c=>c.User)
-                .First(p => p.PostId == postId);
-
+                .FirstOrDefaultAsync(p => p.PostId == postId);
+            
             return Mapper.MapPostsWithComments(postWithComments);
         }
 
@@ -86,33 +92,42 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="userId">User id to get posts from</param>
         /// <returns></returns>
-        public IEnumerable<Post> GetPostsByUser(int userId)
+        public async Task<IEnumerable<Post>> GetPostsByUser(int userId)
         {
-            return _context.Posts
-                .Include(p=>p.User)
-                .Include(p=>p.Comments)
-                    .ThenInclude(c=>c.User)
+            var posts = await _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.User)
                 .Where(p => p.UserId == userId)
-                .Select(Mapper.MapPostsWithComments);
+                .ToListAsync();
+
+            return posts.Select(Mapper.MapPostsWithComments);
+
         }
 
         /// <summary>
         /// Gets all posts in database
         /// </summary>
         /// <returns>All posts in data base</returns>
-        public IEnumerable<Post> GetAllPosts()
+        public async Task<IEnumerable<Post>> GetAllPosts()
         {
-            return _context.Posts.Select(Mapper.MapPostsWithComments);
+            var posts = await _context.Posts.ToListAsync();
+            return posts.Select(Mapper.MapPostsWithComments);
         }
 
         /// <summary>
         /// Updates database with given post
         /// </summary>
         /// <param name="post">Post to be updated</param>
-        public void UpdatePost(Post post)
+        public async Task UpdatePost(Post post)
         {
             var newEntity = Mapper.MapPostsWithComments(post);
-            var oldEntity = _context.Posts.Find(post.PostID);
+            var oldEntity = await _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.User)
+                .FirstOrDefaultAsync(p => p.PostId == post.PostID);
+
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
         }
 

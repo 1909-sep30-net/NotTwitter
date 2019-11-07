@@ -33,10 +33,8 @@ namespace API
             services.AddEntityFrameworkNpgsql().AddDbContext<NotTwitterDbContext>(opt =>
              opt.UseNpgsql(Configuration.GetConnectionString("NotTwitterDB")));
 
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
-            services.AddScoped<IPostRepository, PostRepository>();
-            services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
+            services.AddScoped<IGenericRepository, GenericRepository>();
+
 
             services.AddControllers( options => 
             {

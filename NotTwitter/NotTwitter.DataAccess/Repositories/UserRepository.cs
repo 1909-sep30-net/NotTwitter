@@ -27,7 +27,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns>User matching the given ID</returns>
         public User GetUserByID(int id)
         {
-            var user = _context.Users.AsNoTracking().First(u => u.UserID == id);
+            var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.UserID == id);
             //var user = _context.Users.Find(id);
             if (user == null)
             {
@@ -108,19 +108,13 @@ namespace NotTwitter.DataAccess.Repositories
             _context.Remove(entityToBeRemoved);
         }
 
-		public void MakeFriends(Friendship newFriend)
+		public void AddFriendShip(Friendship newFriend)
 		{
-			if (!CheckIfFriends(newFriend.User1.UserID, newFriend.User2.UserID))
-			{
 				var newEntity = Mapper.MapFriendships(newFriend);
 				_context.Add(newEntity);
-			}
 		}
 
-		public bool CheckIfFriends(int senderId, int receiverId)
-		{
-			return _context.Friendships.Any(uf => (uf.User1ID == senderId && uf.User2ID == receiverId) || (uf.User1ID == receiverId && uf.User2ID == senderId));
-		}
+		
 
 		/// <summary>
 		/// Saves changes to database

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -17,7 +18,20 @@ namespace NotTwitter.API.Controllers
 			_repo = repo;
 			_post = post;
 		}
- 
+
+        // GET: api/Comment
+        [HttpGet]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "value1", "value2" };
+        }
+
+        // GET: api/Comment/5
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return "value";
+        }
 
         // POST: api/Comment
         [HttpPost]
@@ -63,7 +77,7 @@ namespace NotTwitter.API.Controllers
 		}
 
 		// DELETE: api/ApiWithActions/5
-		[HttpDelete("{id}")]
+		[HttpDelete("{postId}")]
         public ActionResult Delete(int postId, PostModel postModel)
         {
 			if (_repo.GetCommentsByPostId(postId) is null)
