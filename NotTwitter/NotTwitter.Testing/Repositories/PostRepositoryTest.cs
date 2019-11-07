@@ -6,6 +6,7 @@ using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NotTwitter.Testing.Repositories
@@ -41,7 +42,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void CreatePostShouldStorePost()
+        public async Task CreatePostShouldStorePost()
         {
             // Assemble
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
@@ -59,7 +60,7 @@ namespace NotTwitter.Testing.Repositories
             };
 
             // Act
-            repo.CreatePost(arrangePost);
+            await repo.CreatePost(arrangePost);
             arrangeContext.SaveChanges();
 
             // Assert
@@ -70,7 +71,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void GetPostsFromUserShouldReturnList()
+        public async Task GetPostsFromUserShouldReturnList()
         {
             // Assemble
             int userId = 1;
@@ -99,7 +100,7 @@ namespace NotTwitter.Testing.Repositories
             var repo = new PostRepository(assembleContext);
 
             // Act
-            var postsAssert = repo.GetPostsByUser(userId);
+            var postsAssert = await repo.GetPostsByUser(userId);
 
             // Assert
             Assert.NotNull(postsAssert);
@@ -108,7 +109,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void GetAllPostsShouldReturnList()
+        public async Task GetAllPostsShouldReturnList()
         {
             // Assemble
 
@@ -136,7 +137,7 @@ namespace NotTwitter.Testing.Repositories
             var repo = new PostRepository(assembleContext);
 
             // Act
-            var postsAssert = repo.GetAllPosts();
+            var postsAssert = await repo.GetAllPosts();
 
             // Assert
             Assert.NotNull(postsAssert);
@@ -145,7 +146,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void UpdatePostShouldUpdate()
+        public async Task UpdatePostShouldUpdate()
         {
             // Assemble
             var oldContent = "oldcontent..";
@@ -178,7 +179,7 @@ namespace NotTwitter.Testing.Repositories
             var repo = new PostRepository(assembleContext);
 
             // Act
-            repo.UpdatePost(postToUpdate);
+            await repo.UpdatePost(postToUpdate);
             assembleContext.SaveChanges();
 
             // Assert
@@ -188,7 +189,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void DeletePostShouldRemovePostAndComments()
+        public async Task DeletePostShouldRemovePostAndComments()
         {
             // Assemble
             var postId = 1;
@@ -221,7 +222,7 @@ namespace NotTwitter.Testing.Repositories
             var repo = new PostRepository(actContext);
 
             // Act
-            repo.DeletePost(postId);
+            await repo.DeletePost(postId);
             actContext.SaveChanges();
 
             // Assert
