@@ -69,13 +69,13 @@ namespace NotTwitter.API.Controllers
         public async Task<IActionResult> GetPostsByUser(int userId)
         {
             // If user doesnt exist, return 404
-            var posts = await _repo.GetPostsByUser(userId);
-            if (posts == null)
+            if (_repo.GetUserByID(userId) == null)
             {
                 return NotFound();
             }
 
             // Populate representation models for posts by user
+            var posts = await _repo.GetPostsByUser(userId);
             List<PostModel> ListPosts = new List<PostModel>();
             foreach (var p in posts)
             {
@@ -110,7 +110,7 @@ namespace NotTwitter.API.Controllers
 			};
             await _repo.CreatePost(newPost,postAuthor);
 
-            _repo.Save();
+            await _repo.Save();
 
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
@@ -144,7 +144,7 @@ namespace NotTwitter.API.Controllers
             currentPost.Content = postModel.Text;
 
 			//_repo.UpdatePost(currentPost);
-            _repo.Save();
+            await _repo.Save();
 
 			return NoContent();
 		}
@@ -153,13 +153,13 @@ namespace NotTwitter.API.Controllers
 		[HttpDelete("{postId}")]
 		public async Task<IActionResult> Delete(int postId)
 		{
-			if (_repo.GetPostById(postId) is null)
+			if (await _repo.GetPostById(postId) is null)
 			{
 				return NotFound();
 			}
 
 			await _repo.DeletePost(postId);
-			_repo.Save();
+			await _repo.Save();
 
 			return NoContent();
 		}

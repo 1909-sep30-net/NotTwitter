@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NotTwitter.Library.Interfaces
 {
-    public interface IGenericRepository: IDisposable
+    public interface IGenericRepository: IAsyncDisposable
     {
         /* Comment Repository */
         public void CreateComment(Comment newComment);
@@ -134,6 +134,6 @@ namespace NotTwitter.Library.Interfaces
         public void AddFriendShip(Friendship newFriend);
         /* End */
 
-        public void Save();
+        public Task Save();
     }
 }

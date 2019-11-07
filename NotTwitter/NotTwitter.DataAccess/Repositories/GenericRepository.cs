@@ -326,22 +326,22 @@ namespace NotTwitter.DataAccess.Repositories
         /// <summary>
         /// Saves changes to database
         /// </summary>
-        public void Save()
+        public async Task Save()
         {
             // TODO: Ideally put a log message here to notify when saving
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual async Task DisposeAsync(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    _context.Dispose();
+                    await _context.DisposeAsync();
 
                 }
 
@@ -357,12 +357,17 @@ namespace NotTwitter.DataAccess.Repositories
         // }
 
         // This code added to correctly implement the disposable pattern.
-        public void Dispose()
+        public async Task Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            await DisposeAsync(true);
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
         }
         #endregion
     }
