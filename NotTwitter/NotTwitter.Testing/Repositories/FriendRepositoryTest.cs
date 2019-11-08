@@ -191,5 +191,41 @@ namespace NotTwitter.Testing.Repositories
 
             Assert.Equal(actFR.FriendRequestStatus, result.FriendRequestStatus);
         }
+
+        [Fact]
+        public async Task DeleteFriendRequestShouldDelete()
+        {
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("DeleteFriendRequestShouldDelete")
+                .Options;
+
+            using var arrangeContext = new NotTwitterDbContext(options);
+
+            FriendRequests assembleFR = new FriendRequests
+            {
+                SenderId = 1,
+                ReceiverId = 2,
+                FriendRequestStatus = 0
+            };
+
+            FriendRequest actFR = new FriendRequest
+            {
+                SenderId = 1,
+                ReceiverId = 2,
+                FriendRequestStatus = 2
+            };
+
+            arrangeContext.FriendRequests.Add(assembleFR);
+            arrangeContext.SaveChanges();
+
+            using var actContext = new NotTwitterDbContext(options);
+            var actRepo = new GenericRepository(actContext);
+            await actRepo.DeleteFriendRequest(actFR);
+            await actContext.SaveChangesAsync();
+
+            var result = await actContext.FriendRequests.FirstOrDefaultAsync();
+
+            Assert.Null(result);
+        }
     }
 }
