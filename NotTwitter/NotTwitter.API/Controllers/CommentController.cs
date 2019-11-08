@@ -15,7 +15,7 @@ namespace NotTwitter.API.Controllers
 
 		public CommentController(IGenericRepository repo)
 		{
-			_repo = repo ?? throw new ArgumentNullException("Repository cannot be null");
+			_repo = repo ?? throw new ArgumentNullException("Repository cannot be null", nameof(repo));
 		}
 
         // GET: api/Comment/5

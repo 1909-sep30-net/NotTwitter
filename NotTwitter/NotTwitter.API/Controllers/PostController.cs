@@ -15,7 +15,7 @@ namespace NotTwitter.API.Controllers
 
 		public PostController(IGenericRepository repo)
 		{
-			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
+			_repo = repo ?? throw new ArgumentNullException("Cannot be null.", nameof(repo));
         }
 
         /// <summary>
