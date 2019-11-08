@@ -18,7 +18,7 @@ namespace NotTwitter.API.Controllers
 
         public UserController(IGenericRepository urepo)
         {
-            _repo = urepo ?? throw new ArgumentNullException(nameof(urepo));
+            _repo = urepo ?? throw new ArgumentNullException("Cannot be null.", nameof(urepo));
         }
 
         [HttpGet("name/{name}", Name = "GetUserByName")]

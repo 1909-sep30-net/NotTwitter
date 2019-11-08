@@ -16,7 +16,7 @@ namespace NotTwitter.API.Controllers
 
 		public FriendRequestController(IGenericRepository repo)
 		{
-			_repo = repo;
+			_repo = repo ?? throw new ArgumentNullException("Cannot be null.", nameof(repo));
 		}
 
 		/// <summary>
@@ -44,21 +44,22 @@ namespace NotTwitter.API.Controllers
 			}
 			return Ok(requestList);
 		}
-		/// <summary>
-		/// Create Friend Request
-		/// </summary>
-		/// <param name="senderId", name="receiverId"></param>
+
+        /// <summary>
         /// 
+        /// </summary>
+        /// <param name="friendRequest"></param>
+        /// <returns></returns>
 		[HttpPost]
 		[Route("Create")]
 		public async Task<IActionResult> CreateRequest([FromBody, Bind("SenderId, ReceiveId")] FriendRequestModel friendRequest)
         {
+            // if the sender or receiver is not a valid user, return NotFound
 			if (await _repo.GetUserByID(friendRequest.SenderId) is null || await _repo.GetUserByID(friendRequest.ReceiverId) is null)
 			{
 				return NotFound();
 			}
-			var sender = await _repo.GetUserByID(friendRequest.SenderId);
-			var receiver = await _repo.GetUserByID(friendRequest.ReceiverId);
+
 			var newRequest = new Library.Models.FriendRequest
 			{
 				SenderId = friendRequest.SenderId,
