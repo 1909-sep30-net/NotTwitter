@@ -18,7 +18,7 @@ namespace NotTwitter.API.Controllers
 
         public UserController(IGenericRepository urepo)
         {
-            _repo = urepo ?? throw new ArgumentNullException(nameof(urepo));
+            _repo = urepo ?? throw new ArgumentNullException("Cannot be null.", nameof(urepo));
         }
 
         [HttpGet("name/{name}", Name = "GetUserByName")]
@@ -81,6 +81,48 @@ namespace NotTwitter.API.Controllers
                 Friends = modelFriends
             });
 
+        }
+
+        [HttpGet("friendposts/{id}", Name = "GetFriendPosts")]
+        public async Task<IActionResult> GetFriendPost(int id)
+        {
+            //Check if user 1 is friend with user 2
+            var x = await _repo.GetUserWithFriends(id);
+
+            var friendPostList = new List<PostModel>();
+
+            foreach (Library.Models.User friend in x.Friends)
+            {
+                var friendPost = await _repo.GetPostsByUser(friend.UserID);
+
+                foreach (Library.Models.Post fPost in friendPost)
+                {
+                    var commentList = new List<CommentModel>();
+
+                    foreach (var comment in fPost.Comments)
+                    {
+                        commentList.Add(new CommentModel
+                        {
+                            CommentId = comment.CommentId,
+                            UserId = comment.Author.UserID,
+                            Content = comment.Content,
+                            TimeSent = comment.TimeSent
+                        });
+                    }
+
+                    var postModel = new PostModel()
+                    {
+                        PostID = fPost.PostID,
+                        Text = fPost.Content,
+                        TimeSent = fPost.TimeSent,
+                        UserID = fPost.User.UserID,
+                        Comments = commentList
+                    };
+
+                    friendPostList.Add(postModel);
+                }
+            }
+            return Ok(friendPostList);
         }
 
         // Post User Model
