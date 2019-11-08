@@ -79,7 +79,6 @@ namespace NotTwitter.API.Controllers
 		[Route("Accepted")]
 		public async Task<IActionResult> AcceptRequest([FromBody, Bind("SenderId, ReceiverId")] FriendRequestModel friendRequest)
 		{
-            // TODO: Enclose this in a try/catch block in case this fails
 
             try
             {

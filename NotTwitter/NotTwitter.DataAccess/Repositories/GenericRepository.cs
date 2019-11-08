@@ -5,7 +5,6 @@ using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NotTwitter.DataAccess.Repositories
@@ -15,7 +14,7 @@ namespace NotTwitter.DataAccess.Repositories
         private readonly NotTwitterDbContext _context;
         public GenericRepository(NotTwitterDbContext db)
         {
-            _context = db ?? throw new ArgumentNullException();
+            _context = db ?? throw new ArgumentNullException("Context cannot be null.",nameof(db));
         }
 
         /// <summary>

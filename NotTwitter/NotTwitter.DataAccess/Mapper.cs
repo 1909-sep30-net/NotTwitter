@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace NotTwitter.DataAccess
 {
-    public class Mapper
+    public static class Mapper
     {
         public static Library.Models.User MapUsers(Entities.Users users)
         {

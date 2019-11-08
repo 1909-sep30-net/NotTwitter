@@ -116,21 +116,6 @@ namespace NotTwitter.API.Controllers
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
 		}
 
-		// TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
-		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
-		//{
-		//  var liked = _repo.GetPostById(post.PostID);
-		//	if (liked is null)
-		//	{
-		//		return NotFound();
-		//	}
-		//	liked.Likes++;
-		//	_repo.GetPostWithLikes(liked);
-
-		//	return RedirectToAction(nameof(GetAllPosts));
-		//}
-
-
 		// PUT: api/Post/5
 		[HttpPut("{PostId}")]
         public async Task<IActionResult> UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
