@@ -9,11 +9,12 @@ namespace NotTwitter.Library.Interfaces
     public interface IGenericRepository: IAsyncDisposable
     {
         /* Comment Repository */
-        public void CreateComment(Comment newComment);
+        public Task CreateComment(Comment newComment, User author = null, Post post = null);
         public Task<IEnumerable<Comment>> GetCommentsByPostId(int postId);
         public Task<IEnumerable<Comment>> GetCommentsByUserId(int userId);
         public Task UpdateComment(Comment newComment);
         public Task DeleteCommentsByPostId(int postId);
+        public Task<Comment> GetCommentById(int commentId);
 
         /* End */
 

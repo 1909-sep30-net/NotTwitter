@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Xunit;
 using NotTwitter.DataAccess;
+using System.Threading.Tasks;
 
 namespace NotTwitter.Testing.Repositories
 {
@@ -18,7 +19,7 @@ namespace NotTwitter.Testing.Repositories
         public int ValidGender = 1;
 
         [Fact]
-        public void GetUserByIdShouldReturnResult()
+        public async Task GetUserByIdShouldReturnResult()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
@@ -40,10 +41,10 @@ namespace NotTwitter.Testing.Repositories
             arrangeContext.SaveChanges();
 
             using var actContext = new NotTwitterDbContext(options);
-            var repo = new UserRepository(actContext);
+            var repo = new GenericRepository(actContext);
 
             // Act
-            var result = repo.GetUserByID(testId);
+            var result = await repo.GetUserByID(testId);
              
             // Assert
             Assert.NotNull(result);
@@ -53,7 +54,7 @@ namespace NotTwitter.Testing.Repositories
         [Theory]
         [InlineData("Jicky","Jick")]
 
-        public void GetUsersByNameShouldReturnList(string fullName, string partialName)
+        public async Task GetUsersByNameShouldReturnList(string fullName, string partialName)
         {
             // Arrange
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
@@ -77,10 +78,10 @@ namespace NotTwitter.Testing.Repositories
             arrangeContext.SaveChanges();
 
             var actContext = new NotTwitterDbContext(options);
-            var repo = new UserRepository(actContext);
+            var repo = new GenericRepository(actContext);
 
             // Act
-            var result = repo.GetUsersByName(partialName);
+            var result = await repo.GetUsersByName(partialName);
 
             // Assert
             Assert.NotNull(result);
@@ -104,7 +105,7 @@ namespace NotTwitter.Testing.Repositories
                 Password = ValidPassword,
                 Gender = ValidGender
             };
-            var actRepo = new UserRepository(actContext);
+            var actRepo = new GenericRepository(actContext);
 
             // Act
             actRepo.AddUser(newUser);
@@ -117,7 +118,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void UpdateUserShouldUpdate()
+        public async Task UpdateUserShouldUpdate()
         {
             // Arrange
             var updatedName = "Robby";
@@ -148,8 +149,8 @@ namespace NotTwitter.Testing.Repositories
             };
 
             // Act
-            var repo = new UserRepository(arrangeContext);
-            repo.UpdateUser(updatedUser);
+            var repo = new GenericRepository(arrangeContext);
+            await repo.UpdateUser(updatedUser);
             arrangeContext.SaveChanges();
 
             // Assert
@@ -160,7 +161,7 @@ namespace NotTwitter.Testing.Repositories
         }
 
         [Fact]
-        public void DeleteUserShouldDelete()
+        public async Task DeleteUserShouldDelete()
         {
             //Assemble
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
@@ -178,10 +179,10 @@ namespace NotTwitter.Testing.Repositories
             };
             assembleContext.Add(someUser);
 
-            var repo = new UserRepository(assembleContext);
+            var repo = new GenericRepository(assembleContext);
 
             // Act
-            repo.DeleteUserByID(1);
+            await repo.DeleteUserByID(1);
 
             // Assert
             var users = assembleContext.Users.ToList();
