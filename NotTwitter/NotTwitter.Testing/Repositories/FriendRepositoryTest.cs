@@ -104,7 +104,7 @@ namespace NotTwitter.Testing.Repositories
             // Arrange
             int arrangeStatus = 0;
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
-                .UseInMemoryDatabase("GetAllFriendRequestsShouldReturnList")
+                .UseInMemoryDatabase("GetFriendRequestStatusShouldReturnInt")
                 .Options;
 
             var assembleFR = new FriendRequests
@@ -154,6 +154,42 @@ namespace NotTwitter.Testing.Repositories
 
             // Assert
             Assert.NotNull(assembleContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == 1 && fr.ReceiverId == 2));
+        }
+
+        [Fact]
+        public async Task UpdateFriendRequestShouldUpdate()
+        {
+            var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+                .UseInMemoryDatabase("UpdateFriendRequestShouldUpdate")
+                .Options;
+
+            using var arrangeContext = new NotTwitterDbContext(options);
+
+            FriendRequests assembleFR = new FriendRequests
+            {
+                SenderId = 1,
+                ReceiverId = 2,
+                FriendRequestStatus = 0
+            };
+
+            FriendRequest actFR = new FriendRequest
+            {
+                SenderId = 1,
+                ReceiverId = 2,
+                FriendRequestStatus = 2
+            };
+
+            arrangeContext.FriendRequests.Add(assembleFR);
+            arrangeContext.SaveChanges();
+
+            using var actContext = new NotTwitterDbContext(options);
+            var actRepo = new GenericRepository(actContext);
+            await actRepo.UpdateFriendRequest(actFR);
+            await actContext.SaveChangesAsync();
+
+            var result = await actContext.FriendRequests.FirstOrDefaultAsync();
+
+            Assert.Equal(actFR.FriendRequestStatus, result.FriendRequestStatus);
         }
     }
 }
