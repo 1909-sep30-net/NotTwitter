@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Xunit;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace NotTwitter.Testing.Controllers
 {
@@ -14,13 +15,13 @@ namespace NotTwitter.Testing.Controllers
     {
         
         [Fact]
-        public void GetUserByIdShouldReturnUser()
+        public void GetValidIdShouldReturnOk()
         {
             // Assemble 
             var userIdForTest = 2;
-            var mockRepo = new Mock<IUserRepository>();
-            mockRepo.Setup(x => x.GetUserByID(It.IsAny<int>()))
-                .Returns(new User
+            var mockRepo = new Mock<IGenericRepository>();
+            mockRepo.Setup(x => x.GetUserWithFriends(It.IsAny<int>()))
+                .ReturnsAsync(new User
                 {
                     UserID = userIdForTest,
                     FirstName = "Moo",
@@ -34,10 +35,28 @@ namespace NotTwitter.Testing.Controllers
 
             // Act
             var result = controller.Get(userIdForTest);
-
+            var asyncResult = result.Result;
             // Asserts
-            var viewresult = Assert.IsAssignableFrom<UserViewModel>(result);
-            Assert.Equal(userIdForTest, viewresult.Id);
+            var viewresult = Assert.IsAssignableFrom<OkObjectResult>(asyncResult);
+            Assert.NotNull(viewresult);
+        }
+
+        [Fact]
+        public void GetInvalidIdShouldReturnNotFound()
+        {
+            // Assemble 
+            var userIdForTest = 2;
+            var mockRepo = new Mock<IGenericRepository>();
+            mockRepo.Setup(x => x.GetUserWithFriends(It.IsAny<int>()))
+                .ReturnsAsync((User)null);
+
+            var controller = new UserController(mockRepo.Object);
+
+            // Act
+            var result = controller.Get(userIdForTest);
+            var asyncResult = result.Result;
+            // Asserts
+            var viewresult = Assert.IsAssignableFrom<NotFoundResult>(asyncResult);
         }
 
         [Fact]
@@ -62,7 +81,7 @@ namespace NotTwitter.Testing.Controllers
             };
 
 
-            var mockRepo = new Mock<IUserRepository>();
+            var mockRepo = new Mock<IGenericRepository>();
             mockRepo.Setup(x => x.AddUser(It.IsAny<User>()))
                 .Callback(() => 
                 {
@@ -73,7 +92,7 @@ namespace NotTwitter.Testing.Controllers
 
             // Act
             var response = controller.Post(newUser);
-            var responseContent = response as CreatedAtRouteResult;
+            var responseContent = response as Task<IActionResult>;
 
             // Assert
             mockRepo.Verify(x => x.AddUser(It.IsAny<User>()));

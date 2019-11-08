@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -10,13 +11,11 @@ namespace NotTwitter.API.Controllers
 	[ApiController]
 	public class PostController : ControllerBase
 	{
-		private readonly IPostRepository _repo;
-		private readonly IUserRepository _urepo;
+        private readonly IGenericRepository _repo;
 
-		public PostController(IPostRepository repo, IUserRepository urepo)
+		public PostController(IGenericRepository repo)
 		{
 			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
-            _urepo = urepo ?? throw new ArgumentNullException(nameof(urepo));
         }
 
         /// <summary>
@@ -25,10 +24,10 @@ namespace NotTwitter.API.Controllers
         /// <param name="postId">ID of specified post</param>
         /// <returns></returns>
         [HttpGet("{postId}", Name = "GetPostById")]
-        public IActionResult GetPostById(int postId)
+        public async Task<IActionResult> GetPostById(int postId)
         {
             // Get post by Id; If post isn't found, return 404
-            var post = _repo.GetPostById(postId);
+            var post = await _repo.GetPostById(postId);
             if (post == null)
             {
                 return NotFound();
@@ -67,16 +66,16 @@ namespace NotTwitter.API.Controllers
         /// <returns></returns>
         // GET: api/Post/5
         [HttpGet("user/{userId}", Name = "GetPostsByUser")]
-        public IActionResult GetPostsByUser(int userId)
+        public async Task<IActionResult> GetPostsByUser(int userId)
         {
             // If user doesnt exist, return 404
-            var posts = _repo.GetPostsByUser(userId);
-            if (posts == null)
+            if (_repo.GetUserByID(userId) == null)
             {
                 return NotFound();
             }
 
             // Populate representation models for posts by user
+            var posts = await _repo.GetPostsByUser(userId);
             List<PostModel> ListPosts = new List<PostModel>();
             foreach (var p in posts)
             {
@@ -95,23 +94,23 @@ namespace NotTwitter.API.Controllers
 
         // POST: api/CreatePost
         [HttpPost]
-        public ActionResult CreatePost(int authorId, string content)
+        public async Task<IActionResult> CreatePost(int authorId, string content)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var postAuthor = _urepo.GetUserByID(authorId);
+            var postAuthor = await _repo.GetUserByID(authorId);
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
 				TimeSent = DateTime.Now,
 				User = postAuthor
 			};
-            _repo.CreatePost(newPost,postAuthor);
+            await _repo.CreatePost(newPost, postAuthor);
 
-            _repo.Save();
+            await _repo.Save();
 
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
@@ -134,9 +133,9 @@ namespace NotTwitter.API.Controllers
 
 		// PUT: api/Post/5
 		[HttpPut("{PostId}")]
-        public IActionResult UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
+        public async Task<IActionResult> UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
         {
-            var currentPost = _repo.GetPostById(PostId);
+            var currentPost = await _repo.GetPostById(PostId);
             if (currentPost is null)
             {
                 return NotFound();
@@ -145,22 +144,22 @@ namespace NotTwitter.API.Controllers
             currentPost.Content = postModel.Text;
 
 			//_repo.UpdatePost(currentPost);
-            _repo.Save();
+            await _repo.Save();
 
 			return NoContent();
 		}
 
 		// DELETE: api/ApiWithActions/5
 		[HttpDelete("{postId}")]
-		public IActionResult Delete(int postId)
+		public async Task<IActionResult> Delete(int postId)
 		{
-			if (_repo.GetPostById(postId) is null)
+			if (await _repo.GetPostById(postId) is null)
 			{
 				return NotFound();
 			}
 
-			_repo.DeletePost(postId);
-			_repo.Save();
+			await _repo.DeletePost(postId);
+			await _repo.Save();
 
 			return NoContent();
 		}

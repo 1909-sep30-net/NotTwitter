@@ -33,10 +33,19 @@ namespace API
             services.AddEntityFrameworkNpgsql().AddDbContext<NotTwitterDbContext>(opt =>
              opt.UseNpgsql(Configuration.GetConnectionString("NotTwitterDB")));
 
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
-            services.AddScoped<IPostRepository, PostRepository>();
-            services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
+            services.AddScoped<IGenericRepository, GenericRepository>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod() // not just GET and POST, but allow all methods
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
 
             services.AddControllers( options => 
             {
@@ -49,6 +58,8 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NotTwitterAPI", Version = "v1" });
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,6 +85,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("AllowAngular");
 
             app.UseEndpoints(endpoints =>
             {
