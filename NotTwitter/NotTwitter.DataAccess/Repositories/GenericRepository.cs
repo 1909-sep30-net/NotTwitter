@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NotTwitter.DataAccess.Entities;
 using NotTwitter.Library.Interfaces;
 using NotTwitter.Library.Models;
 using System;
@@ -39,7 +40,6 @@ namespace NotTwitter.DataAccess.Repositories
         {
             var userFriends = await _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToListAsync();
             var user = await GetUserByID(id);
-            //var user = _context.Users.Find(id);
             foreach (var fs in userFriends)
             {
                 var frond = await GetUserByID(fs.User2ID);
@@ -217,10 +217,21 @@ namespace NotTwitter.DataAccess.Repositories
         /// Add new comment to database
         /// </summary>
         /// <param name="newComment">Comment to be added</param>
-        public void CreateComment(Comment newComment)
+        public async Task CreateComment(Comment newComment, User author = null, Post post = null)
         {
-            var newEntity = Mapper.MapComments(newComment);
-            _context.Add(newEntity);
+            Comments entityComment = Mapper.MapComments(newComment);
+
+            if (post != null && author != null)
+            {
+                Posts entityPost = await _context.Posts.FirstOrDefaultAsync(p => p.PostId == post.PostID);
+                Users entityAuthor = await _context.Users.FindAsync(author.UserID);
+                entityAuthor.Comments.Add(entityComment);
+                entityPost.Comments.Add(entityComment);
+            }
+            else
+            {
+                _context.Add(entityComment);
+            }
         }
 
         public async Task UpdateComment(Comment newComment)
@@ -244,6 +255,16 @@ namespace NotTwitter.DataAccess.Repositories
             }
         }
 
+        public async Task<Comment> GetCommentById(int commentId)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+            {
+                return null;
+            }
+            return Mapper.MapComments(comment);
+        }
+
         /// <summary>
         /// Gets all comments from a post
         /// </summary>
@@ -263,6 +284,11 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public async Task<IEnumerable<Comment>> GetCommentsByUserId(int userId)
         {
+            // Return null if user doesnt exist, that way we can distinguish between invalid user or valid user but with no comments
+            if (await _context.Users.FirstOrDefaultAsync(u=>u.UserID == userId) == null)
+            {
+                return null;
+            }
             var comments = await _context.Comments.Where(c => c.UserId == userId).ToListAsync();
             return comments.Select(Mapper.MapComments);
         }
@@ -275,8 +301,13 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
         public async Task<FriendRequest> GetFriendRequest(int senderId, int receiverId)
         {
-            return Mapper.MapFriendRequest(await _context.FriendRequests
-                    .FirstOrDefaultAsync(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId));
+            var fr = await _context.FriendRequests
+                    .FirstOrDefaultAsync(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
+            if (fr == null)
+            {
+                return null;
+            }
+            return Mapper.MapFriendRequest(fr);
         }
 
         /// <summary>
@@ -287,7 +318,7 @@ namespace NotTwitter.DataAccess.Repositories
         public async Task<IEnumerable<FriendRequest>> GetAllFriendRequests(int userId)
         {
             var friendRequests = await _context.FriendRequests
-                .Where(fr => fr.SenderId == userId)
+                .Where(fr => fr.ReceiverId == userId)
                 .ToListAsync();
             return friendRequests.Select(Mapper.MapFriendRequest);
         }

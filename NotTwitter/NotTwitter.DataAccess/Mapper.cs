@@ -115,8 +115,8 @@ namespace NotTwitter.DataAccess
                PostID = post.PostId,
                Content = post.Content,
                TimeSent = post.TimeSent,
-               Comments = post.Comments.Select(MapComments).ToHashSet(),
-               //User = MapUsers(post.User)
+               Comments = post.Comments.Select(MapCommentsWithUsers).ToHashSet(),
+               User = MapUsers(post.User)
             };
         }
 
@@ -133,7 +133,7 @@ namespace NotTwitter.DataAccess
                 Content = post.Content,
                 TimeSent = post.TimeSent,
                 Comments = post.Comments.Select(MapComments).ToHashSet(),
-                User = MapUsers(post.User)
+                //User = MapUsers(post.User)
             };
         }
 
@@ -166,6 +166,18 @@ namespace NotTwitter.DataAccess
                 Content = comments.Content,
                 TimeSent = comments.TimeSent,
                 Author = MapUsers(comments.User)
+            };
+        }
+
+        public static Entities.Comments MapCommentsWithUsers(Library.Models.Comment comments)
+        {
+
+            return new Entities.Comments
+            {
+                CommentId = comments.CommentId,
+                Content = comments.Content,
+                TimeSent = comments.TimeSent,
+                User = MapUsers(comments.Author)
             };
         }
 
