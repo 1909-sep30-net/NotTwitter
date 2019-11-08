@@ -35,8 +35,20 @@ namespace API
 
             services.AddScoped<IGenericRepository, GenericRepository>();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200",
+                                        "https://1909nickproject2angular.azurewebsites.net")
+                        .AllowAnyMethod() // not just GET and POST, but allow all methods
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
 
-            services.AddControllers( options => 
+            services.AddControllers(options =>
             {
                 options.FormatterMappings.SetMediaTypeMappingForFormat("json",
                     new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json"));
@@ -47,6 +59,8 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NotTwitterAPI", Version = "v1" });
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +86,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("AllowAngular");
 
             app.UseEndpoints(endpoints =>
             {
