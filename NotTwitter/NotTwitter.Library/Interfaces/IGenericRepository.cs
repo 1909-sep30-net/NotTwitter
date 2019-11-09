@@ -88,6 +88,8 @@ namespace NotTwitter.Library.Interfaces
         /* End */
 
         /* User Repository */
+        public Task<User> GetUserByEmail(string email);
+
         /// <summary>
         /// Given an ID, returns matching user from DB
         /// </summary>
