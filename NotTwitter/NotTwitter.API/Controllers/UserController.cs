@@ -46,7 +46,7 @@ namespace NotTwitter.API.Controllers
         }
 
 		[HttpGet("email/{email}", Name ="GetUserByEmail")]
-		public async Task<ActionResult<ApiUser>> GetUserByEmailAsync(string email)
+		public async Task<ActionResult> GetUserByEmailAsync(string email)
 		{
 			var x = await _repo.GetUserByEmailAsync(email);
 			if (x == null)

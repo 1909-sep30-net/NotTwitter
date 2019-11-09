@@ -34,7 +34,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             arrangeContext.Users.Add(testUserEntity);
@@ -70,7 +69,6 @@ namespace NotTwitter.Testing.Repositories
                         LastName = fullName,
                         Email = ValidEmail,
                         Username = ValidUsername,
-                        Password = ValidPassword,
                         Gender = ValidGender
                     }
                 );
@@ -133,7 +131,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             arrangeContext.Users.Add(arrangeUser);
@@ -174,7 +171,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             assembleContext.Add(someUser);
