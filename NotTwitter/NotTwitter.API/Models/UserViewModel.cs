@@ -21,5 +21,6 @@ namespace NotTwitter.API.Models
         public int Gender { get; set; }
 
         public List<FriendViewModel> Friends { get; set; } = new List<FriendViewModel>();
+        public List<PostModel> Posts { get; set; } = new List<PostModel>();
     }
 }

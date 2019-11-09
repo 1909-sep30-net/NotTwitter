@@ -43,7 +43,7 @@ namespace NotTwitter.API.Controllers
                         CommentId = com.CommentId,
                         Content = com.Content,
                         TimeSent = com.TimeSent,
-                        UserId = com.Author.UserID
+                        AuthorId = com.Author.UserID
                     }
                 );
             }
@@ -69,7 +69,7 @@ namespace NotTwitter.API.Controllers
         public async Task<IActionResult> GetPostsByUser(int userId)
         {
             // If user doesnt exist, return 404
-            if (_repo.GetUserByID(userId) == null)
+            if (await _repo.GetUserByID(userId) == null)
             {
                 return NotFound();
             }
@@ -98,10 +98,15 @@ namespace NotTwitter.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var postAuthor = await _repo.GetUserByID(authorId);
+            if (postAuthor == null)
+            {
+                return NotFound();
+            }
+
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
@@ -118,17 +123,40 @@ namespace NotTwitter.API.Controllers
 
 		// PUT: api/Post/5
 		[HttpPut("{PostId}")]
-        public async Task<IActionResult> UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
+        public async Task<IActionResult> UpdatePost(int PostId, [FromBody] PostsPostModel post)
         {
             var currentPost = await _repo.GetPostById(PostId);
+
+            currentPost.Content = post.Content;
+
             if (currentPost is null)
             {
                 return NotFound();
             }
 
-            currentPost.Content = postModel.Text;
+            // Populate the comments in the post
+            //var postComments = new List<CommentModel>();
+            //foreach (var comment in currentPost.Comments)
+            //{
+            //    postComments.Add( new CommentModel
+            //    {
+            //        CommentId = comment.CommentId,
+            //        PostId = PostId,
+            //        Content = comment.Content,
+            //        AuthorId = comment.Author.UserID,
+            //        TimeSent = comment.TimeSent
+            //    });
+            //}
+            //var viewPost = new PostModel
+            //{
+            //    PostID = currentPost.PostID,
+            //    UserID = currentPost.User.UserID,
+            //    Text = currentPost.Content,
+            //    Comments = currentPost.Comments,
+            //    TimeSent = currentPost.TimeSent
+            //};
 
-			//_repo.UpdatePost(currentPost);
+			await _repo.UpdatePost(currentPost);
             await _repo.Save();
 
 			return NoContent();

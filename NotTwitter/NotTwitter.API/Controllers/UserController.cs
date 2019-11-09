@@ -31,7 +31,6 @@ namespace NotTwitter.API.Controllers
                 userList.Add(new UserViewModel()
                 {
                     Username = user.Username,
-                    Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Gender = user.Gender,
@@ -91,20 +90,23 @@ namespace NotTwitter.API.Controllers
 
             var friendPostList = new List<PostModel>();
 
+            // For each friend of the user
             foreach (Library.Models.User friend in x.Friends)
             {
                 var friendPost = await _repo.GetPostsByUser(friend.UserID);
 
+                // For each post of the friend
                 foreach (Library.Models.Post fPost in friendPost)
                 {
                     var commentList = new List<CommentModel>();
 
+                    // For each comment of the post
                     foreach (var comment in fPost.Comments)
                     {
                         commentList.Add(new CommentModel
                         {
                             CommentId = comment.CommentId,
-                            UserId = comment.Author.UserID,
+                            AuthorId = comment.Author.UserID,
                             Content = comment.Content,
                             TimeSent = comment.TimeSent
                         });
@@ -128,24 +130,26 @@ namespace NotTwitter.API.Controllers
         // Post User Model
         // POST: api/User
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody, Bind("FirstName, LastName, Username, Password, Email, Gender")] UserViewModel newUser)
+        public async Task<IActionResult> Post([FromBody] UserPostModel newUser)
         {
             try
             {
                 Library.Models.User mappedUser = new Library.Models.User()
                 {
                     Username = newUser.Username,
-                    Password = newUser.Password,
                     FirstName = newUser.FirstName,
                     LastName = newUser.LastName,
                     Gender = newUser.Gender,
                     Email = newUser.Email,
+                    DateCreated = DateTime.Now
                 };
 
                 _repo.AddUser(mappedUser);
                 await _repo.Save();
 
-                return CreatedAtRoute("GetUserByID", new { id = mappedUser.UserID }, newUser);
+                var newAddedUser = await _repo.GetUserByEmail(mappedUser.Email);
+
+                return CreatedAtRoute("GetUserByID", new { id = newAddedUser.UserID }, newAddedUser);
             }
             catch
             {
@@ -157,26 +161,18 @@ namespace NotTwitter.API.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] UserViewModel user)
+        public async Task<IActionResult> Put(int id, [FromBody] UserPostModel user)
         {
             var oldUser = await _repo.GetUserByID(id);
             if (oldUser != null)
             {
-                if(oldUser.UserID != user.Id || oldUser.Username != user.Username)
-                {
-                    return Forbid();
-                }
-                Library.Models.User updatedUser = new Library.Models.User()
-                {
-                    UserID = user.Id, // this is redundant, should be removed
-                    Username = user.Username, // technically also redundant since this should also not be changed according to the logic above
-                    Password = user.Password,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    Gender = user.Gender
-                };
-                await _repo.UpdateUser(updatedUser);
+                oldUser.Username = user.Username;
+                oldUser.FirstName = user.FirstName;
+                oldUser.LastName = user.LastName;
+                oldUser.Email = user.Email;
+                oldUser.Gender = user.Gender;
+
+                await _repo.UpdateUser(oldUser);
                 await _repo.Save();
                 return NoContent();
             }
