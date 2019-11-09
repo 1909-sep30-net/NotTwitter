@@ -102,13 +102,20 @@ namespace NotTwitter.Library.Interfaces
         /// <returns>User matching the given ID</returns>
         public Task<User> GetUserWithFriends(int id);
 
-        /// <summary>
-        /// Returns list of users with name matching given string
-        /// </summary>
-        /// <param name="name"></param>
-        /// <remarks>Checks combination of user's first and last name</remarks>
-        /// <returns></returns>
-        public Task<IEnumerable<User>> GetUsersByName(string name);
+		/// <summary>
+		/// Given an email, returns matching user
+		/// </summary>
+		/// <param name="id">User email to be searched for</param>
+		/// <returns>User matching the given email</returns>
+		Task<User> GetUserByEmailAsync(string email);
+
+		/// <summary>
+		/// Returns list of users with name matching given string
+		/// </summary>
+		/// <param name="name"></param>
+		/// <remarks>Checks combination of user's first and last name</remarks>
+		/// <returns></returns>
+		public Task<IEnumerable<User>> GetUsersByName(string name);
 
         /// <summary>
         /// Given a business model user, add user to database

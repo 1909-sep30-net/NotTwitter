@@ -1,9 +1,6 @@
 ﻿using NotTwitter.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+
 
 
 namespace NotTwitter.DataAccess
@@ -57,10 +54,11 @@ namespace NotTwitter.DataAccess
                 entity.Property(u => u.Username)
                     .HasMaxLength(50)
                     .IsRequired();
-                 
+                 /*
                 // Password ??
                 entity.Property(u => u.Password)
                     .IsRequired();
+					*/
             });
 
             modelBuilder.Entity<Comments>(entity =>

@@ -20,7 +20,6 @@ namespace NotTwitter.Testing.Repositories
             LastName = "MyLastName",
             Email = "valid@email.com",
             Username = "myUsername",
-            Password = "myPassword",
             Gender = 0,
             Posts = new List<Posts>(),
             Comments = new List<Comments>(),

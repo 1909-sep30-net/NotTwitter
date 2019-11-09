@@ -135,11 +135,11 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("character varying(50)")
                         .HasMaxLength(50);
-
+					/*
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
-
+						*/
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("character varying(50)")

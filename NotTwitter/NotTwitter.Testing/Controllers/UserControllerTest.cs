@@ -67,7 +67,6 @@ namespace NotTwitter.Testing.Controllers
                 Username = "hithisistest",
                 FirstName = "HiThis",
                 LastName = "IsTest",
-                Password = "password1",
                 Gender = 1,
                 Email = "hithisistest@test.com",
                 Id = 3,

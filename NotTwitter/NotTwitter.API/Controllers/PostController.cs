@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -8,6 +9,7 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
+	[Authorize]
 	[ApiController]
 	public class PostController : ControllerBase
 	{
@@ -15,7 +17,7 @@ namespace NotTwitter.API.Controllers
 
 		public PostController(IGenericRepository repo)
 		{
-			_repo = repo ?? throw new ArgumentNullException(nameof(repo));
+			_repo = repo ?? throw new ArgumentNullException("Cannot be null.", nameof(repo));
         }
 
         /// <summary>
@@ -115,21 +117,6 @@ namespace NotTwitter.API.Controllers
 
 			return CreatedAtRoute("GetPostByID", new { postId = newPost.PostID }, newPost);
 		}
-
-		// TODO: clarify; what is this method trying to do? Gets a post, increments the Likes property, gets a post from db with likes?
-		//public IActionResult Like(Post post) //TODO what is this parameter post; does it need to be model binded?
-		//{
-		//  var liked = _repo.GetPostById(post.PostID);
-		//	if (liked is null)
-		//	{
-		//		return NotFound();
-		//	}
-		//	liked.Likes++;
-		//	_repo.GetPostWithLikes(liked);
-
-		//	return RedirectToAction(nameof(GetAllPosts));
-		//}
-
 
 		// PUT: api/Post/5
 		[HttpPut("{PostId}")]

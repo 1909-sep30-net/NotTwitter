@@ -5,7 +5,6 @@ using NotTwitter.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NotTwitter.DataAccess.Repositories
@@ -15,7 +14,7 @@ namespace NotTwitter.DataAccess.Repositories
         private readonly NotTwitterDbContext _context;
         public GenericRepository(NotTwitterDbContext db)
         {
-            _context = db ?? throw new ArgumentNullException();
+            _context = db ?? throw new ArgumentNullException("Context cannot be null.",nameof(db));
         }
 
         /// <summary>
@@ -36,7 +35,26 @@ namespace NotTwitter.DataAccess.Repositories
             }
         }
 
-        public async Task<User> GetUserWithFriends(int id)
+		/// <summary>
+		/// Given an email, returns matching user from DB
+		/// </summary>
+		/// <param name="id">User email to be searched for</param>
+		/// <returns>User matching the given email</returns>
+		public async Task<User> GetUserByEmailAsync(string email)
+		{
+			var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+			if (user == null)
+			{
+				return null;
+			}
+			else
+			{
+				return Mapper.MapUsers(user);
+			}
+		}
+
+
+		public async Task<User> GetUserWithFriends(int id)
         {
             var userFriends = await _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToListAsync();
             var user = await GetUserByID(id);

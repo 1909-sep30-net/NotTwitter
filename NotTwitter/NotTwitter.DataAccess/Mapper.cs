@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace NotTwitter.DataAccess
 {
-    public class Mapper
+    public static class Mapper
     {
         public static Library.Models.User MapUsers(Entities.Users users)
         {
@@ -11,7 +10,7 @@ namespace NotTwitter.DataAccess
             {
                 UserID = users.UserID,
                 Username = users.Username,
-                Password = users.Password,
+               // Password = users.Password,
                 FirstName = users.FirstName,
                 LastName = users.LastName,
                 Email = users.Email,
@@ -25,7 +24,7 @@ namespace NotTwitter.DataAccess
             {
                 UserID = users.UserID,
                 Username = users.Username,
-                Password = users.Password,
+             //   Password = users.Password,
                 FirstName = users.FirstName,
                 LastName = users.LastName,
                 Email = users.Email,

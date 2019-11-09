@@ -28,7 +28,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = "ValidName",
                 Email = "ValidEmail@email.com",
                 Username = "ValidUsername",
-                Password = "ValidPassword",
                 Gender = 0
             };
 

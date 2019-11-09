@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NotTwitter.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NotTwitter.API.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
 
     public class UserController : ControllerBase
     {
@@ -18,58 +21,10 @@ namespace NotTwitter.API.Controllers
 
         public UserController(IGenericRepository urepo)
         {
-            _repo = urepo ?? throw new ArgumentNullException(nameof(urepo));
-
+            _repo = urepo ?? throw new ArgumentNullException("Cannot be null.", nameof(urepo));
         }
 
-    [HttpGet("post/{id}", Name = "GetFriendPosts")]
-    public async Task<IActionResult> GetFriendPost(int id)
-    {
-        //Check if user 1 is friend with user 2
-        var x = await _repo.GetUserWithFriends(id);
-
-        var friendPostList = new List<PostModel>();
-
-        //if(x == null)
-        //{
-        //    return NotFound();
-        //}
-
-        foreach (Library.Models.User friend in x.Friends)
-        {
-            var friendPost = await _repo.GetPostsByUser(friend.UserID);
-
-            foreach (Library.Models.Post fPost in friendPost)
-            {
-                var commentList = new List<CommentModel>();
-
-                foreach (var comment in fPost.Comments)
-                {
-                    commentList.Add(new CommentModel
-                    {
-                        CommentId = comment.CommentId,
-                        UserId = comment.Author.UserID,
-                        Content = comment.Content,
-                        TimeSent = comment.TimeSent
-                    });
-                }
-
-                var postModel = new PostModel()
-                {
-                    PostID = fPost.PostID,
-                    Text = fPost.Content,
-                    TimeSent = fPost.TimeSent,
-                    UserID = fPost.User.UserID,
-                    Comments = commentList
-                };
-
-                friendPostList.Add(postModel);
-            }
-        }
-        return Ok(friendPostList);
-    }
-
-    [HttpGet("name/{name}", Name = "GetUserByName")]
+        [HttpGet("name/{name}", Name = "GetUserByName")]
         public async Task<IEnumerable<UserViewModel>> GetName(string name)
         {
             var x = await _repo.GetUsersByName(name);
@@ -79,7 +34,7 @@ namespace NotTwitter.API.Controllers
                 userList.Add(new UserViewModel()
                 {
                     Username = user.Username,
-                    Password = user.Password,
+                  //  Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Gender = user.Gender,
@@ -90,10 +45,45 @@ namespace NotTwitter.API.Controllers
             return userList;
         }
 
+		[HttpGet("email/{email}", Name ="GetUserByEmail")]
+		public async Task<ActionResult> GetUserByEmailAsync(string email)
+		{
+			var x = await _repo.GetUserByEmailAsync(email);
+			if (x == null)
+			{
+				return NotFound();
+			}
+			var modelFriends = new List<FriendViewModel>();
 
-        // Get User by Name
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUserByID")]
+			// Populate friend view model using x's populated friend list
+			// business model -> representational model
+			foreach (var friend in x.Friends)
+			{
+				var f = new FriendViewModel
+				{
+					UserId = friend.UserID,
+					FirstName = friend.FirstName,
+					LastName = friend.LastName
+				};
+				modelFriends.Add(f);
+			}
+
+			// Create and return representational model of user
+			return Ok(new UserViewModel()
+			{
+				Username = x.Username,
+				FirstName = x.FirstName,
+				LastName = x.LastName,
+				Gender = x.Gender,
+				Email = x.Email,
+				Id = x.UserID,
+				Friends = modelFriends
+			});
+		}
+
+		// Get User by Name
+		// GET: api/User/5
+		[HttpGet("{id}", Name = "GetUserByID")]
         public async Task<IActionResult> Get(int id)
         {
 
@@ -131,6 +121,48 @@ namespace NotTwitter.API.Controllers
 
         }
 
+        [HttpGet("friendposts/{id}", Name = "GetFriendPosts")]
+        public async Task<IActionResult> GetFriendPost(int id)
+        {
+            //Check if user 1 is friend with user 2
+            var x = await _repo.GetUserWithFriends(id);
+
+            var friendPostList = new List<PostModel>();
+
+            foreach (Library.Models.User friend in x.Friends)
+            {
+                var friendPost = await _repo.GetPostsByUser(friend.UserID);
+
+                foreach (Library.Models.Post fPost in friendPost)
+                {
+                    var commentList = new List<CommentModel>();
+
+                    foreach (var comment in fPost.Comments)
+                    {
+                        commentList.Add(new CommentModel
+                        {
+                            CommentId = comment.CommentId,
+                            UserId = comment.Author.UserID,
+                            Content = comment.Content,
+                            TimeSent = comment.TimeSent
+                        });
+                    }
+
+                    var postModel = new PostModel()
+                    {
+                        PostID = fPost.PostID,
+                        Text = fPost.Content,
+                        TimeSent = fPost.TimeSent,
+                        UserID = fPost.User.UserID,
+                        Comments = commentList
+                    };
+
+                    friendPostList.Add(postModel);
+                }
+            }
+            return Ok(friendPostList);
+        }
+
         // Post User Model
         // POST: api/User
         [HttpPost]
@@ -141,7 +173,7 @@ namespace NotTwitter.API.Controllers
                 Library.Models.User mappedUser = new Library.Models.User()
                 {
                     Username = newUser.Username,
-                    Password = newUser.Password,
+                 //   Password = newUser.Password,
                     FirstName = newUser.FirstName,
                     LastName = newUser.LastName,
                     Gender = newUser.Gender,
@@ -176,7 +208,7 @@ namespace NotTwitter.API.Controllers
                 {
                     UserID = user.Id, // this is redundant, should be removed
                     Username = user.Username, // technically also redundant since this should also not be changed according to the logic above
-                    Password = user.Password,
+                  //  Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
