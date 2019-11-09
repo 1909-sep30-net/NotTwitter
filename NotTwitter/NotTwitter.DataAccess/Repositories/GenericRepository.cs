@@ -35,7 +35,26 @@ namespace NotTwitter.DataAccess.Repositories
             }
         }
 
-        public async Task<User> GetUserWithFriends(int id)
+		/// <summary>
+		/// Given an email, returns matching user from DB
+		/// </summary>
+		/// <param name="id">User email to be searched for</param>
+		/// <returns>User matching the given email</returns>
+		public async Task<User> GetUserByEmailAsync(string email)
+		{
+			var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+			if (user == null)
+			{
+				return null;
+			}
+			else
+			{
+				return Mapper.MapUsers(user);
+			}
+		}
+
+
+		public async Task<User> GetUserWithFriends(int id)
         {
             var userFriends = await _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToListAsync();
             var user = await GetUserByID(id);

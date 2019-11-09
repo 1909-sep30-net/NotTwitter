@@ -10,7 +10,7 @@ namespace NotTwitter.DataAccess
             {
                 UserID = users.UserID,
                 Username = users.Username,
-                Password = users.Password,
+               // Password = users.Password,
                 FirstName = users.FirstName,
                 LastName = users.LastName,
                 Email = users.Email,
@@ -24,7 +24,7 @@ namespace NotTwitter.DataAccess
             {
                 UserID = users.UserID,
                 Username = users.Username,
-                Password = users.Password,
+             //   Password = users.Password,
                 FirstName = users.FirstName,
                 LastName = users.LastName,
                 Email = users.Email,

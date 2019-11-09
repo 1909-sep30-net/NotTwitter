@@ -13,8 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using NotTwitter.DataAccess;
+using NotTwitter.API.Services;
 
 namespace API
 {
@@ -34,18 +36,15 @@ namespace API
              opt.UseNpgsql(Configuration.GetConnectionString("NotTwitterDB")));
 
             services.AddScoped<IGenericRepository, GenericRepository>();
+			services.AddHttpClient<AuthInfoService>();
 
-            services.AddCors(options =>
+			services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular",
                 builder =>
                 {
-<<<<<<< HEAD
-                    builder.WithOrigins("http://localhost:3000",
-                                        "https://1909nickproject2angular.azurewebsites.net")
-=======
+
                     builder.WithOrigins("http://localhost:4200")
->>>>>>> 5f6347b7d4a4128b4aff94a9c0af8668060076ae
                         .AllowAnyMethod() // not just GET and POST, but allow all methods
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -64,8 +63,18 @@ namespace API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NotTwitterAPI", Version = "v1" });
             });
 
+			//Add Auth
+			services.AddAuthentication(options =>
+			{
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer(options =>
+			{
+				options.Authority = "https://nottwitter.auth0.com/";
+				options.Audience = "https://api.nottwiter.com";
+			});
 
-        }
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -89,9 +98,10 @@ namespace API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+			app.UseAuthentication();
+			app.UseAuthorization();
 
-            app.UseCors("AllowAngular");
+			app.UseCors("AllowAngular");
 
             app.UseEndpoints(endpoints =>
             {

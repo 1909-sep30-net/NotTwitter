@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NotTwitter.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NotTwitter.API.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
 
     public class UserController : ControllerBase
     {
@@ -31,7 +34,7 @@ namespace NotTwitter.API.Controllers
                 userList.Add(new UserViewModel()
                 {
                     Username = user.Username,
-                    Password = user.Password,
+                  //  Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Gender = user.Gender,
@@ -42,10 +45,45 @@ namespace NotTwitter.API.Controllers
             return userList;
         }
 
+		[HttpGet("email/{email}", Name ="GetUserByEmail")]
+		public async Task<ActionResult<ApiUser>> GetUserByEmailAsync(string email)
+		{
+			var x = await _repo.GetUserByEmailAsync(email);
+			if (x == null)
+			{
+				return NotFound();
+			}
+			var modelFriends = new List<FriendViewModel>();
 
-        // Get User by Name
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUserByID")]
+			// Populate friend view model using x's populated friend list
+			// business model -> representational model
+			foreach (var friend in x.Friends)
+			{
+				var f = new FriendViewModel
+				{
+					UserId = friend.UserID,
+					FirstName = friend.FirstName,
+					LastName = friend.LastName
+				};
+				modelFriends.Add(f);
+			}
+
+			// Create and return representational model of user
+			return Ok(new UserViewModel()
+			{
+				Username = x.Username,
+				FirstName = x.FirstName,
+				LastName = x.LastName,
+				Gender = x.Gender,
+				Email = x.Email,
+				Id = x.UserID,
+				Friends = modelFriends
+			});
+		}
+
+		// Get User by Name
+		// GET: api/User/5
+		[HttpGet("{id}", Name = "GetUserByID")]
         public async Task<IActionResult> Get(int id)
         {
 
@@ -135,7 +173,7 @@ namespace NotTwitter.API.Controllers
                 Library.Models.User mappedUser = new Library.Models.User()
                 {
                     Username = newUser.Username,
-                    Password = newUser.Password,
+                 //   Password = newUser.Password,
                     FirstName = newUser.FirstName,
                     LastName = newUser.LastName,
                     Gender = newUser.Gender,
@@ -170,7 +208,7 @@ namespace NotTwitter.API.Controllers
                 {
                     UserID = user.Id, // this is redundant, should be removed
                     Username = user.Username, // technically also redundant since this should also not be changed according to the logic above
-                    Password = user.Password,
+                  //  Password = user.Password,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
