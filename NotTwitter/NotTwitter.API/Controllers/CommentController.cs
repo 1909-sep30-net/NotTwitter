@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -8,7 +9,8 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
     public class CommentController : ControllerBase
     {
 		private readonly IGenericRepository _repo;
