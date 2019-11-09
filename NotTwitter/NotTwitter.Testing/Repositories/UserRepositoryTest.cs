@@ -50,7 +50,39 @@ namespace NotTwitter.Testing.Repositories
             Assert.Equal(testId, result.UserID);
         }
 
-        [Theory]
+		[Fact]
+		public async Task GetUserByEmailShouldReturnResult()
+		{
+			// Arrange
+			var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+				.UseInMemoryDatabase("GetUserByEmailShouldReturnResult")
+				.Options;
+			using var arrangeContext = new NotTwitterDbContext(options);
+			var testEmail = "abc.abc@abc.com";
+			var testUserEntity = new Users
+			{
+				UserID = 2,
+				FirstName = ValidName,
+				LastName = ValidName,
+				Email = ValidEmail,
+				Username = ValidUsername,
+				Gender = ValidGender
+			};
+			arrangeContext.Users.Add(testUserEntity);
+			arrangeContext.SaveChanges();
+
+			using var actContext = new NotTwitterDbContext(options);
+			var repo = new GenericRepository(actContext);
+
+			// Act
+			var result = await repo.GetUserByEmailAsync(testEmail);
+
+			// Assert
+			Assert.NotNull(result);
+			Assert.Equal(testEmail, result.Email);
+		}
+
+		[Theory]
         [InlineData("Jicky","Jick")]
 
         public async Task GetUsersByNameShouldReturnList(string fullName, string partialName)

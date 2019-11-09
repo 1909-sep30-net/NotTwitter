@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NotTwitter.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NotTwitter.API.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
 
     public class UserController : ControllerBase
     {
@@ -41,10 +44,45 @@ namespace NotTwitter.API.Controllers
             return userList;
         }
 
+		[HttpGet("email/{email}", Name ="GetUserByEmail")]
+		public async Task<ActionResult> GetUserByEmail(string email)
+		{
+			var x = await _repo.GetUserByEmail(email);
+			if (x == null)
+			{
+				return NotFound();
+			}
+			var modelFriends = new List<FriendViewModel>();
 
-        // Get User by Name
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUserByID")]
+			// Populate friend view model using x's populated friend list
+			// business model -> representational model
+			foreach (var friend in x.Friends)
+			{
+				var f = new FriendViewModel
+				{
+					UserId = friend.UserID,
+					FirstName = friend.FirstName,
+					LastName = friend.LastName
+				};
+				modelFriends.Add(f);
+			}
+
+			// Create and return representational model of user
+			return Ok(new UserViewModel()
+			{
+				Username = x.Username,
+				FirstName = x.FirstName,
+				LastName = x.LastName,
+				Gender = x.Gender,
+				Email = x.Email,
+				Id = x.UserID,
+				Friends = modelFriends
+			});
+		}
+
+		// Get User by Name
+		// GET: api/User/5
+		[HttpGet("{id}", Name = "GetUserByID")]
         public async Task<IActionResult> Get(int id)
         {
 

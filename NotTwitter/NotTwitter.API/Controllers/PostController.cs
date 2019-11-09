@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -8,6 +9,7 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
+	[Authorize]
 	[ApiController]
 	public class PostController : ControllerBase
 	{
@@ -133,28 +135,6 @@ namespace NotTwitter.API.Controllers
             {
                 return NotFound();
             }
-
-            // Populate the comments in the post
-            //var postComments = new List<CommentModel>();
-            //foreach (var comment in currentPost.Comments)
-            //{
-            //    postComments.Add( new CommentModel
-            //    {
-            //        CommentId = comment.CommentId,
-            //        PostId = PostId,
-            //        Content = comment.Content,
-            //        AuthorId = comment.Author.UserID,
-            //        TimeSent = comment.TimeSent
-            //    });
-            //}
-            //var viewPost = new PostModel
-            //{
-            //    PostID = currentPost.PostID,
-            //    UserID = currentPost.User.UserID,
-            //    Text = currentPost.Content,
-            //    Comments = currentPost.Comments,
-            //    TimeSent = currentPost.TimeSent
-            //};
 
 			await _repo.UpdatePost(currentPost);
             await _repo.Save();
