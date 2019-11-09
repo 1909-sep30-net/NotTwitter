@@ -62,15 +62,13 @@ namespace NotTwitter.Testing.Controllers
         [Fact]
         public void PostUserShouldPost()
         {
-            UserViewModel newUser = new UserViewModel()
+            UserPostModel newUser = new UserPostModel()
             {
                 Username = "hithisistest",
                 FirstName = "HiThis",
                 LastName = "IsTest",
-                Password = "password1",
                 Gender = 1,
                 Email = "hithisistest@test.com",
-                Id = 3,
             };
 
             var userList = new List<User>

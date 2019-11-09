@@ -68,26 +68,5 @@ namespace NotTwitter.Testing.Library.Models
             Assert.Equal(expected, user.LastName);
         }
 
-        [Theory]
-        [InlineData("d34gh54")]
-        [InlineData("123")]
-        [InlineData("4j")]
-        [InlineData("s")]
-        public void Password_TooShort_ThrowsException(string password)
-        {
-            Assert.Throws<ArgumentException>( () => user.Password = password);
-        }
-
-        [Theory]
-        [InlineData("12345678")]
-        [InlineData("fiberonetree")]
-        [InlineData("pickle pocket poo")]
-        [InlineData("thisislongerthan8")]
-        public void Password_LongEnough_CorrectlyStores(string password)
-        {
-            user.Password = password;
-
-            Assert.Equal(password, user.Password);
-        }
     }
 }
