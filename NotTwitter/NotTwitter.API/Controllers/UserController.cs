@@ -24,6 +24,26 @@ namespace NotTwitter.API.Controllers
             _repo = urepo ?? throw new ArgumentNullException("Cannot be null.", nameof(urepo));
         }
 
+        [HttpGet(Name = "GetAllUsers")]
+        public async Task<IEnumerable<UserViewModel>> GetAllUsers()
+        {
+            var users = await _repo.GetAllUsers();
+            var userList = new List<UserViewModel>();
+            foreach (Library.Models.User user in users)
+            {
+                userList.Add(new UserViewModel()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    Id = user.UserID
+                });
+            }
+            return userList;
+        }
+
         [HttpGet("name/{name}", Name = "GetUserByName")]
         public async Task<IEnumerable<UserViewModel>> GetName(string name)
         {

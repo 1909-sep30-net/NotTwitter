@@ -34,9 +34,19 @@ namespace NotTwitter.API.Controllers
 
         // GET: api/Comment/user/4
         [HttpGet("user/{userid}", Name = "GetCommentByUser")]
-        public async Task<IActionResult> GetCommentByUser(int userid)
+        public async Task<IActionResult> GetCommentByUser(int userId)
         {
-            var comments = await _repo.GetCommentsByUserId(userid);
+            var comments = await _repo.GetCommentsByUserId(userId);
+            if (comments == null)
+            {
+                return NotFound();
+            }
+            return Ok(comments);
+        }
+
+        public async Task<IActionResult> GetCommentsByPost(int postId)
+        {
+            var comments = await _repo.GetCommentsByPostId(postId);
             if (comments == null)
             {
                 return NotFound();

@@ -89,6 +89,8 @@ namespace NotTwitter.Library.Interfaces
 
         /* User Repository */
 
+        public Task<IEnumerable<User>> GetAllUsers();
+
         /// <summary>
         /// Given an ID, returns matching user from DB
         /// </summary>
