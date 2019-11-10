@@ -54,10 +54,6 @@ namespace NotTwitter.DataAccess
                 entity.Property(u => u.Username)
                     .HasMaxLength(50)
                     .IsRequired();
-                 
-                // Password ??
-                entity.Property(u => u.Password)
-                    .IsRequired();
             });
 
             modelBuilder.Entity<Comments>(entity =>

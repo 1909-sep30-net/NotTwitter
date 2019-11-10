@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -8,6 +9,7 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
+	[Authorize]
 	[ApiController]
 	public class PostController : ControllerBase
 	{
@@ -43,7 +45,7 @@ namespace NotTwitter.API.Controllers
                         CommentId = com.CommentId,
                         Content = com.Content,
                         TimeSent = com.TimeSent,
-                        UserId = com.Author.UserID
+                        AuthorId = com.Author.UserID
                     }
                 );
             }
@@ -69,7 +71,7 @@ namespace NotTwitter.API.Controllers
         public async Task<IActionResult> GetPostsByUser(int userId)
         {
             // If user doesnt exist, return 404
-            if (_repo.GetUserByID(userId) == null)
+            if (await _repo.GetUserByID(userId) == null)
             {
                 return NotFound();
             }
@@ -98,10 +100,15 @@ namespace NotTwitter.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var postAuthor = await _repo.GetUserByID(authorId);
+            if (postAuthor == null)
+            {
+                return NotFound();
+            }
+
 			var newPost = new Library.Models.Post
 			{
 				Content = content,
@@ -118,17 +125,18 @@ namespace NotTwitter.API.Controllers
 
 		// PUT: api/Post/5
 		[HttpPut("{PostId}")]
-        public async Task<IActionResult> UpdatePost(int PostId, [FromBody] Models.PostModel postModel)
+        public async Task<IActionResult> UpdatePost(int PostId, [FromBody] PostsPostModel post)
         {
             var currentPost = await _repo.GetPostById(PostId);
+
+            currentPost.Content = post.Content;
+
             if (currentPost is null)
             {
                 return NotFound();
             }
 
-            currentPost.Content = postModel.Text;
-
-			//_repo.UpdatePost(currentPost);
+			await _repo.UpdatePost(currentPost);
             await _repo.Save();
 
 			return NoContent();

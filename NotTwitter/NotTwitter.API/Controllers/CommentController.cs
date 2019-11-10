@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotTwitter.API.Models;
 using NotTwitter.Library.Interfaces;
@@ -8,7 +9,8 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
     public class CommentController : ControllerBase
     {
 		private readonly IGenericRepository _repo;
@@ -30,6 +32,7 @@ namespace NotTwitter.API.Controllers
             return Ok(comment);
         }
 
+        // GET: api/Comment/user/4
         [HttpGet("user/{userid}", Name = "GetCommentByUser")]
         public async Task<IActionResult> GetCommentByUser(int userid)
         {
@@ -42,25 +45,20 @@ namespace NotTwitter.API.Controllers
         }
 
         // POST: api/Comment
-        [HttpPost]
-        public async Task<IActionResult> CreateComment([FromBody] CommentModel commentModel)
+        [HttpPost("Post")]
+        public async Task<IActionResult> CreateComment([FromBody] CommentPostModel commentModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var post = await _repo.GetPostById(commentModel.PostId);
-            var author = await _repo.GetUserByID(commentModel.UserId);
-            if (post is null)
-            {
-				return BadRequest();
-            }
-            if (author is null)
-            {
-                return BadRequest();
-            }
+            var author = await _repo.GetUserByID(commentModel.AuthorId);
 
-			if (commentModel.Content is null || commentModel.Content == "") // Not sure if you need this if we have data annotations checking for the same thing
-			{
-				ModelState.AddModelError(string.Empty, "You cannot submit an empty comment!");
-				return BadRequest(); // Is this the correct status code for incorrect input? I think it should just be 400 if it's Post
-			}
+            if (post is null || author is null)
+            {
+				return NotFound();
+            }
 
 			var comment = new Library.Models.Comment
 			{
@@ -75,27 +73,23 @@ namespace NotTwitter.API.Controllers
 		}
 
         // PUT: api/Comment/5
-        [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] CommentModel commentModel)
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> Put(int commentId, string content)
         {
-			if (commentModel.Content is null || commentModel.Content == "")
+			if (!ModelState.IsValid)
 			{
-				ModelState.AddModelError(string.Empty, "You cannot submit an empty comment!");
-				return NotFound();
+				return BadRequest(ModelState);
 			}
-			var updateComment = new Library.Models.Comment
-			{
-				Content = commentModel.Content,
-				TimeSent = DateTime.Now,
-			};
-			_repo.UpdateComment(updateComment);
-            _repo.Save();
+            var updateComment = await _repo.GetCommentById(commentId);
+            updateComment.Content = content;
+			await _repo.UpdateComment(updateComment);
+            await _repo.Save();
 			return NoContent();
 		}
 
 		// DELETE: api/ApiWithActions/5
 		[HttpDelete("{postId}")]
-        public ActionResult Delete(int postId, PostModel postModel)
+        public ActionResult Delete(int postId)
         {
 			if (_repo.GetCommentsByPostId(postId) is null)
             {

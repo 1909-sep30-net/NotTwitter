@@ -15,11 +15,12 @@ namespace NotTwitter.API.Models
         public string LastName { get; set; }
 
         public string Username { get; set; }
-        public string Password { get; set; }
+     //   public string Password { get; set; }
         public string Email { get; set; }
 
         public int Gender { get; set; }
 
         public List<FriendViewModel> Friends { get; set; } = new List<FriendViewModel>();
+        public List<PostModel> Posts { get; set; } = new List<PostModel>();
     }
 }

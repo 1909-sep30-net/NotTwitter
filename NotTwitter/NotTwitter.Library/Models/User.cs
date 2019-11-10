@@ -11,7 +11,6 @@ namespace NotTwitter.Library.Models
         private string _lastName;
         private int _gender;
         private string _email;
-        private string _password;
 
         /// <summary>
         /// ID that uniquely identifies the user, 0 if unset
@@ -119,25 +118,6 @@ namespace NotTwitter.Library.Models
         /// Username that user displays or logs in with
         /// </summary>
         public string Username { get; set; }
-
-        /// <summary>
-        /// Password that user uses to log into their account
-        /// </summary>
-        public string Password 
-        {
-            get
-            {
-                return _password;
-            }
-            set
-            {
-                if (value.Length < 8) 
-                {
-                    throw new ArgumentException("Password must be 8 characters or longer.", nameof(value));
-                }
-                _password = value;
-            }
-        }
 
         public DateTime DateCreated { get; set; }
         public ICollection<Post> Posts { get; set; } = new HashSet<Post>();

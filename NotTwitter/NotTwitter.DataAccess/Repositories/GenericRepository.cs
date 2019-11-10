@@ -35,7 +35,31 @@ namespace NotTwitter.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Given an email, returns matching user from DB
+        /// </summary>
+        /// <param name="id">User email to be searched for</param>
+        /// <returns>User matching the given email</returns>
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return null;
+            }
+            else
+            {
+                return Mapper.MapUsers(user);
+            }
+        }
+
+        /// <summary>
+        /// Returns a user with a populated list of friends
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<User> GetUserWithFriends(int id)
+
         {
             var userFriends = await _context.Friendships.Where(fs => fs.User1ID == id).AsNoTracking().ToListAsync();
             var user = await GetUserByID(id);
@@ -202,11 +226,8 @@ namespace NotTwitter.DataAccess.Repositories
         /// <param name="post">Post to be updated</param>
         public async Task UpdatePost(Post post)
         {
-            var newEntity = Mapper.MapPostsWithComments(post);
+            var newEntity = Mapper.MapPostWithUser(post);
             var oldEntity = await _context.Posts
-                .Include(p => p.User)
-                .Include(p => p.Comments)
-                    .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(p => p.PostId == post.PostID);
 
             _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
@@ -230,14 +251,20 @@ namespace NotTwitter.DataAccess.Repositories
             else
             {
                 _context.Add(entityComment);
+                newComment.CommentId = entityComment.CommentId;
             }
         }
 
+        /// <summary>
+        /// Updates the content of the comment
+        /// </summary>
+        /// <param name="newComment"></param>
+        /// <returns></returns>
         public async Task UpdateComment(Comment newComment)
         {
-            var newEntity = Mapper.MapComments(newComment);
             var oldEntity = await _context.Comments.FindAsync(newComment.CommentId);
-            _context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
+            oldEntity.Content = newComment.Content;
+            _context.Entry(oldEntity).CurrentValues.SetValues(oldEntity);
         }
 
         /// <summary>

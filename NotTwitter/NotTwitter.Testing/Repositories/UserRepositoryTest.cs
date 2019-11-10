@@ -34,7 +34,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             arrangeContext.Users.Add(testUserEntity);
@@ -51,7 +50,39 @@ namespace NotTwitter.Testing.Repositories
             Assert.Equal(testId, result.UserID);
         }
 
-        [Theory]
+		[Fact]
+		public async Task GetUserByEmailShouldReturnResult()
+		{
+			// Arrange
+			var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
+				.UseInMemoryDatabase("GetUserByEmailShouldReturnResult")
+				.Options;
+			using var arrangeContext = new NotTwitterDbContext(options);
+			var testEmail = "abc.abc@abc.com";
+			var testUserEntity = new Users
+			{
+				UserID = 2,
+				FirstName = ValidName,
+				LastName = ValidName,
+				Email = ValidEmail,
+				Username = ValidUsername,
+				Gender = ValidGender
+			};
+			arrangeContext.Users.Add(testUserEntity);
+			arrangeContext.SaveChanges();
+
+			using var actContext = new NotTwitterDbContext(options);
+			var repo = new GenericRepository(actContext);
+
+			// Act
+			var result = await repo.GetUserByEmailAsync(testEmail);
+
+			// Assert
+			Assert.NotNull(result);
+			Assert.Equal(testEmail, result.Email);
+		}
+
+		[Theory]
         [InlineData("Jicky","Jick")]
 
         public async Task GetUsersByNameShouldReturnList(string fullName, string partialName)
@@ -70,7 +101,6 @@ namespace NotTwitter.Testing.Repositories
                         LastName = fullName,
                         Email = ValidEmail,
                         Username = ValidUsername,
-                        Password = ValidPassword,
                         Gender = ValidGender
                     }
                 );
@@ -102,7 +132,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             var actRepo = new GenericRepository(actContext);
@@ -133,7 +162,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             arrangeContext.Users.Add(arrangeUser);
@@ -144,7 +172,6 @@ namespace NotTwitter.Testing.Repositories
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
 
@@ -167,25 +194,26 @@ namespace NotTwitter.Testing.Repositories
             var options = new DbContextOptionsBuilder<NotTwitterDbContext>()
                 .UseInMemoryDatabase("DeleteUserShouldDelete")
                 .Options;
-            var assembleContext = new NotTwitterDbContext(options);
+            using var assembleContext = new NotTwitterDbContext(options);
             var someUser = new Users
             {
                 FirstName = ValidName,
                 LastName = ValidName,
                 Email = ValidEmail,
                 Username = ValidUsername,
-                Password = ValidPassword,
                 Gender = ValidGender
             };
             assembleContext.Add(someUser);
+            assembleContext.SaveChanges();
 
-            var repo = new GenericRepository(assembleContext);
+            using var actContext = new NotTwitterDbContext(options);
+            var repo = new GenericRepository(actContext);
 
             // Act
             await repo.DeleteUserByID(1);
 
             // Assert
-            var users = assembleContext.Users.ToList();
+            var users = actContext.Users.ToList();
 
             Assert.DoesNotContain(someUser,users);
         }

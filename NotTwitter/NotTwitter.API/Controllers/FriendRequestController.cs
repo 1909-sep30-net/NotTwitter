@@ -5,10 +5,12 @@ using Library.Models.Enum;
 using NotTwitter.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
+	[Authorize]
 	[ApiController]
 	public class FriendRequestController : ControllerBase
 	{
