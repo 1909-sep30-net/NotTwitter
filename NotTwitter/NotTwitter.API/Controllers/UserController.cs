@@ -53,11 +53,12 @@ namespace NotTwitter.API.Controllers
 			{
 				return NotFound();
 			}
+			var y = await _repo.GetUserWithFriends(x.UserID);
 			var modelFriends = new List<FriendViewModel>();
 
 			// Populate friend view model using x's populated friend list
 			// business model -> representational model
-			foreach (var friend in x.Friends)
+			foreach (var friend in y.Friends)
 			{
 				var f = new FriendViewModel
 				{
@@ -71,12 +72,12 @@ namespace NotTwitter.API.Controllers
 			// Create and return representational model of user
 			return Ok(new UserViewModel()
 			{
-				Username = x.Username,
-				FirstName = x.FirstName,
-				LastName = x.LastName,
-				Gender = x.Gender,
-				Email = x.Email,
-				Id = x.UserID,
+				Username = y.Username,
+				FirstName = y.FirstName,
+				LastName = y.LastName,
+				Gender = y.Gender,
+				Email = y.Email,
+				Id = y.UserID,
 				Friends = modelFriends
 			});
 		}

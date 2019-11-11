@@ -9,7 +9,7 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
-	[Authorize]
+	//[Authorize]
 	[ApiController]
 	public class PostController : ControllerBase
 	{
@@ -71,7 +71,7 @@ namespace NotTwitter.API.Controllers
         public async Task<IActionResult> GetPostsByUser(int userId)
         {
             // If user doesnt exist, return 404
-            if (_repo.GetUserByID(userId) == null)
+            if ( await _repo.GetUserByID(userId) == null)
             {
                 return NotFound();
             }
