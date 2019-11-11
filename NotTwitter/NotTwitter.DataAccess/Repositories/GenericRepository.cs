@@ -210,9 +210,10 @@ namespace NotTwitter.DataAccess.Repositories
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.User)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
+			
 
-            return posts.Select(Mapper.MapPostsWithComments);
+			return posts.Select(Mapper.MapPostsWithComments);
 
         }
 
