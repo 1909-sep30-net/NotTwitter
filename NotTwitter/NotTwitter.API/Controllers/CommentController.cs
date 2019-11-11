@@ -9,7 +9,7 @@ using NotTwitter.Library.Interfaces;
 namespace NotTwitter.API.Controllers
 {
     [Route("api/[controller]")]
-	[Authorize]
+	//[Authorize]
 	[ApiController]
     public class CommentController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace NotTwitter.API.Controllers
         }
 
         // GET: api/Comment/user/4
-        [HttpGet("user/{userid}", Name = "GetCommentByUser")]
+        [HttpGet("user/{userId}", Name = "GetCommentByUser")]
         public async Task<IActionResult> GetCommentByUser(int userId)
         {
             var comments = await _repo.GetCommentsByUserId(userId);
@@ -44,6 +44,7 @@ namespace NotTwitter.API.Controllers
             return Ok(comments);
         }
 
+        [HttpGet("posts/{postId}",Name ="GetCommentsByPost")]
         public async Task<IActionResult> GetCommentsByPost(int postId)
         {
             var comments = await _repo.GetCommentsByPostId(postId);
