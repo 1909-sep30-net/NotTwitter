@@ -35,9 +35,9 @@ steps:
   displayName: npm install
   workingDirectory: $(appDir)
 
-- script: ng build --prod
+- script: ngx ng build --prod
   displayName: ng build
-  workingDirectory: $(appDir)
+  workingDirectory: $(appDir)/NotTwitterAngular
 
 # - script: npx ng test --browsers ChromeHeadless --no-watch --code-coverage
 #   displayName: ng test
