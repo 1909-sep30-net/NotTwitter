@@ -1,0 +1,35 @@
+
+<h1>{{title}} </h1>
+<form>
+  First name: <input type="text" name="fname" value="fname"><br>
+  <input type="submit" value="Submit" (onSubmit)="getUserByName(fname)">
+</form>
+<h1 (click)="getUserByName()">clickmeinstead</h1>
+<h1>Users with name {{name}}</h1>
+<h3>List of Users: </h3>
+<div *ngIf="users">
+  <table>
+    <tr>
+      <th>id</th>
+      <th>firstName</th>
+      <th>lastName</th>
+      <th>username</th>
+      <th>password</th>
+      <th>email</th>
+      <th>gender</th>
+    </tr>
+  
+    <tr *ngFor = "let us of users">
+      <td>{{us.id}}</td>
+      <td>{{us.firstName}}</td>
+      <td>{{us.lastName}}</td>
+      <td>{{us.username}}</td>
+      <td>{{us.password}}</td>
+      <td>{{us.email}}</td>
+      <td>{{us.gender}}</td>
+    </tr>
+  </table>
+</div>
+
+
+

@@ -1,0 +1,33 @@
+<div class="fields-container">
+
+  <form (ngSubmit)='getUserByName($event)' color='primary' id='search-input'>
+    <input type="text" [(ngModel)]='name' name='searchBar' [value]='name' (keyup.enter)='getUserByName(name)'>
+  </form>
+
+  <div *ngIf="users && visible == 1">
+    <table>
+      <tr *ngFor="let us of users" (click)="selectUser(us)">
+        <td>{{us.username}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- <div *ngIf="selectedUser && visible ==0">
+    <-- user profile component --
+    <app-user-profile [model]="selectedUser"></app-user-profile>
+  </div> -->
+
+<div *ngIf="showingProfile">
+  <app-user-profile-page [userId]="selectedUser.id"></app-user-profile-page>
+</div>
+
+
+<!-- 
+  <form #f="ngForm" (ngSubmit)="getUserByName(f)" novalidate>
+    <input name="first" ngModel required #first="ngModel">
+    <button>Submit</button>
+  </form> -->
+
+<!-- <h1 (click)="getUserByName(name)">clickmeinstead</h1>
+  <h1>Users with name {{name}}</h1> -->

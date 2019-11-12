@@ -1,0 +1,10 @@
+<div *ngIf="userOfProfile && posts">
+    <h1>{{userOfProfile.firstName}} {{userOfProfile.lastName}}</h1>
+    <span>Total Posts: {{posts.length}}</span>
+</div>
+<div *ngIf="posts">
+    <div *ngFor="let post of posts">
+        <app-post *ngIf="post" [model]="post" [postId]="post.postID"></app-post>
+        <br>
+    </div>
+</div>

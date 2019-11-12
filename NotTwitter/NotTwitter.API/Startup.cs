@@ -43,8 +43,14 @@ namespace API
                 options.AddPolicy("AllowAngular",
                 builder =>
                 {
+					
+					builder.WithOrigins("http://localhost:4200")
+						.AllowAnyMethod() // not just GET and POST, but allow all methods
+						.AllowAnyHeader()
+						.AllowCredentials();
+					
 
-                    builder.WithOrigins("http://localhost:4200")
+					builder.WithOrigins("https://nottwitter.azurewebsites.net")
                         .AllowAnyMethod() // not just GET and POST, but allow all methods
                         .AllowAnyHeader()
                         .AllowCredentials();

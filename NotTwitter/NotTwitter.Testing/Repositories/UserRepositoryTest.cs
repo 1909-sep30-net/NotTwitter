@@ -75,7 +75,7 @@ namespace NotTwitter.Testing.Repositories
 			var repo = new GenericRepository(actContext);
 
 			// Act
-			var result = await repo.GetUserByEmailAsync(testEmail);
+			var result = await repo.GetUserByEmail(testEmail);
 
 			// Assert
 			Assert.NotNull(result);
