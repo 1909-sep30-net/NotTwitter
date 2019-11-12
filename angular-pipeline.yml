@@ -10,7 +10,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  appDir: intro-app
+  appDir: NotTwitterAngular
 
 steps:
 - checkout: self
@@ -39,13 +39,13 @@ steps:
   displayName: ng build
   workingDirectory: $(appDir)
 
-- script: npx ng test --browsers ChromeHeadless --no-watch --code-coverage
-  displayName: ng test
-  workingDirectory: $(appDir)
+# - script: npx ng test --browsers ChromeHeadless --no-watch --code-coverage
+#   displayName: ng test
+#   workingDirectory: $(appDir)
 
-- script: npm run lint
-  displayName: ng lint
-  workingDirectory: $(appDir)
+# - script: npm run lint
+#   displayName: ng lint
+#   workingDirectory: $(appDir)
 
 - task: AzureRmWebAppDeployment@4
   displayName: App Service deploy
