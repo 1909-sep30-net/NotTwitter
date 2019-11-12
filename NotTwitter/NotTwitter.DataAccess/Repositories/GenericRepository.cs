@@ -46,7 +46,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="id">User email to be searched for</param>
         /// <returns>User matching the given email</returns>
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)

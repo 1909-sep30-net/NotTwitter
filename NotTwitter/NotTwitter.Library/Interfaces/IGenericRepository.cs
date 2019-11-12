@@ -110,7 +110,7 @@ namespace NotTwitter.Library.Interfaces
 		/// </summary>
 		/// <param name="email">User email to be searched for</param>
 		/// <returns>User matching the given email</returns>
-		public Task<User> GetUserByEmail(string email);
+		public Task<User> GetUserByEmailAsync(string email);
 
 		/// <summary>
 		/// Returns list of users with name matching given string

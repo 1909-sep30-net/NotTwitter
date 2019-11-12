@@ -67,7 +67,7 @@ namespace NotTwitter.API.Controllers
 		[HttpGet("email/{email}", Name ="GetUserByEmail")]
 		public async Task<ActionResult> GetUserByEmail(string email)
 		{
-			var x = await _repo.GetUserByEmail(email);
+			var x = await _repo.GetUserByEmailAsync(email);
 			if (x == null)
 			{
 				return NotFound();
@@ -206,7 +206,7 @@ namespace NotTwitter.API.Controllers
                 _repo.AddUser(mappedUser);
                 await _repo.Save();
 
-                var newAddedUser = await _repo.GetUserByEmail(mappedUser.Email);
+                var newAddedUser = await _repo.GetUserByEmailAsync(mappedUser.Email);
 
                 return CreatedAtRoute("GetUserByID", new { id = newAddedUser.UserID }, newAddedUser);
             }
