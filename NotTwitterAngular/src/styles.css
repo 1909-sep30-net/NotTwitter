@@ -1,0 +1,8 @@
+body
+{
+ width:100%;
+ margin:0 auto;
+ padding:0px;
+ font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+ background: linear-gradient(white, rgb(235, 180, 180));
+}

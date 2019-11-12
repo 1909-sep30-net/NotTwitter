@@ -1,0 +1,26 @@
+<title>NotTwitterAngular</title>
+<div class='container-fluid'>
+        <div class='row'>
+            <div class='col-sm-3'>
+                <app-navbar #navbar></app-navbar>
+            </div>
+        <div class='col-sm-9 body-content'>
+            <div *ngIf ="navbar.selectedPage == 1"> 
+                <app-dashboard></app-dashboard>                    
+            </div>
+            <div *ngIf ="navbar.selectedPage == 2">
+                <app-user-profile-page *ngIf = "loggedInUser.id" [userId]='loggedInUser.id'></app-user-profile-page>
+            </div>
+            <div *ngIf ="navbar.selectedPage == 3">
+                <app-user></app-user>
+            </div>
+            <div *ngIf ="navbar.selectedPage == 4">
+                <app-friend-request></app-friend-request>
+            </div>
+            <div *ngIf ="navbar.selectedPage == 5">
+                <app-settings></app-settings>
+            </div>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="row">
+    <div class="post" *ngIf="loggedInUser">
+        <h6>Author: {{loggedInUser.username}}</h6>
+        <hr>
+    </div>
+
+    <div *ngIf="model!==undefined">
+        <h2>{{model.text}}</h2>
+        <h6>{{model.timeSent}}</h6>
+    </div>
+
+    <div *ngIf="model!==undefined">
+        <ul class=".pb-cmnt-textarea"> 
+            <div class="comSec" *ngFor="let comment of (model.comments).slice(0,maxNumOfComments); let i=index">
+                    <app-comment [model]="comment"></app-comment>
+            </div>
+            <button *ngIf="maxNumOfComments < model.comments.length" (click)="extendList(model.comments.length - maxNumOfComments)">Show More: {{model.comments.length - maxNumOfComments}}</button>
+        </ul>
+    
+
+        
+        <mat-form-field (ngSubmit)='addComment($event)' color='primary' id='search-input' appearance='outline'>
+
+            <mat-label color='red'>Comment</mat-label>
+            <input matInput name='commentPost'
+                (keyup.enter)='addComment(content.value);' [formControl]="content">
+
+        </mat-form-field>
+        <button class="btn btn-success" (click)='addComment(content.value)' id='submit-search' type='submit'
+            for='commentPost'>Send</button>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+<div class='main-nav'>
+    <div class='navbar navbar-inverse'>
+        <div class='navbar-header'>
+            <button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse'>
+                <span class='sr-only'>Toggle navigation</span>
+                <span class='icon-bar'></span>
+                <span class='icon-bar'></span>
+                <span class='icon-bar'></span>
+            </button>
+            <div *ngIf="user">
+                <a class='navbar-brand' [routerLink]="['/']" ></a>
+            </div>
+        </div>
+        <div class='clearfix'></div>
+        <div class='navbar-collapse collapse' *ngIf="user" >
+            <ul class='nav navbar-nav'>
+                <li>
+                    <a (click)="SelectPage(1)">
+                        <span class='glyphicon glyphicon-dashboard'></span> Dashboard
+                    </a>
+                <li>
+                    <a (click)="SelectPage(2)">
+                      <span class='glyphicon glyphicon-pencil'></span> {{user.username}}'s Posts
+                    </a>
+                </li>
+                <li>
+                    <a (click)="SelectPage(3)">
+                        <span class='glyphicon glyphicon-user'></span> Search Users
+                    </a>
+                </li>
+                <li>
+                    <a (click)="SelectPage(4)">
+                        <span class='glyphicon glyphicon-education'></span> {{user.username}}'s Friends
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a (click)="SelectPage(5)">
+                        <span class='glyphicon glyphicon-wrench'></span> Settings
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li *ngIf="auth.loggedIn">
+                    <a>
+                        <span class='glyphicon glyphicon-log-out' (click)="auth.logout()"> Logout</span> 
+                    </a>
+                </li>
+                <li *ngIf="!auth.loggedIn">
+                    <a>
+                        <span class='glyphicon glyphicon-user'   (click)="auth.login()"> Login</span> 
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

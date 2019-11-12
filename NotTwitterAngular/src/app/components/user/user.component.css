@@ -1,0 +1,20 @@
+input[type=text] {
+    margin-top: 10px;
+    width: 200px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    padding: 20px 0px 20px 5px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+  }
+  
+  input[type=text]:focus {
+    width: 80%;
+  }
+
+  .btn-info{
+    padding: 20px 20px 20px 5px;
+  }
