@@ -26,6 +26,15 @@ namespace NotTwitter.Testing.Repositories
             
         };
 
+        User testObjectUser = new User
+        {
+            FirstName = "MyFirstName",
+            LastName = "MyLastName",
+            Email = "valid@email.com",
+            Username = "myUsername",
+            Gender = 0,
+        };
+
         Posts testEntityPost = new Posts
         {
             PostId = 1,
@@ -191,7 +200,7 @@ namespace NotTwitter.Testing.Repositories
                 Comments = new List<Comment>(),
                 TimeSent = DateTime.Now,
                 Content = newContent,
-
+                User = testObjectUser
             };
 
             var postInDb = new Posts

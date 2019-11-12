@@ -12,7 +12,7 @@ namespace NotTwitter.API.Controllers
 {
 
     [Route("api/[controller]")]
-	[Authorize]
+	//[Authorize]
 	[ApiController]
 
     public class UserController : ControllerBase
@@ -22,6 +22,26 @@ namespace NotTwitter.API.Controllers
         public UserController(IGenericRepository urepo)
         {
             _repo = urepo ?? throw new ArgumentNullException("Cannot be null.", nameof(urepo));
+        }
+
+        [HttpGet(Name = "GetAllUsers")]
+        public async Task<IEnumerable<UserViewModel>> GetAllUsers()
+        {
+            var users = await _repo.GetAllUsers();
+            var userList = new List<UserViewModel>();
+            foreach (Library.Models.User user in users)
+            {
+                userList.Add(new UserViewModel()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    Id = user.UserID
+                });
+            }
+            return userList;
         }
 
         [HttpGet("name/{name}", Name = "GetUserByName")]
@@ -47,16 +67,17 @@ namespace NotTwitter.API.Controllers
 		[HttpGet("email/{email}", Name ="GetUserByEmail")]
 		public async Task<ActionResult> GetUserByEmail(string email)
 		{
-			var x = await _repo.GetUserByEmail(email);
+			var x = await _repo.GetUserByEmailAsync(email);
 			if (x == null)
 			{
 				return NotFound();
 			}
+			var y = await _repo.GetUserWithFriends(x.UserID);
 			var modelFriends = new List<FriendViewModel>();
 
 			// Populate friend view model using x's populated friend list
 			// business model -> representational model
-			foreach (var friend in x.Friends)
+			foreach (var friend in y.Friends)
 			{
 				var f = new FriendViewModel
 				{
@@ -70,12 +91,12 @@ namespace NotTwitter.API.Controllers
 			// Create and return representational model of user
 			return Ok(new UserViewModel()
 			{
-				Username = x.Username,
-				FirstName = x.FirstName,
-				LastName = x.LastName,
-				Gender = x.Gender,
-				Email = x.Email,
-				Id = x.UserID,
+				Username = y.Username,
+				FirstName = y.FirstName,
+				LastName = y.LastName,
+				Gender = y.Gender,
+				Email = y.Email,
+				Id = y.UserID,
 				Friends = modelFriends
 			});
 		}
@@ -185,7 +206,7 @@ namespace NotTwitter.API.Controllers
                 _repo.AddUser(mappedUser);
                 await _repo.Save();
 
-                var newAddedUser = await _repo.GetUserByEmail(mappedUser.Email);
+                var newAddedUser = await _repo.GetUserByEmailAsync(mappedUser.Email);
 
                 return CreatedAtRoute("GetUserByID", new { id = newAddedUser.UserID }, newAddedUser);
             }

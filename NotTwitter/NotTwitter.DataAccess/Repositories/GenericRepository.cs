@@ -17,6 +17,12 @@ namespace NotTwitter.DataAccess.Repositories
             _context = db ?? throw new ArgumentNullException("Context cannot be null.",nameof(db));
         }
 
+        public async Task<IEnumerable<User>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            return users.Select(Mapper.MapUsers);
+        }
+
         /// <summary>
         /// Given an ID, returns matching user from DB
         /// </summary>
@@ -40,7 +46,7 @@ namespace NotTwitter.DataAccess.Repositories
         /// </summary>
         /// <param name="id">User email to be searched for</param>
         /// <returns>User matching the given email</returns>
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
@@ -204,9 +210,10 @@ namespace NotTwitter.DataAccess.Repositories
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.User)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
+			
 
-            return posts.Select(Mapper.MapPostsWithComments);
+			return posts.Select(Mapper.MapPostsWithComments);
 
         }
 
@@ -299,6 +306,10 @@ namespace NotTwitter.DataAccess.Repositories
         /// <returns></returns>
 		public async Task<IEnumerable<Comment>> GetCommentsByPostId(int postId)
         {
+            if (await _context.Posts.FindAsync(postId) == null)
+            {
+                return null;
+            }
             var comments = await _context.Comments.Where(p => p.PostId == postId).OrderByDescending(d => d.TimeSent).ToListAsync();
             return comments.Select(Mapper.MapComments);
         }
