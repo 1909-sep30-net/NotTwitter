@@ -1,4 +1,4 @@
 export const environment = {
-  notTwitterApiBaseUrl: 'https://localhost:44381',
+  notTwitterApiBaseUrl: 'https://nottwitterapi.azurewebsites.net',
   production: true
 };

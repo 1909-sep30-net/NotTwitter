@@ -12,7 +12,7 @@ namespace NotTwitter.API.Controllers
 {
 
     [Route("api/[controller]")]
-	//[Authorize]
+	[Authorize]
 	[ApiController]
 
     public class UserController : ControllerBase

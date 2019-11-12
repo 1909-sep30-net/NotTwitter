@@ -44,7 +44,7 @@ namespace API
                 builder =>
                 {
 
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:4200", "https://nottwitter.azurewebsites.net")
                         .AllowAnyMethod() // not just GET and POST, but allow all methods
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -71,7 +71,7 @@ namespace API
 			}).AddJwtBearer(options =>
 			{
 				options.Authority = "https://nottwitter.auth0.com/";
-				options.Audience = "https://api.nottwiter.com";
+				options.Audience = "https://nottwitter.azurewebsites.net";
 			});
 
 		}
