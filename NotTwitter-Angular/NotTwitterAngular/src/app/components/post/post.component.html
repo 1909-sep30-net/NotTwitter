@@ -1,12 +1,14 @@
 <div class="row">
-    <div class="post" *ngIf="loggedInUser">
-        <h6>Author: {{loggedInUser.username}}</h6>
-        <hr>
-    </div>
-
-    <div *ngIf="model!==undefined">
-        <h2>{{model.text}}</h2>
-        <h6>{{model.timeSent}}</h6>
+    <div class="post">
+        <div *ngIf="loggedInUser">
+            <h6>Author: {{loggedInUser.username}}</h6>
+            <hr>
+        </div>
+    
+        <div *ngIf="model!==undefined">
+            <h2>{{model.text}}</h2>
+            <h6>{{model.timeSent}}</h6>
+        </div>
     </div>
 
     <div *ngIf="model!==undefined">
