@@ -37,7 +37,7 @@ steps:
 
 - script: ng build --prod
   displayName: ng build
-  workingDirectory: $(appDir)/src
+  workingDirectory: $(appDir)
 
 # - script: npx ng test --browsers ChromeHeadless --no-watch --code-coverage
 #   displayName: ng test
