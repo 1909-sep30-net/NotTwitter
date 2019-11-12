@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace NotTwitter.API.Controllers
 {
 	[Route("api/[controller]")]
-	[Authorize]
+	//[Authorize]
 	[ApiController]
 	public class FriendRequestController : ControllerBase
 	{
@@ -20,6 +20,8 @@ namespace NotTwitter.API.Controllers
 		{
 			_repo = repo ?? throw new ArgumentNullException("Cannot be null.", nameof(repo));
 		}
+
+
 
 		/// <summary>
 		/// List All Requests
@@ -41,6 +43,7 @@ namespace NotTwitter.API.Controllers
 				{
 					SenderId = req.SenderId,
 					ReceiverId = req.ReceiverId,
+                    Status = req.FriendRequestStatus
 				};
 				requestList.Add(r);
 			}

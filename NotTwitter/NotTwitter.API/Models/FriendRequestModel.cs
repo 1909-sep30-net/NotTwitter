@@ -16,6 +16,7 @@ namespace NotTwitter.API.Models
 		[Required]
 		public int ReceiverId { get; set; }
 
+        public int Status { get; set; }
 
 	}
 }
